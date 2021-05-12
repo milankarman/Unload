@@ -17,7 +17,8 @@ namespace auto_loadless
 {
     public partial class MainWindow : Window
     {
-        Bitmap currentCrop = null;
+        BitmapImage currentFrame = null;
+        CroppedBitmap currentCroppedFrame = null;
 
         public MainWindow()
         {
@@ -26,14 +27,12 @@ namespace auto_loadless
 
         private void btnLoadVideo_Click(object sender, RoutedEventArgs e)
         {
-            CompareImage();
-
-            // OpenFileDialog dialog = new OpenFileDialog();
-            // 
-            // if (dialog.ShowDialog() == true)
-            // {
-            //     ConvertToImageSequence(dialog.FileName);
-            // }
+            OpenFileDialog dialog = new OpenFileDialog();
+            
+            if (dialog.ShowDialog() == true)
+            {
+                ConvertToImageSequence(dialog.FileName);
+            }
         }
 
         private void ConvertToImageSequence(string inputPath)
@@ -56,16 +55,33 @@ namespace auto_loadless
 
         private void CompareImage()
         {
-            OpenFileDialog img1 = new OpenFileDialog();
-            OpenFileDialog img2 = new OpenFileDialog();
+            OpenFileDialog img2Dialog = new OpenFileDialog();
 
-            if (img1.ShowDialog() == true && img2.ShowDialog() == true)
+            if (img2Dialog.ShowDialog() == true)
             {
-                Bitmap image1 = (Bitmap)Image.FromFile(img1.FileName);
+                Bitmap image1 = BitmapFromSource(currentCroppedFrame.Source);
                 Digest hash1 = ImagePhash.ComputeDigest(image1.ToLuminanceImage());
-   
-                Bitmap image2 = (Bitmap)Image.FromFile(img2.FileName);
-                Digest hash2 = ImagePhash.ComputeDigest(image2.ToLuminanceImage());
+
+                Uri img2Path = new Uri(img2Dialog.FileName);
+
+                BitmapImage img2 = new BitmapImage(img2Path);
+
+                int width = (int)Math.Round(sldWidth.Value / 100 * currentFrame.Width);
+                int height = (int)Math.Round(sldHeight.Value / 100 * currentFrame.Height);
+                
+                int x = (int)Math.Round(sldX.Value / 100 * currentFrame.Width);
+                int y = (int)Math.Round(sldY.Value / 100 * currentFrame.Height);
+                
+                x = Math.Clamp(x, 0, (int)currentFrame.Width - width);
+                y = Math.Clamp(y, 0, (int)currentFrame.Height - height);
+
+                CroppedBitmap img2Cropped = new CroppedBitmap(img2, new Int32Rect(x, y, width, height));
+
+                imgPreview2.Source = img2Cropped;
+
+                Bitmap img2out = BitmapFromSource(img2Cropped);
+
+                Digest hash2 = ImagePhash.ComputeDigest(img2out.ToLuminanceImage());
 
                 float score = ImagePhash.GetCrossCorrelation(hash1, hash2);
 
@@ -75,32 +91,68 @@ namespace auto_loadless
 
         private void btnLoadFrame_Click(object sender, RoutedEventArgs e)
         {
-            currentCrop = (Bitmap)Image.FromFile($"C:/TestOutput/{txtFrameNumber.Text}.bmp");
+            Uri framePath = new Uri($"C:/TestOutput/{txtFrameNumber.Text}.png");
+            currentFrame = new BitmapImage(framePath);
 
-            imgPreview.Source = ToBitmapImage(currentCrop);
+            imgPreview.Source = currentFrame;
         }
 
-        private void btnUpdateCrop_Click(object sender, RoutedEventArgs e)
+        private void UpdateCropPreview()
         {
-            sldLeft.Value
-        }
-
-        public static BitmapImage ToBitmapImage(Bitmap bitmap)
-        {
-            using (MemoryStream memory = new MemoryStream())
+            if (currentFrame == null)
             {
-                bitmap.Save(memory, ImageFormat.Png);
-                memory.Position = 0;
-
-                BitmapImage bitmapImage = new BitmapImage();
-                bitmapImage.BeginInit();
-                bitmapImage.StreamSource = memory;
-                bitmapImage.CacheOption = BitmapCacheOption.OnLoad;
-                bitmapImage.EndInit();
-                bitmapImage.Freeze();
-
-                return bitmapImage;
+                return;
             }
+
+            int width = (int)Math.Round(sldWidth.Value / 100 * currentFrame.Width);
+            int height = (int)Math.Round(sldHeight.Value / 100 * currentFrame.Height);
+
+            int x = (int)Math.Round(sldX.Value / 100 * currentFrame.Width);
+            int y = (int)Math.Round(sldY.Value / 100 * currentFrame.Height);
+
+            x = Math.Clamp(x, 0, (int)currentFrame.Width - width);
+            y = Math.Clamp(y, 0, (int)currentFrame.Height - height);
+
+            currentCroppedFrame = new CroppedBitmap(currentFrame, new Int32Rect(x, y, width, height));
+            imgPreview.Source = currentCroppedFrame;
+        }
+
+        private void sldX_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            UpdateCropPreview();
+        }
+
+        private void sldY_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            UpdateCropPreview();
+        }
+
+        private void sldWidth_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            UpdateCropPreview();
+        }
+
+        private void sldHeight_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            UpdateCropPreview();
+        }
+
+        private void btnCompareAgainst_Click(object sender, RoutedEventArgs e)
+        {
+            CompareImage();
+        }
+
+        public static Bitmap BitmapFromSource(BitmapSource bitmapsource)
+        {
+            Bitmap bitmap;
+            using (var outStream = new MemoryStream())
+            {
+                BitmapEncoder enc = new BmpBitmapEncoder();
+                enc.Frames.Add(BitmapFrame.Create(bitmapsource));
+                enc.Save(outStream);
+                bitmap = new Bitmap(outStream);
+            }
+            return bitmap;
         }
     }
 }

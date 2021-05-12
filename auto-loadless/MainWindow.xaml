@@ -7,15 +7,20 @@
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
     <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="67*"/>
+            <ColumnDefinition Width="33*"/>
+        </Grid.ColumnDefinitions>
         <Button x:Name="btnLoadVideo" Content="Load &amp; Prepare" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Click="btnLoadVideo_Click"/>
-        <Image x:Name="imgPreview" HorizontalAlignment="Left" Height="410" Margin="111,10,0,0" VerticalAlignment="Top" Width="679" Source="/chrome_7fp5ib9rjN.png"/>
+        <Image x:Name="imgPreview" HorizontalAlignment="Center" Height="183" VerticalAlignment="Center" Width="316" Source="/chrome_7fp5ib9rjN.png" Stretch="Fill" StretchDirection="DownOnly"/>
         <TextBox x:Name="txtFrameNumber" HorizontalAlignment="Left" Margin="10,45,0,0" Text="Frame" TextWrapping="Wrap" VerticalAlignment="Top" Width="87"/>
         <Button x:Name="btnLoadFrame" Content="Load Frame" HorizontalAlignment="Left" Margin="10,68,0,0" VerticalAlignment="Top" Width="87" Click="btnLoadFrame_Click"/>
-        <Slider x:Name="sldTop" HorizontalAlignment="Left" Margin="10,102,0,0" VerticalAlignment="Top" Width="87"/>
-        <Slider x:Name="sldBottom" HorizontalAlignment="Left" Margin="10,125,0,0" VerticalAlignment="Top" Width="87"/>
-        <Slider x:Name="sldLeft" HorizontalAlignment="Left" Margin="10,148,0,0" VerticalAlignment="Top" Width="87"/>
-        <Slider x:Name="sldRight" HorizontalAlignment="Left" Margin="10,171,0,0" VerticalAlignment="Top" Width="87"/>
-        <Button x:Name="btnUpdateCrop" Content="Update Crop" HorizontalAlignment="Left" Margin="10,202,0,0" VerticalAlignment="Top" Width="87" Click="btnUpdateCrop_Click"/>
+        <Slider x:Name="sldX" HorizontalAlignment="Left" Margin="10,102,0,0" VerticalAlignment="Top" Width="87" ValueChanged="sldX_ValueChanged" Maximum="100"/>
+        <Slider x:Name="sldY" HorizontalAlignment="Left" Margin="10,125,0,0" VerticalAlignment="Top" Width="87" ValueChanged="sldY_ValueChanged" Maximum="100"/>
+        <Slider x:Name="sldWidth" HorizontalAlignment="Left" Margin="10,148,0,0" VerticalAlignment="Top" Width="87" ValueChanged="sldWidth_ValueChanged" Maximum="100" Minimum="1" Value="100"/>
+        <Slider x:Name="sldHeight" HorizontalAlignment="Left" Margin="10,171,0,0" VerticalAlignment="Top" Width="87" ValueChanged="sldHeight_ValueChanged" Maximum="100" Minimum="1" Value="100"/>
+        <Button x:Name="btnCompareAgainst" Content="Compare Against" HorizontalAlignment="Left" Margin="10,197,0,0" VerticalAlignment="Top" Width="87" Click="btnCompareAgainst_Click"/>
+        <Image x:Name="imgPreview2" HorizontalAlignment="Left" Height="183" VerticalAlignment="Center" Width="316" Source="/chrome_7fp5ib9rjN.png" Stretch="Fill" StretchDirection="DownOnly" Grid.ColumnSpan="2" Margin="460,0,0,0"/>
 
     </Grid>
 </Window>
