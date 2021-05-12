@@ -77,7 +77,7 @@ namespace auto_loadless
 
                 CroppedBitmap img2Cropped = new CroppedBitmap(img2, new Int32Rect(x, y, width, height));
 
-                imgPreview2.Source = img2Cropped;
+                // imgPreview2.Source = img2Cropped;
 
                 Bitmap img2out = BitmapFromSource(img2Cropped);
 
@@ -94,7 +94,7 @@ namespace auto_loadless
             Uri framePath = new Uri($"C:/TestOutput/{txtFrameNumber.Text}.png");
             currentFrame = new BitmapImage(framePath);
 
-            imgPreview.Source = currentFrame;
+            imgVideo.Source = currentFrame;
         }
 
         private void UpdateCropPreview()
@@ -114,7 +114,7 @@ namespace auto_loadless
             y = Math.Clamp(y, 0, (int)currentFrame.Height - height);
 
             currentCroppedFrame = new CroppedBitmap(currentFrame, new Int32Rect(x, y, width, height));
-            imgPreview.Source = currentCroppedFrame;
+            imgPickedLoad.Source = currentCroppedFrame;
         }
 
         private void sldX_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)

@@ -5,22 +5,47 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:auto_loadless"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+        Title="MainWindow" Height="720" Width="1280">
     <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="105*"/>
+            <RowDefinition Height="71*"/>
+        </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="67*"/>
-            <ColumnDefinition Width="33*"/>
+            <ColumnDefinition Width="0*"/>
+            <ColumnDefinition Width="0*"/>
+            <ColumnDefinition Width="0*"/>
+            <ColumnDefinition Width="23*"/>
+            <ColumnDefinition Width="105*"/>
+            <ColumnDefinition Width="0*"/>
         </Grid.ColumnDefinitions>
-        <Button x:Name="btnLoadVideo" Content="Load &amp; Prepare" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Click="btnLoadVideo_Click"/>
-        <Image x:Name="imgPreview" HorizontalAlignment="Center" Height="183" VerticalAlignment="Center" Width="316" Source="/chrome_7fp5ib9rjN.png" Stretch="Fill" StretchDirection="DownOnly"/>
-        <TextBox x:Name="txtFrameNumber" HorizontalAlignment="Left" Margin="10,45,0,0" Text="Frame" TextWrapping="Wrap" VerticalAlignment="Top" Width="87"/>
-        <Button x:Name="btnLoadFrame" Content="Load Frame" HorizontalAlignment="Left" Margin="10,68,0,0" VerticalAlignment="Top" Width="87" Click="btnLoadFrame_Click"/>
-        <Slider x:Name="sldX" HorizontalAlignment="Left" Margin="10,102,0,0" VerticalAlignment="Top" Width="87" ValueChanged="sldX_ValueChanged" Maximum="100"/>
-        <Slider x:Name="sldY" HorizontalAlignment="Left" Margin="10,125,0,0" VerticalAlignment="Top" Width="87" ValueChanged="sldY_ValueChanged" Maximum="100"/>
-        <Slider x:Name="sldWidth" HorizontalAlignment="Left" Margin="10,148,0,0" VerticalAlignment="Top" Width="87" ValueChanged="sldWidth_ValueChanged" Maximum="100" Minimum="1" Value="100"/>
-        <Slider x:Name="sldHeight" HorizontalAlignment="Left" Margin="10,171,0,0" VerticalAlignment="Top" Width="87" ValueChanged="sldHeight_ValueChanged" Maximum="100" Minimum="1" Value="100"/>
-        <Button x:Name="btnCompareAgainst" Content="Compare Against" HorizontalAlignment="Left" Margin="10,197,0,0" VerticalAlignment="Top" Width="87" Click="btnCompareAgainst_Click"/>
-        <Image x:Name="imgPreview2" HorizontalAlignment="Left" Height="183" VerticalAlignment="Center" Width="316" Source="/chrome_7fp5ib9rjN.png" Stretch="Fill" StretchDirection="DownOnly" Grid.ColumnSpan="2" Margin="460,0,0,0"/>
+        <Button x:Name="btnConverAndLoadVideo" Content="New" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Click="btnLoadVideo_Click" Height="20" Width="104" Grid.Column="3"/>
+        <Image x:Name="imgVideo" Height="587" VerticalAlignment="Top" Source="/chrome_7fp5ib9rjN.png" Stretch="Fill" StretchDirection="Both" Margin="10,10,10,0" Grid.Column="4" Grid.RowSpan="2"/>
+        <TextBox x:Name="txtFrameNumber" HorizontalAlignment="Left" Margin="953,185,0,0" Text="Frame" TextWrapping="Wrap" VerticalAlignment="Top" Width="87" Height="18" Grid.Column="4" Grid.Row="1"/>
+        <GroupBox x:Name="grpPickLoad" Header="Pick Load" Margin="9,46,10,26" Grid.Column="3"/>
+        <Image x:Name="imgPickedLoad" Height="107" Margin="21,276,22,0" VerticalAlignment="Top" Grid.Column="1" Grid.ColumnSpan="3" Source="/chrome_7fp5ib9rjN.png"/>
+        <Button x:Name="btnLoadFrame" Content="Pick Current Frame" HorizontalAlignment="Center" Margin="0,71,0,0" VerticalAlignment="Top" Width="188" Click="btnLoadFrame_Click" Height="20" Grid.Column="3"/>
+        <Slider x:Name="sldX" HorizontalAlignment="Right" Margin="0,111,21,0" VerticalAlignment="Top" Width="167" ValueChanged="sldX_ValueChanged" Maximum="100" Height="19" Grid.Column="3" AutoToolTipPlacement="None"/>
+        <Slider x:Name="sldY" HorizontalAlignment="Right" Margin="0,147,21,0" VerticalAlignment="Top" Width="167" ValueChanged="sldY_ValueChanged" Maximum="100" Height="20" Grid.Column="3"/>
+        <Slider x:Name="sldWidth" HorizontalAlignment="Right" Margin="0,182,21,0" VerticalAlignment="Top" Width="167" ValueChanged="sldWidth_ValueChanged" Maximum="100" Minimum="1" Value="100" Height="19" Grid.Column="3"/>
+        <Slider x:Name="sldHeight" HorizontalAlignment="Right" Margin="0,217,21,0" VerticalAlignment="Top" Width="167" ValueChanged="sldHeight_ValueChanged" Maximum="100" Minimum="1" Value="100" Height="21" Grid.Column="3"/>
+        <GroupBox x:Name="grpActions" Header="Actions" Margin="10,399,10,159" Grid.Column="3" Grid.RowSpan="2"/>
+        <TextBox x:Name="textBox" HorizontalAlignment="Right" Margin="0,94,22,170" Text="TextBox" TextWrapping="Wrap" Width="126" Grid.Row="1" Grid.Column="3"/>
+        <Label x:Name="label1" Content="Similarity" HorizontalAlignment="Left" Margin="21,90,0,167" Grid.Column="3" Width="59" Grid.Row="1"/>
+        <Button x:Name="btnCompareAgainst" Content="Compare Against Current Frame&#xD;&#xA;" HorizontalAlignment="Center" Margin="0,246,0,0" VerticalAlignment="Top" Width="188" Click="btnCompareAgainst_Click" Height="20" Grid.Column="3"/>
+        <Slider x:Name="sldTimeline" HorizontalAlignment="Left" Margin="137,185,0,0" VerticalAlignment="Top" Width="722" Grid.Column="4" Height="18" Grid.Row="1"/>
+        <Button x:Name="button" Content="&lt;" HorizontalAlignment="Left" Margin="39,185,0,0" VerticalAlignment="Top" Width="24" Height="20" Grid.Column="4" Grid.Row="1"/>
+        <Button x:Name="button_Copy" Content="&gt;" HorizontalAlignment="Left" Margin="68,185,0,0" VerticalAlignment="Top" Width="24" Height="20" Grid.Column="4" Grid.Row="1"/>
+        <Button x:Name="button_Copy1" Content="&gt;&gt;" HorizontalAlignment="Left" Margin="97,185,0,0" VerticalAlignment="Top" Width="24" Height="20" Grid.Column="4" Grid.Row="1"/>
+        <Button x:Name="button_Copy2" Content="&lt;&lt;" HorizontalAlignment="Left" Margin="10,185,0,0" VerticalAlignment="Top" Width="24" Height="20" Grid.Column="4" Grid.Row="1"/>
+        <Button x:Name="btnConverAndLoadVideo_Copy" Content="Open" HorizontalAlignment="Left" Margin="126,10,0,0" VerticalAlignment="Top" Click="btnLoadVideo_Click" Height="20" Width="94" Grid.Column="3"/>
+        <Label x:Name="label" Content="X" Grid.ColumnSpan="4" HorizontalAlignment="Left" Margin="21,106,0,0" VerticalAlignment="Top" Height="28" RenderTransformOrigin="0.488,1.001"/>
+        <Label x:Name="label_Copy" Content="Y" Grid.ColumnSpan="4" HorizontalAlignment="Left" Margin="21,143,0,0" VerticalAlignment="Top" Height="28" RenderTransformOrigin="0.488,1.001"/>
+        <Label x:Name="label_Copy2" Content="H" Grid.ColumnSpan="4" HorizontalAlignment="Left" Margin="21,213,0,0" VerticalAlignment="Top" Height="28" RenderTransformOrigin="0.488,1.001"/>
+        <Label x:Name="label_Copy3" Content="W" Grid.ColumnSpan="4" HorizontalAlignment="Left" Margin="21,178,0,0" VerticalAlignment="Top" Height="28" RenderTransformOrigin="0.488,1.001"/>
+        <Button x:Name="button1" Content="Mark Start" Grid.Column="3" HorizontalAlignment="Center" Margin="0,3,0,0" VerticalAlignment="Top" Width="186" Grid.Row="1"/>
+        <Button x:Name="button1_Copy" Content="Mark End" Grid.Column="3" HorizontalAlignment="Center" Margin="0,28,0,0" VerticalAlignment="Top" Width="186" Grid.Row="1"/>
+        <Button x:Name="button1_Copy1" Content="Detect Loads" Grid.Column="3" HorizontalAlignment="Center" Margin="0,65,0,0" VerticalAlignment="Top" Width="186" Grid.Row="1"/>
 
     </Grid>
 </Window>
