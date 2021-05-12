@@ -52,6 +52,28 @@
           }
         }
       },
+      "Shipwreck.Phash/0.5.0": {
+        "type": "package",
+        "compile": {
+          "lib/netcoreapp3.0/Shipwreck.Phash.dll": {}
+        },
+        "runtime": {
+          "lib/netcoreapp3.0/Shipwreck.Phash.dll": {}
+        }
+      },
+      "Shipwreck.Phash.Bitmaps/0.5.0": {
+        "type": "package",
+        "dependencies": {
+          "Shipwreck.Phash": "0.5.0",
+          "System.Drawing.Common": "4.5.1"
+        },
+        "compile": {
+          "lib/netcoreapp3.0/Shipwreck.Phash.Bitmaps.dll": {}
+        },
+        "runtime": {
+          "lib/netcoreapp3.0/Shipwreck.Phash.Bitmaps.dll": {}
+        }
+      },
       "System.Drawing.Common/5.0.2": {
         "type": "package",
         "dependencies": {
@@ -156,6 +178,58 @@
         "version.txt"
       ]
     },
+    "Shipwreck.Phash/0.5.0": {
+      "sha512": "FMeI3ZkPAjr/KlIIyagMoFCdUVADj654njRVcUC172sBGUAqdc6LRBD/3Dj9SZxbeSL1iJU4iHCTakVgva9ukQ==",
+      "type": "package",
+      "path": "shipwreck.phash/0.5.0",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "lib/net45/Shipwreck.Phash.dll",
+        "lib/net45/Shipwreck.Phash.xml",
+        "lib/net461/Shipwreck.Phash.dll",
+        "lib/net461/Shipwreck.Phash.xml",
+        "lib/netcoreapp1.0/Shipwreck.Phash.dll",
+        "lib/netcoreapp1.0/Shipwreck.Phash.xml",
+        "lib/netcoreapp2.0/Shipwreck.Phash.dll",
+        "lib/netcoreapp2.0/Shipwreck.Phash.xml",
+        "lib/netcoreapp2.1/Shipwreck.Phash.dll",
+        "lib/netcoreapp2.1/Shipwreck.Phash.xml",
+        "lib/netcoreapp3.0/Shipwreck.Phash.dll",
+        "lib/netcoreapp3.0/Shipwreck.Phash.xml",
+        "lib/netstandard1.0/Shipwreck.Phash.dll",
+        "lib/netstandard1.0/Shipwreck.Phash.xml",
+        "lib/netstandard1.1/Shipwreck.Phash.dll",
+        "lib/netstandard1.1/Shipwreck.Phash.xml",
+        "lib/netstandard2.1/Shipwreck.Phash.dll",
+        "lib/netstandard2.1/Shipwreck.Phash.xml",
+        "shipwreck.phash.0.5.0.nupkg.sha512",
+        "shipwreck.phash.nuspec"
+      ]
+    },
+    "Shipwreck.Phash.Bitmaps/0.5.0": {
+      "sha512": "/RobTn1m44uphZm9NDWuDZNhqwBpsZAeWz2OtN7Ea1xN8qyFeIwfDB4KdfsipDMlogBVmeh4cdUO2u+/CIn6iw==",
+      "type": "package",
+      "path": "shipwreck.phash.bitmaps/0.5.0",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "lib/net45/Shipwreck.Phash.Bitmaps.dll",
+        "lib/net45/Shipwreck.Phash.Bitmaps.xml",
+        "lib/net461/Shipwreck.Phash.Bitmaps.dll",
+        "lib/net461/Shipwreck.Phash.Bitmaps.xml",
+        "lib/netcoreapp2.1/Shipwreck.Phash.Bitmaps.dll",
+        "lib/netcoreapp2.1/Shipwreck.Phash.Bitmaps.xml",
+        "lib/netcoreapp3.0/Shipwreck.Phash.Bitmaps.dll",
+        "lib/netcoreapp3.0/Shipwreck.Phash.Bitmaps.xml",
+        "lib/netstandard2.0/Shipwreck.Phash.Bitmaps.dll",
+        "lib/netstandard2.0/Shipwreck.Phash.Bitmaps.xml",
+        "lib/netstandard2.1/Shipwreck.Phash.Bitmaps.dll",
+        "lib/netstandard2.1/Shipwreck.Phash.Bitmaps.xml",
+        "shipwreck.phash.bitmaps.0.5.0.nupkg.sha512",
+        "shipwreck.phash.bitmaps.nuspec"
+      ]
+    },
     "System.Drawing.Common/5.0.2": {
       "sha512": "rvr/M1WPf24ljpvvrVd74+NdjRUJu1bBkspkZcnzSZnmAUQWSvanlQ0k/hVHk+cHufZbZfu7vOh/vYc0q5Uu/A==",
       "type": "package",
@@ -223,7 +297,9 @@
   },
   "projectFileDependencyGroups": {
     ".NETCoreApp,Version=v3.1": [
-      "FFMpegCore >= 4.1.0"
+      "FFMpegCore >= 4.1.0",
+      "Shipwreck.Phash >= 0.5.0",
+      "Shipwreck.Phash.Bitmaps >= 0.5.0"
     ]
   },
   "packageFolders": {
@@ -275,6 +351,14 @@
           "FFMpegCore": {
             "target": "Package",
             "version": "[4.1.0, )"
+          },
+          "Shipwreck.Phash": {
+            "target": "Package",
+            "version": "[0.5.0, )"
+          },
+          "Shipwreck.Phash.Bitmaps": {
+            "target": "Package",
+            "version": "[0.5.0, )"
           }
         },
         "imports": [

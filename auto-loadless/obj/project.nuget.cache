@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "G09P1L65ZQTKHrvMmlDUzJjoyWDNavQwCuXGYT9HM86xwQQd9eD8y8JPPpWmDAc87ZtQhrXs4wO47hbEFR/F1g==",
+  "dgSpecHash": "4+fxPyjbVUvl6doSgzOOE8XM2x85sAASut3TREsWRXLWEWcqC1Ywysw0GZy68BVwcrDtCI75HgkKa7Af6Dhw/Q==",
   "success": true,
   "projectFilePath": "C:\\Users\\milan\\repos\\auto-loadless\\auto-loadless\\auto-loadless.csproj",
   "expectedPackageFiles": [
@@ -8,6 +8,8 @@
     "C:\\Users\\milan\\.nuget\\packages\\instances\\1.6.0\\instances.1.6.0.nupkg.sha512",
     "C:\\Users\\milan\\.nuget\\packages\\microsoft.netcore.platforms\\5.0.0\\microsoft.netcore.platforms.5.0.0.nupkg.sha512",
     "C:\\Users\\milan\\.nuget\\packages\\microsoft.win32.systemevents\\5.0.0\\microsoft.win32.systemevents.5.0.0.nupkg.sha512",
+    "C:\\Users\\milan\\.nuget\\packages\\shipwreck.phash\\0.5.0\\shipwreck.phash.0.5.0.nupkg.sha512",
+    "C:\\Users\\milan\\.nuget\\packages\\shipwreck.phash.bitmaps\\0.5.0\\shipwreck.phash.bitmaps.0.5.0.nupkg.sha512",
     "C:\\Users\\milan\\.nuget\\packages\\system.drawing.common\\5.0.2\\system.drawing.common.5.0.2.nupkg.sha512",
     "C:\\Users\\milan\\.nuget\\packages\\system.text.json\\5.0.1\\system.text.json.5.0.1.nupkg.sha512"
   ],

@@ -26,3 +26,5 @@ C:\Users\milan\repos\auto-loadless\auto-loadless\obj\Debug\netcoreapp3.1\auto-lo
 C:\Users\milan\repos\auto-loadless\auto-loadless\obj\Debug\netcoreapp3.1\auto-loadless.dll
 C:\Users\milan\repos\auto-loadless\auto-loadless\obj\Debug\netcoreapp3.1\auto-loadless.pdb
 C:\Users\milan\repos\auto-loadless\auto-loadless\obj\Debug\netcoreapp3.1\auto-loadless.genruntimeconfig.cache
+C:\Users\milan\repos\auto-loadless\auto-loadless\bin\Debug\netcoreapp3.1\Shipwreck.Phash.dll
+C:\Users\milan\repos\auto-loadless\auto-loadless\bin\Debug\netcoreapp3.1\Shipwreck.Phash.Bitmaps.dll

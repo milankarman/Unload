@@ -8,6 +8,14 @@
         Title="MainWindow" Height="450" Width="800">
     <Grid>
         <Button x:Name="btnLoadVideo" Content="Load &amp; Prepare" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Click="btnLoadVideo_Click"/>
+        <Image x:Name="imgPreview" HorizontalAlignment="Left" Height="410" Margin="111,10,0,0" VerticalAlignment="Top" Width="679" Source="/chrome_7fp5ib9rjN.png"/>
+        <TextBox x:Name="txtFrameNumber" HorizontalAlignment="Left" Margin="10,45,0,0" Text="Frame" TextWrapping="Wrap" VerticalAlignment="Top" Width="87"/>
+        <Button x:Name="btnLoadFrame" Content="Load Frame" HorizontalAlignment="Left" Margin="10,68,0,0" VerticalAlignment="Top" Width="87" Click="btnLoadFrame_Click"/>
+        <Slider x:Name="sldTop" HorizontalAlignment="Left" Margin="10,102,0,0" VerticalAlignment="Top" Width="87"/>
+        <Slider x:Name="sldBottom" HorizontalAlignment="Left" Margin="10,125,0,0" VerticalAlignment="Top" Width="87"/>
+        <Slider x:Name="sldLeft" HorizontalAlignment="Left" Margin="10,148,0,0" VerticalAlignment="Top" Width="87"/>
+        <Slider x:Name="sldRight" HorizontalAlignment="Left" Margin="10,171,0,0" VerticalAlignment="Top" Width="87"/>
+        <Button x:Name="btnUpdateCrop" Content="Update Crop" HorizontalAlignment="Left" Margin="10,202,0,0" VerticalAlignment="Top" Width="87" Click="btnUpdateCrop_Click"/>
 
     </Grid>
 </Window>

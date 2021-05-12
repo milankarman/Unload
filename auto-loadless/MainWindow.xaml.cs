@@ -3,15 +3,22 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Drawing.Imaging;
+using System.Windows.Media.Imaging;
 using System.IO;
+using System.Drawing;
 using System.Diagnostics;
 using System.Windows;
 using Microsoft.Win32;
+using Shipwreck.Phash;
+using Shipwreck.Phash.Bitmaps;
 
 namespace auto_loadless
 {
     public partial class MainWindow : Window
     {
+        Bitmap currentCrop = null;
+
         public MainWindow()
         {
             InitializeComponent();
@@ -19,12 +26,14 @@ namespace auto_loadless
 
         private void btnLoadVideo_Click(object sender, RoutedEventArgs e)
         {
-            OpenFileDialog dialog = new OpenFileDialog();
+            CompareImage();
 
-            if (dialog.ShowDialog() == true)
-            {
-                ConvertToImageSequence(dialog.FileName);
-            }
+            // OpenFileDialog dialog = new OpenFileDialog();
+            // 
+            // if (dialog.ShowDialog() == true)
+            // {
+            //     ConvertToImageSequence(dialog.FileName);
+            // }
         }
 
         private void ConvertToImageSequence(string inputPath)
@@ -43,6 +52,55 @@ namespace auto_loadless
             process.StartInfo.UseShellExecute = false;
             process.StartInfo.CreateNoWindow = false;
             process.Start();
+        }
+
+        private void CompareImage()
+        {
+            OpenFileDialog img1 = new OpenFileDialog();
+            OpenFileDialog img2 = new OpenFileDialog();
+
+            if (img1.ShowDialog() == true && img2.ShowDialog() == true)
+            {
+                Bitmap image1 = (Bitmap)Image.FromFile(img1.FileName);
+                Digest hash1 = ImagePhash.ComputeDigest(image1.ToLuminanceImage());
+   
+                Bitmap image2 = (Bitmap)Image.FromFile(img2.FileName);
+                Digest hash2 = ImagePhash.ComputeDigest(image2.ToLuminanceImage());
+
+                float score = ImagePhash.GetCrossCorrelation(hash1, hash2);
+
+                MessageBox.Show($"Similarity: {score}");
+            }
+        }
+
+        private void btnLoadFrame_Click(object sender, RoutedEventArgs e)
+        {
+            currentCrop = (Bitmap)Image.FromFile($"C:/TestOutput/{txtFrameNumber.Text}.bmp");
+
+            imgPreview.Source = ToBitmapImage(currentCrop);
+        }
+
+        private void btnUpdateCrop_Click(object sender, RoutedEventArgs e)
+        {
+            sldLeft.Value
+        }
+
+        public static BitmapImage ToBitmapImage(Bitmap bitmap)
+        {
+            using (MemoryStream memory = new MemoryStream())
+            {
+                bitmap.Save(memory, ImageFormat.Png);
+                memory.Position = 0;
+
+                BitmapImage bitmapImage = new BitmapImage();
+                bitmapImage.BeginInit();
+                bitmapImage.StreamSource = memory;
+                bitmapImage.CacheOption = BitmapCacheOption.OnLoad;
+                bitmapImage.EndInit();
+                bitmapImage.Freeze();
+
+                return bitmapImage;
+            }
         }
     }
 }
