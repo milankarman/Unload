@@ -56,6 +56,10 @@
             <Slider x:Name="sliderCropHeight" Grid.ColumnSpan="2" Margin="11,196,9,0" VerticalAlignment="Top" Width="200" ValueChanged="slidersCropping_OnValueChanged" Maximum="100" Value="100" Minimum="1"/>
             <Image x:Name="imageLoadFrame" Height="113" Margin="10,224,9,0" VerticalAlignment="Top" Width="201" Grid.ColumnSpan="2" Source="/chrome_7fp5ib9rjN.png"/>
             <Button x:Name="btnCheckSimilarity" Content="Check Similarity to Current Frame" HorizontalAlignment="Left" Margin="10,352,0,0" VerticalAlignment="Top" Grid.ColumnSpan="2" Width="200" Click="btnCheckSimilarity_Click"/>
+            <Label x:Name="label1" Content="Minimum Similarity" HorizontalAlignment="Left" Margin="11,401,0,0" VerticalAlignment="Top" Grid.ColumnSpan="2" Width="200"/>
+            <TextBox x:Name="txtSimilarity" Grid.ColumnSpan="2" HorizontalAlignment="Left" Margin="11,432,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="199" Text="0.90"/>
+            <Button x:Name="btnCountLoads" Content="Count Loads" HorizontalAlignment="Left" Margin="11,455,0,0" VerticalAlignment="Top" Grid.ColumnSpan="2" Width="199" Click="btnCountLoads_Click"/>
+            <ListBox x:Name="lbxLoads" Margin="10,480,10,10" Grid.ColumnSpan="2" SelectionChanged="lbxLoads_SelectionChanged"/>
         </Grid>
         <Button x:Name="button1" Content="Button" HorizontalAlignment="Left" Margin="176,-179,0,0" VerticalAlignment="Top"/>
 

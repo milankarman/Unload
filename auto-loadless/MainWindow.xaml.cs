@@ -118,5 +118,33 @@ namespace auto_loadless
 
             return ImageProcessor.CropImage(bitmap, x, y, width, height);
         }
+
+        private void btnCountLoads_Click(object sender, RoutedEventArgs e)
+        {
+            Bitmap image1 = new Bitmap(Path.Join(workingDirectory, $"{pickedLoadingFrame}.jpg"));
+            image1 = CropImageWithSliders(image1);
+
+            for (int i = 1; i <= loadedFrames; i++)
+            {
+                Bitmap image2 = new Bitmap(Path.Join(workingDirectory, $"{i}.jpg"));
+                image2 = CropImageWithSliders(image2);
+
+                float similarity = ImageProcessor.ComparePhash(image1, image2);
+
+                if (similarity > 0.90)
+                {
+                    lbxLoads.Items.Add(i + "\t" + similarity);
+                }
+            }
+
+            MessageBox.Show("Done");
+        }
+
+        private void lbxLoads_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
+        {
+            int frame = Int32.Parse(lbxLoads.SelectedItem.ToString().Split("\t")[0]);
+            sliderTimeline.Value = frame;
+            SetVideoFrame(frame);
+        }
     }
 }
