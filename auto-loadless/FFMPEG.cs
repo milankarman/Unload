@@ -11,15 +11,15 @@ namespace auto_loadless
             string ffmpegPath = Path.Join("C:", "Program Files", "ffmpeg", "bin", "ffmpeg.exe");
 
             Process process = new Process();
+
             process.StartInfo.RedirectStandardOutput = false;
             process.StartInfo.RedirectStandardError = false;
 
             process.StartInfo.FileName = ffmpegPath;
-            process.StartInfo.Arguments = $"-i {inputPath} -r 1/1 {outputPath}/%0d.bmp";
-            // process.StartInfo.Arguments = $"-i {inputPath} -s 640x480 -vf fps=1 {outputPath}/%d.jpg";
 
-            process.StartInfo.UseShellExecute = false;
-            process.StartInfo.CreateNoWindow = false;
+            string args = $"-i {inputPath} -s 640x360 -q:v 4 {outputPath}/%d.jpg";
+            process.StartInfo.Arguments = args;
+
             process.Start();
         }
     }

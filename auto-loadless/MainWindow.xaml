@@ -20,7 +20,7 @@
                 <RowDefinition Height="100"/>
             </Grid.RowDefinitions>
             <Image x:Name="imageVideo" Margin="10,10,10,10" Source="/chrome_7fp5ib9rjN.png" StretchDirection="Both" Stretch="Uniform"/>
-            <Slider x:Name="slider" Margin="10,0,10,0" VerticalAlignment="Top" Grid.Row="1" Height="20"/>
+            <Slider x:Name="sliderTimeline" Margin="10,0,10,0" VerticalAlignment="Top" Grid.Row="1" Height="20" ValueChanged="sliderTimeline_ValueChanged"/>
             <Grid x:Name="gridVideoControls" Grid.Row="1" Margin="0,23,0,46">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="20*"/>
@@ -47,14 +47,14 @@
                 <ColumnDefinition/>
             </Grid.ColumnDefinitions>
             <Button x:Name="btnConvert" Content="Convert Video to Image Sequence" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Grid.ColumnSpan="2" Width="200" Click="btnConvert_Click"/>
-            <Button x:Name="btnLoad" Content="Load Image Sequence" HorizontalAlignment="Left" Margin="10,35,0,0" VerticalAlignment="Top" Grid.ColumnSpan="2" Width="200"/>
-            <Button x:Name="btnPickLoadFrame" Content="Pick Frame as Load" HorizontalAlignment="Left" Margin="10,92,0,0" VerticalAlignment="Top" Grid.ColumnSpan="2" Width="200"/>
-            <Slider x:Name="sliderCropX" Grid.ColumnSpan="2" Margin="11,127,9,0" VerticalAlignment="Top" Width="200" ValueChanged="UpdateCropPreview" Maximum="100"/>
-            <Slider x:Name="sliderCropY" Grid.ColumnSpan="2" Margin="11,150,9,0" VerticalAlignment="Top" Width="200" ValueChanged="UpdateCropPreview" Maximum="100"/>
-            <Slider x:Name="sliderCropWidth" Grid.ColumnSpan="2" Margin="11,173,9,0" VerticalAlignment="Top" Width="200" ValueChanged="UpdateCropPreview" Maximum="100"/>
-            <Slider x:Name="sliderCropHeight" Grid.ColumnSpan="2" Margin="11,196,9,0" VerticalAlignment="Top" Width="200" ValueChanged="UpdateCropPreview" Maximum="100"/>
+            <Button x:Name="btnLoad" Content="Load Image Sequence" HorizontalAlignment="Left" Margin="10,35,0,0" VerticalAlignment="Top" Grid.ColumnSpan="2" Width="200" Click="btnLoad_Click"/>
+            <Button x:Name="btnPickLoadFrame" Content="Pick Frame as Load" HorizontalAlignment="Left" Margin="10,92,0,0" VerticalAlignment="Top" Grid.ColumnSpan="2" Width="200" Click="btnPickLoadFrame_Click"/>
+            <Slider x:Name="sliderCropX" Grid.ColumnSpan="2" Margin="11,127,9,0" VerticalAlignment="Top" Width="200" ValueChanged="slidersCropping_OnValueChanged" Maximum="100"/>
+            <Slider x:Name="sliderCropY" Grid.ColumnSpan="2" Margin="11,150,9,0" VerticalAlignment="Top" Width="200" ValueChanged="slidersCropping_OnValueChanged" Maximum="100"/>
+            <Slider x:Name="sliderCropWidth" Grid.ColumnSpan="2" Margin="11,173,9,0" VerticalAlignment="Top" Width="200" ValueChanged="slidersCropping_OnValueChanged" Maximum="100" Minimum="1" Value="100"/>
+            <Slider x:Name="sliderCropHeight" Grid.ColumnSpan="2" Margin="11,196,9,0" VerticalAlignment="Top" Width="200" ValueChanged="slidersCropping_OnValueChanged" Maximum="100" Value="100" Minimum="1"/>
             <Image x:Name="imageLoadFrame" Height="113" Margin="10,224,9,0" VerticalAlignment="Top" Width="201" Grid.ColumnSpan="2" Source="/chrome_7fp5ib9rjN.png"/>
-            <Button x:Name="btnLoad_Copy1" Content="Check Similarity to Current Frame" HorizontalAlignment="Left" Margin="10,352,0,0" VerticalAlignment="Top" Grid.ColumnSpan="2" Width="200"/>
+            <Button x:Name="btnCheckSimilarity" Content="Check Similarity to Current Frame" HorizontalAlignment="Left" Margin="10,352,0,0" VerticalAlignment="Top" Grid.ColumnSpan="2" Width="200" Click="btnCheckSimilarity_Click"/>
         </Grid>
         <Button x:Name="button1" Content="Button" HorizontalAlignment="Left" Margin="176,-179,0,0" VerticalAlignment="Top"/>
 
