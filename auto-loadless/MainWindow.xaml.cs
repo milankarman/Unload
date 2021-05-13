@@ -2,6 +2,7 @@
 using System.Windows.Media.Imaging;
 using System.IO;
 using System.Drawing;
+using System.Drawing.Imaging;
 using System.Windows;
 using Microsoft.Win32;
 
@@ -9,11 +10,12 @@ namespace auto_loadless
 {
     public partial class MainWindow : Window
     {
-        BitmapImage currentFrame = null;
-        BitmapImage pickedLoadFrame = null;
-        CroppedBitmap pickedLoadFrameCropped = null;
+        // BitmapImage pickedLoadFrame = null;
+        // CroppedBitmap pickedLoadFrameCropped = null;
 
         int loadedFrames = 0;
+        int pickedLoadingFrame = 0;
+
         string workingDirectory = String.Empty;
 
         public MainWindow()
@@ -50,6 +52,7 @@ namespace auto_loadless
                 if (!Directory.Exists(targetDirectory))
                 {
                     MessageBox.Show("No _frames folder accompanying this video found. Convert it first.");
+                    return;
                 }
 
                 loadedFrames = Directory.GetFiles(targetDirectory, "*.jpg").Length;
@@ -71,49 +74,49 @@ namespace auto_loadless
         private void SetVideoFrame(int frame)
         {
             Uri image = new Uri(Path.Join(workingDirectory, $"{frame}.jpg"));
-            currentFrame = new BitmapImage(image);
-            imageVideo.Source = currentFrame;
+            imageVideo.Source = new BitmapImage(image);
         }
 
         private void slidersCropping_OnValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
-            if (pickedLoadFrame == null)
+            if (pickedLoadingFrame != 0)
             {
-                return;
+                UpdateCropPreview();
             }
-
-            UpdateCropPreview();
         }
 
         private void UpdateCropPreview()
         {
-            int width = (int)Math.Round(sliderCropWidth.Value / 100 * pickedLoadFrame.Width);
-            int height = (int)Math.Round(sliderCropHeight.Value / 100 * pickedLoadFrame.Height);
-
-            int x = (int)Math.Round(sliderCropX.Value / 100 * pickedLoadFrame.Width);
-            int y = (int)Math.Round(sliderCropY.Value / 100 * pickedLoadFrame.Height);
-
-            x = Math.Clamp(x, 0, (int)currentFrame.Width - width);
-            y = Math.Clamp(y, 0, (int)currentFrame.Height - height);
-
-            pickedLoadFrameCropped = new CroppedBitmap(pickedLoadFrame, new Int32Rect(x, y, width, height));
-            imageLoadFrame.Source = pickedLoadFrameCropped;
+            Bitmap image = new Bitmap(Path.Join(workingDirectory, $"{pickedLoadingFrame}.jpg"));
+            Bitmap croppedImage = CropImageWithSliders(image);
+            imageLoadFrame.Source = ImageProcessor.BitmapToBitmapImage(croppedImage);
         }
 
         private void btnPickLoadFrame_Click(object sender, RoutedEventArgs e)
         {
-            pickedLoadFrame = currentFrame.Clone();
+            pickedLoadingFrame = (int)sliderTimeline.Value;
             UpdateCropPreview();
-
-            imageLoadFrame.Source = pickedLoadFrame;
         }
 
         private void btnCheckSimilarity_Click(object sender, RoutedEventArgs e)
         {
-            Bitmap image1 = ImageProcessor.BitmapFromSource(pickedLoadFrameCropped.Source);
-            Bitmap image2 = ImageProcessor.BitmapFromBitmapImage(currentFrame);
+            Bitmap image1 = new Bitmap(Path.Join(workingDirectory, $"{pickedLoadingFrame}.jpg"));
+            image1 = CropImageWithSliders(image1);
+
+            Bitmap image2 = new Bitmap(Path.Join(workingDirectory, $"{(int)Math.Round(sliderTimeline.Value)}.jpg"));
+            image2 = CropImageWithSliders(image2);
 
             MessageBox.Show(ImageProcessor.ComparePhash(image1, image2).ToString());
+        }
+
+        private Bitmap CropImageWithSliders(Bitmap bitmap)
+        {
+            int x = (int)Math.Round(sliderCropX.Value);
+            int y = (int)Math.Round(sliderCropY.Value);
+            int width = (int)Math.Round(sliderCropWidth.Value);
+            int height = (int)Math.Round(sliderCropHeight.Value);
+
+            return ImageProcessor.CropImage(bitmap, x, y, width, height);
         }
     }
 }
