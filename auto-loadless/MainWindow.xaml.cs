@@ -17,6 +17,10 @@ namespace auto_loadless
         int loadedFrames = 0;
         int pickedLoadingFrame = 0;
 
+        int startFrame = 0;
+        int endFrame = 0;
+        int framesPerSecond = 0;
+
         string workingDirectory = String.Empty;
 
         public MainWindow()
@@ -75,6 +79,7 @@ namespace auto_loadless
         private void SetVideoFrame(int frame)
         {
             Uri image = new Uri(Path.Join(workingDirectory, $"{frame}.jpg"));
+            txtFrame.Text = frame.ToString(); ;
             imageVideo.Source = new BitmapImage(image);
         }
 
@@ -144,6 +149,7 @@ namespace auto_loadless
                 image2.Dispose();
             }
 
+            txtLoadFrames.Text = loadCounter.ToString();
             MessageBox.Show($"Done. {loadCounter} frames of loading found.");
         }
 
@@ -180,6 +186,35 @@ namespace auto_loadless
             sliderTimeline.Value += 60;
 
             SetVideoFrame((int)sliderTimeline.Value);
+        }
+
+        private void txtFrame_TextChanged(object sender, System.Windows.Input.TextCompositionEventArgs e)
+        {
+            // Figure out later
+            if (loadedFrames > 0)
+            {
+                sliderTimeline.Value = Int32.Parse(txtFrame.Text);
+                SetVideoFrame((int)sliderTimeline.Value);
+            }
+        }
+
+        private void buttonRetime_Click(object sender, RoutedEventArgs e)
+        {
+            double framesPerSecond = double.Parse(txtFPS.Text);
+
+            double totalFrames = double.Parse(txtEndFrame.Text) - double.Parse(txtStartFrame.Text);
+            double loadlessFrames = totalFrames - double.Parse(txtLoadFrames.Text);
+
+            double totalSeconds = totalFrames / framesPerSecond;
+            double loadlessSeconds = loadlessFrames / framesPerSecond;
+
+            TimeSpan timeWithLoads = TimeSpan.FromSeconds(totalSeconds);
+            TimeSpan timeWithoutLoads = TimeSpan.FromSeconds(loadlessSeconds);
+
+            txtTimeOutput.Text = "Time with loads:" + Environment.NewLine;
+            txtTimeOutput.Text += timeWithLoads.ToString(@"hh\:mm\:ss\:fff") + Environment.NewLine;
+            txtTimeOutput.Text += "Time without loads:" + Environment.NewLine;
+            txtTimeOutput.Text += timeWithoutLoads.ToString(@"hh\:mm\:ss\:fff") + Environment.NewLine;
         }
     }
 }
