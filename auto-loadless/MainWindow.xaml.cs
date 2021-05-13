@@ -9,6 +9,8 @@ using System.Globalization;
 using Shipwreck.Phash;
 using Shipwreck.Phash.Bitmaps;
 using Microsoft.Win32;
+using System.Windows.Input;
+using System.Text.RegularExpressions;
 
 namespace auto_loadless
 {
@@ -227,6 +229,18 @@ namespace auto_loadless
             txtTimeOutput.Text += timeWithLoads.ToString(@"hh\:mm\:ss\:fff") + Environment.NewLine;
             txtTimeOutput.Text += "Time without loads:" + Environment.NewLine;
             txtTimeOutput.Text += timeWithoutLoads.ToString(@"hh\:mm\:ss\:fff") + Environment.NewLine;
+        }
+
+        private void IntegerValidationTextBox(object sender, TextCompositionEventArgs e)
+        {
+            Regex regex = new Regex("[^0-9]+");
+            e.Handled = regex.IsMatch(e.Text);
+        }
+
+        private void DoubleValidationTextBox(object sender, TextCompositionEventArgs e)
+        {
+            Regex regex = new Regex("[^0-9.]+");
+            e.Handled = regex.IsMatch(e.Text);
         }
     }
 }
