@@ -1,25 +1,21 @@
 ﻿using System;
 using System.Windows.Media.Imaging;
 using System.IO;
+using System.Collections.Concurrent;
 using System.Drawing;
-using System.Drawing.Imaging;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Globalization;
+using Shipwreck.Phash;
+using Shipwreck.Phash.Bitmaps;
 using Microsoft.Win32;
 
 namespace auto_loadless
 {
     public partial class MainWindow : Window
     {
-        // BitmapImage pickedLoadFrame = null;
-        // CroppedBitmap pickedLoadFrameCropped = null;
-
         int loadedFrames = 0;
         int pickedLoadingFrame = 0;
-
-        int startFrame = 0;
-        int endFrame = 0;
-        int framesPerSecond = 0;
 
         string workingDirectory = String.Empty;
 
@@ -127,26 +123,42 @@ namespace auto_loadless
 
         private void btnCountLoads_Click(object sender, RoutedEventArgs e)
         {
-            Bitmap image1 = new Bitmap(Path.Join(workingDirectory, $"{pickedLoadingFrame}.jpg"));
-            image1 = CropImageWithSliders(image1);
+            int startFrame = int.Parse(txtStartFrame.Text);
+            int endFrame = int.Parse(txtEndFrame.Text);
+
+            int cropX = (int)Math.Round(sliderCropX.Value);
+            int cropY = (int)Math.Round(sliderCropY.Value);
+            int cropWidth = (int)Math.Round(sliderCropWidth.Value);
+            int cropHeight = (int)Math.Round(sliderCropHeight.Value);
+
+            Bitmap loadFrame = new Bitmap(Path.Join(workingDirectory, $"{pickedLoadingFrame}.jpg"));
+            loadFrame = ImageProcessor.CropImage(loadFrame, cropX, cropY, cropWidth, cropHeight);
+            Digest loadFrameHash = ImagePhash.ComputeDigest(loadFrame.ToLuminanceImage());
+
+            ConcurrentDictionary<int, float> frameSimilarity = new ConcurrentDictionary<int, float>();
+
+            Parallel.For(startFrame, endFrame, new ParallelOptions { MaxDegreeOfParallelism = 50 }, i =>
+            {
+                Bitmap currentFrame = new Bitmap(Path.Join(workingDirectory, $"{i}.jpg"));
+                currentFrame = ImageProcessor.CropImage(currentFrame, cropX, cropY, cropWidth, cropHeight);
+                Digest currentFrameHash = ImagePhash.ComputeDigest(currentFrame.ToLuminanceImage());
+
+                float similarity = ImagePhash.GetCrossCorrelation(loadFrameHash, currentFrameHash);
+                frameSimilarity[i] = similarity;
+
+                currentFrame.Dispose();
+            });
 
             int loadCounter = 0;
+            double minSimilarity = double.Parse(txtSimilarity.Text, CultureInfo.InvariantCulture);
 
-            for (int i = 1; i <= loadedFrames; i++)
+            for (int i = startFrame; i < endFrame; i++)
             {
-                Bitmap image2 = new Bitmap(Path.Join(workingDirectory, $"{i}.jpg"));
-                image2 = CropImageWithSliders(image2);
-
-                float similarity = ImageProcessor.ComparePhash(image1, image2);
-                double maxSimilarity = double.Parse(txtSimilarity.Text, CultureInfo.InvariantCulture);
-
-                if (similarity > maxSimilarity)
+                if (frameSimilarity[i] > minSimilarity)
                 {
-                    lbxLoads.Items.Add(i + "\t" + similarity);
+                    lbxLoads.Items.Add(i + "\t" + frameSimilarity[i]);
                     loadCounter += 1;
                 }
-
-                image2.Dispose();
             }
 
             txtLoadFrames.Text = loadCounter.ToString();
@@ -202,8 +214,8 @@ namespace auto_loadless
         {
             double framesPerSecond = double.Parse(txtFPS.Text);
 
-            double totalFrames = double.Parse(txtEndFrame.Text) - double.Parse(txtStartFrame.Text);
-            double loadlessFrames = totalFrames - double.Parse(txtLoadFrames.Text);
+            int totalFrames = int.Parse(txtEndFrame.Text) - int.Parse(txtStartFrame.Text);
+            int loadlessFrames = totalFrames - int.Parse(txtLoadFrames.Text);
 
             double totalSeconds = totalFrames / framesPerSecond;
             double loadlessSeconds = loadlessFrames / framesPerSecond;

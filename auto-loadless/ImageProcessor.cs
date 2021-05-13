@@ -1,5 +1,4 @@
-﻿using System;
-using System.Windows.Media.Imaging;
+﻿using System.Windows.Media.Imaging;
 using Shipwreck.Phash;
 using Shipwreck.Phash.Bitmaps;
 using System.Drawing;
@@ -18,34 +17,6 @@ namespace auto_loadless
             float score = ImagePhash.GetCrossCorrelation(hash1, hash2);
 
             return score;
-        }
-
-        public static Bitmap BitmapFromSource(BitmapSource source)
-        {
-            Bitmap bitmap = null;
-
-            using (MemoryStream outStream = new MemoryStream())
-            {
-                BitmapEncoder encoder = new BmpBitmapEncoder();
-                encoder.Frames.Add(BitmapFrame.Create(source));
-                encoder.Save(outStream);
-                bitmap = new Bitmap(outStream);
-            }
-
-            return bitmap;
-        }
-
-        public static Bitmap BitmapFromBitmapImage(BitmapImage bitmapImage)
-        {
-            using (MemoryStream outStream = new MemoryStream())
-            {
-                BitmapEncoder encoder = new BmpBitmapEncoder();
-                encoder.Frames.Add(BitmapFrame.Create(bitmapImage));
-                encoder.Save(outStream);
-                Bitmap bitmap = new Bitmap(outStream);
-
-                return new Bitmap(bitmap);
-            }
         }
 
         public static Bitmap CropImage(Image source, int xPercentage, int yPercentage, int widthPercentage, int heightPercentage)
