@@ -17,10 +17,11 @@ namespace auto_loadless
 
             process.StartInfo.FileName = ffmpegPath;
 
-            string args = $"-i {inputPath} -s 640x360 -q:v 4 {outputPath}/%d.jpg";
+            string args = $"-i \"{inputPath}\" -s 640x360 -q:v 4 \"{outputPath}/%d.jpg\"";
             process.StartInfo.Arguments = args;
 
             process.Start();
+            process.WaitForExit();
         }
     }
 }

@@ -35,10 +35,10 @@
                     <ColumnDefinition Width="7*"/>
                     <ColumnDefinition Width="3*"/>
                 </Grid.ColumnDefinitions>
-                <Button x:Name="button" Content="&lt;&lt;" Margin="10,5,5,5" Grid.RowSpan="2" VerticalAlignment="Top"/>
-                <Button x:Name="button_Copy" Content="&lt;" Margin="5,5,5,5" Grid.Column="1" Grid.RowSpan="2"/>
-                <Button x:Name="button_Copy1" Content="&gt;" Margin="5,5,5,5" Grid.Column="2" Grid.RowSpan="2"/>
-                <Button x:Name="button_Copy2" Content="&gt;&gt;" Margin="5,5,5,5" Grid.Column="3" Grid.RowSpan="2"/>
+                <Button x:Name="buttonBackFar" Content="&lt;&lt;" Margin="10,5,5,5" Grid.RowSpan="2" VerticalAlignment="Top" Click="buttonBackFar_Click"/>
+                <Button x:Name="buttonBack" Content="&lt;" Margin="5,5,5,5" Grid.Column="1" Grid.RowSpan="2" Click="buttonBack_Click"/>
+                <Button x:Name="buttonForward" Content="&gt;" Margin="5,5,5,5" Grid.Column="2" Grid.RowSpan="2" Click="buttonForward_Click"/>
+                <Button x:Name="buttonForwardFar" Content="&gt;&gt;" Margin="5,5,5,5" Grid.Column="3" Grid.RowSpan="2" Click="buttonForwardFar_Click"/>
             </Grid>
             <Label x:Name="label" Content="Status..." Margin="10,69,10,0" Grid.Row="1" VerticalAlignment="Top" Height="21" Padding="0,0,0,0"/>
         </Grid>

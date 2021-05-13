@@ -4,6 +4,7 @@ using System.IO;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.Windows;
+using System.Globalization;
 using Microsoft.Win32;
 
 namespace auto_loadless
@@ -124,20 +125,26 @@ namespace auto_loadless
             Bitmap image1 = new Bitmap(Path.Join(workingDirectory, $"{pickedLoadingFrame}.jpg"));
             image1 = CropImageWithSliders(image1);
 
+            int loadCounter = 0;
+
             for (int i = 1; i <= loadedFrames; i++)
             {
                 Bitmap image2 = new Bitmap(Path.Join(workingDirectory, $"{i}.jpg"));
                 image2 = CropImageWithSliders(image2);
 
                 float similarity = ImageProcessor.ComparePhash(image1, image2);
+                double maxSimilarity = double.Parse(txtSimilarity.Text, CultureInfo.InvariantCulture);
 
-                if (similarity > 0.90)
+                if (similarity > maxSimilarity)
                 {
                     lbxLoads.Items.Add(i + "\t" + similarity);
+                    loadCounter += 1;
                 }
+
+                image2.Dispose();
             }
 
-            MessageBox.Show("Done");
+            MessageBox.Show($"Done. {loadCounter} frames of loading found.");
         }
 
         private void lbxLoads_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
@@ -145,6 +152,34 @@ namespace auto_loadless
             int frame = Int32.Parse(lbxLoads.SelectedItem.ToString().Split("\t")[0]);
             sliderTimeline.Value = frame;
             SetVideoFrame(frame);
+        }
+
+        private void buttonBackFar_Click(object sender, RoutedEventArgs e)
+        {
+            sliderTimeline.Value -= 60;
+
+            SetVideoFrame((int)sliderTimeline.Value);
+        }
+
+        private void buttonBack_Click(object sender, RoutedEventArgs e)
+        {
+            sliderTimeline.Value -= 1;
+
+            SetVideoFrame((int)sliderTimeline.Value);
+        }
+
+        private void buttonForward_Click(object sender, RoutedEventArgs e)
+        {
+            sliderTimeline.Value += 1;
+
+            SetVideoFrame((int)sliderTimeline.Value);
+        }
+
+        private void buttonForwardFar_Click(object sender, RoutedEventArgs e)
+        {
+            sliderTimeline.Value += 60;
+
+            SetVideoFrame((int)sliderTimeline.Value);
         }
     }
 }
