@@ -93,6 +93,8 @@ namespace auto_loadless
 
             txtStartFrame.Text = "1";
             txtEndFrame.Text = totalVideoFrames.ToString();
+            txtLoadFrames.Text = "0";
+            txtTimeOutput.Clear();
 
             hashedFrames = null;
             pickedLoadingFrame = 0;
@@ -114,9 +116,6 @@ namespace auto_loadless
 
             btnSetStart.IsEnabled = true;
             btnSetEnd.IsEnabled = true;
-
-            txtLoadFrames.Clear();
-            txtTimeOutput.Clear();
 
             SetVideoFrame(1);
         }
@@ -219,7 +218,8 @@ namespace auto_loadless
                     progress.cts.Dispose();
                     Dispatcher.Invoke(() => IsEnabled = true);
                 }
-            });
+            })
+            { IsBackground = true };
 
             thread.Start();
         }
@@ -328,19 +328,21 @@ namespace auto_loadless
         {
             double framesPerSecond = double.Parse(txtFPS.Text, CultureInfo.InvariantCulture);
 
-            int totalFrames = int.Parse(txtEndFrame.Text) - int.Parse(txtStartFrame.Text);
-            int loadlessFrames = totalFrames - int.Parse(txtLoadFrames.Text);
-
-            double totalSeconds = totalFrames / framesPerSecond;
-            double loadlessSeconds = loadlessFrames / framesPerSecond;
-
-            TimeSpan timeWithLoads = TimeSpan.FromSeconds(totalSeconds);
-            TimeSpan timeWithoutLoads = TimeSpan.FromSeconds(loadlessSeconds);
-
+            int totalFrames = int.Parse(txtEndFrame.Text) - int.Parse(txtStartFrame.Text) + 1;
+            double totalSecondsDouble = totalFrames / framesPerSecond;
+            int totalSecondsInt = (int)totalSecondsDouble;
+            double totalMilliseconds = totalSecondsDouble - totalSecondsInt;
+            TimeSpan timeWithLoads = TimeSpan.FromSeconds(totalSecondsDouble);
             txtTimeOutput.Text = "Time with loads:" + Environment.NewLine;
-            txtTimeOutput.Text += timeWithLoads.ToString(@"hh\:mm\:ss\:fff") + Environment.NewLine;
+            txtTimeOutput.Text += $"{timeWithLoads.ToString(@"hh\:mm\:ss")}.{Math.Round(totalMilliseconds * 1000, 0)}{Environment.NewLine}";
+
+            int loadlessFrames = totalFrames - int.Parse(txtLoadFrames.Text);
+            double loadlessSecondsDouble = loadlessFrames / framesPerSecond;
+            int loadlessSecondsInt = (int)loadlessSecondsDouble;
+            double loadlessMilliseconds = loadlessSecondsDouble - loadlessSecondsInt;
+            TimeSpan timeWithoutLoads = TimeSpan.FromSeconds(loadlessSecondsDouble);
             txtTimeOutput.Text += "Time without loads:" + Environment.NewLine;
-            txtTimeOutput.Text += timeWithoutLoads.ToString(@"hh\:mm\:ss\:fff") + Environment.NewLine;
+            txtTimeOutput.Text += $"{timeWithoutLoads.ToString(@"hh\:mm\:ss")}.{Math.Round(loadlessMilliseconds * 1000, 0)}{Environment.NewLine}";
         }
 
         private void lbxLoads_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -443,6 +445,11 @@ namespace auto_loadless
             txtFrame.Text = frame.ToString();
 
             SetVideoFrame(frame);
+        }
+
+        private void Window_Closed(object sender, EventArgs e)
+        {
+            Application.Current.Shutdown();
         }
     }
 }

@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:auto_loadless"
         mc:Ignorable="d"
-        Title="Auto Loadless" Height="700" Width="1330">
+        Title="Auto Loadless" Height="700" Width="1330" Closed="Window_Closed">
     <Grid x:Name="gridMain">
         <Grid.RowDefinitions>
             <RowDefinition Height="1*"/>
