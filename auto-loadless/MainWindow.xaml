@@ -28,7 +28,7 @@
             </GroupBox>
             <GroupBox x:Name="groupVideoControls" Header="Video Controls" Margin="0,5,0,10" Grid.Row="1">
                 <Grid Margin="5,0,5,0">
-                    <Slider x:Name="sliderTimeline" Margin="0,5,0,0" VerticalAlignment="Top" Height="27" ValueChanged="sliderTimeline_ValueChanged" TickPlacement="BottomRight" SmallChange="1" Minimum="1" IsSnapToTickEnabled="True"/>
+                    <Slider x:Name="sliderTimeline" Margin="0,5,0,0" VerticalAlignment="Top" Height="31" ValueChanged="sliderTimeline_ValueChanged" TickPlacement="BottomRight" SmallChange="1" Minimum="1" IsSnapToTickEnabled="True"/>
                     <Grid x:Name="gridVideoControls" VerticalAlignment="Top" Height="20" Margin="0,36,0,0">
                         <Grid.RowDefinitions>
                             <RowDefinition/>
@@ -52,6 +52,7 @@
                         <Button x:Name="btnSetStart" Content="Set Start" Margin="0,0,10,0" Grid.Column="5" Click="btnSetStart_Click" Height="Auto"/>
                         <Button x:Name="btnSetEnd" Content="Set End" Margin="0,0,10,0" Grid.Column="6" Height="Auto" Click="btnSetEnd_Click"/>
                     </Grid>
+                    <Canvas Height="3" VerticalAlignment="Top" Margin="0,28,0,0"/>
                 </Grid>
             </GroupBox>
         </Grid>
@@ -82,7 +83,7 @@
                     <Button x:Name="btnPickLoadFrame" Content="Pick Frame as Load Frame" Margin="0,139,0,0" VerticalAlignment="Top" Click="btnPickLoadFrame_Click" Grid.ColumnSpan="2"/>
                     <Rectangle Stroke="#3F000000" VerticalAlignment="Top" Height="134" Grid.ColumnSpan="2"/>
                     <Image x:Name="imageLoadFrame" Height="147" Margin="0,0,0,0" VerticalAlignment="Top" Grid.ColumnSpan="2"/>
-                    <Button x:Name="btnCheckSimilarity" Content="Check Similarity To Video Frame" Margin="0,210,0,0" VerticalAlignment="Top" Click="btnCheckSimilarity_Click" Grid.ColumnSpan="2"/>
+                    <Button x:Name="btnCheckSimilarity" Content="Check Similarity to Video Frame" Margin="0,210,0,0" VerticalAlignment="Top" Click="btnCheckSimilarity_Click" Grid.ColumnSpan="2"/>
                 </Grid>
             </GroupBox>
             <GroupBox x:Name="groupFrameCount" Header="Frame Count" Margin="10,356,10,10" Grid.RowSpan="2">
@@ -112,6 +113,7 @@
             <Grid.RowDefinitions>
                 <RowDefinition Height="145"/>
                 <RowDefinition/>
+                <RowDefinition Height="68.04"/>
             </Grid.RowDefinitions>
             <GroupBox x:Name="groupLoadDetection" Header="Load Detection" Margin="10,0,10,5">
                 <Grid HorizontalAlignment="Stretch" Margin="5,5,5,5" VerticalAlignment="Stretch">
@@ -126,8 +128,18 @@
                     <Button x:Name="btnClearFrameHashes" Content="Clear Frame Hashes" VerticalAlignment="Top" Height="20" Grid.ColumnSpan="2" Margin="0,25,0,0" Click="btnClearFrameHashes_Click"/>
                 </Grid>
             </GroupBox>
-            <GroupBox x:Name="groupDetectedLoads" Header="Detected Loads" Margin="10,0,10,10" Grid.Row="1">
+            <GroupBox x:Name="groupDetectedLoads" Header="Detected Loads" Margin="10,0,10,0" Grid.Row="1">
                 <ListBox x:Name="lbxLoads" Margin="5,5,5,5" SelectionChanged="lbxLoads_SelectionChanged" BorderBrush="#00ABADB3"/>
+            </GroupBox>
+            <GroupBox x:Name="groupSettings" Header="Settings" Grid.Row="2" Margin="10,5,10,10">
+                <Grid Margin="5,5,5,5">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+                    <Label x:Name="lblSimilarity_Copy" Content="Concurrent Tasks:" Padding="0,0,0,0" VerticalContentAlignment="Center" Height="20" VerticalAlignment="Top"/>
+                    <TextBox x:Name="txtConcurrentTasks" TextWrapping="Wrap" VerticalAlignment="Top" Text="20" Height="20" PreviewTextInput="IntegerValidationTextBox" VerticalContentAlignment="Center" Grid.Column="1"/>
+                </Grid>
             </GroupBox>
         </Grid>
 

@@ -23,11 +23,11 @@ namespace auto_loadless
             return score;
         }
 
-        public static Dictionary<int, Digest> CropAndPhashFolder(string path, Rectangle cropPercentage, int startFrame, int endFrame)
+        public static Dictionary<int, Digest> CropAndPhashFolder(string path, Rectangle cropPercentage, int startFrame, int endFrame, int concurrentTasks)
         {
             ConcurrentDictionary<int, Digest> frameHashes = new ConcurrentDictionary<int, Digest>();
 
-            Parallel.For(startFrame, endFrame, new ParallelOptions { MaxDegreeOfParallelism = 50 }, i =>
+            Parallel.For(startFrame, endFrame, new ParallelOptions { MaxDegreeOfParallelism = concurrentTasks }, i =>
             {
                 Bitmap currentFrame = new Bitmap(Path.Join(path, $"{i}.jpg"));
                 currentFrame = CropImage(currentFrame, cropPercentage);
@@ -41,13 +41,13 @@ namespace auto_loadless
             return new Dictionary<int, Digest>(frameHashes);
         }
 
-        public static Dictionary<int, float> GetHashDictSimilarity(Dictionary<int, Digest> hashDict, Bitmap reference)
+        public static Dictionary<int, float> GetHashDictSimilarity(Dictionary<int, Digest> hashDict, Bitmap reference, int concurrentTasks)
         {
             Digest referenceHash = ImagePhash.ComputeDigest(reference.ToLuminanceImage());
 
             ConcurrentDictionary<int, float> frameSimilarities = new ConcurrentDictionary<int, float>();
 
-            Parallel.ForEach(hashDict, new ParallelOptions { MaxDegreeOfParallelism = 50 }, hash =>
+            Parallel.ForEach(hashDict, new ParallelOptions { MaxDegreeOfParallelism = concurrentTasks }, hash =>
             {
                 float score = ImagePhash.GetCrossCorrelation(hash.Value, referenceHash);
                 frameSimilarities[hash.Key] = score;

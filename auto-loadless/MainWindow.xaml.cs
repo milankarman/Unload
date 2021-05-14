@@ -169,8 +169,9 @@ namespace auto_loadless
 
             int startFrame = int.Parse(txtStartFrame.Text);
             int endFrame = int.Parse(txtEndFrame.Text);
+            int concurrentTasks = int.Parse(txtConcurrentTasks.Text);
 
-            hashedFrames = ImageProcessor.CropAndPhashFolder(workingDirectory, CropSlidersToRectange(), startFrame, endFrame);
+            hashedFrames = ImageProcessor.CropAndPhashFolder(workingDirectory, CropSlidersToRectange(), startFrame, endFrame, concurrentTasks);
 
             groupPickLoad.IsEnabled = false;
             txtStartFrame.IsEnabled = false;
@@ -194,6 +195,8 @@ namespace auto_loadless
             if (result == MessageBoxResult.Yes)
             {
                 hashedFrames = null;
+                lbxLoads.Items.Clear();
+                sliderTimeline.Ticks.Clear();
 
                 groupPickLoad.IsEnabled = true;
                 txtStartFrame.IsEnabled = true;
@@ -214,6 +217,7 @@ namespace auto_loadless
 
             int startFrame = int.Parse(txtStartFrame.Text);
             int endFrame = int.Parse(txtEndFrame.Text);
+            int concurrentTasks = int.Parse(txtConcurrentTasks.Text);
 
             double minSimilarity = double.Parse(txtSimilarity.Text, CultureInfo.InvariantCulture);
 
@@ -221,7 +225,7 @@ namespace auto_loadless
             Rectangle cropPercentage = CropSlidersToRectange();
             loadFrame = ImageProcessor.CropImage(loadFrame, cropPercentage);
             
-            Dictionary<int, float> frameSimilarities = ImageProcessor.GetHashDictSimilarity(hashedFrames, loadFrame);
+            Dictionary<int, float> frameSimilarities = ImageProcessor.GetHashDictSimilarity(hashedFrames, loadFrame, concurrentTasks);
 
             int loadScreenCounter = 0;
             int loadFrameCounter = 0;
@@ -248,6 +252,8 @@ namespace auto_loadless
                     {         
                         lbxLoads.Items.Add($"{loadScreenCounter}\t{currentLoadStartFrame}\t{i - 1}\t{i - currentLoadStartFrame}");
 
+                        sliderTimeline.Ticks.Add(currentLoadStartFrame);
+                        sliderTimeline.Ticks.Add(i - 1);
                         subsequentLoadFrame = false;
                         currentLoadStartFrame = 0;
                     }
