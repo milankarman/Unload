@@ -3,7 +3,7 @@ using System.Threading;
 using System.Windows;
 using System.Windows.Threading;
 
-namespace auto_loadless
+namespace unload
 {
     public partial class ProgressWindow : Window
     {

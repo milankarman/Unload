@@ -13,7 +13,7 @@ using Microsoft.Win32;
 using Shipwreck.Phash;
 using FFMpegCore;
 
-namespace auto_loadless
+namespace unload
 {
     public partial class MainWindow : Window
     {
@@ -178,9 +178,9 @@ namespace auto_loadless
 
         private void btnIndexFrameHashes_Click(object sender, RoutedEventArgs e)
         {
-            string text = "This will start the long and intense process of hashing every frame from start to end." + Environment.NewLine +
+            string text = "This will start the long and intense process of hashing every frame from start to end using the specified cropping." + Environment.NewLine + Environment.NewLine +
                 "Make sure your start frame, end frame and load image are set properly before doing this, to change these you will have the clear the hash.";
-            string caption = "Information";
+            string caption = "Info";
 
             MessageBoxResult result = MessageBox.Show(text, caption, MessageBoxButton.YesNo, MessageBoxImage.Information);
 
@@ -240,8 +240,8 @@ namespace auto_loadless
 
         private void btnClearFrameHashes_Click(object sender, RoutedEventArgs e)
         {
-            string text = "Doing this value will require the frame hashes to be indexed again. Are you sure?";
-            string caption = "Information";
+            string text = "Doing this will require the frame hashes to be indexed again. Are you sure?";
+            string caption = "Info";
 
             MessageBoxResult result = MessageBox.Show(text, caption, MessageBoxButton.YesNo, MessageBoxImage.Information);
 

@@ -3,7 +3,7 @@ using System.IO;
 using System.Diagnostics;
 using FFMpegCore;
 
-namespace auto_loadless
+namespace unload
 {
     public static class FFMPEG
     {
