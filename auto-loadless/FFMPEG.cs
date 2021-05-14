@@ -1,20 +1,36 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Diagnostics;
+using FFMpegCore;
 
 namespace auto_loadless
 {
     public static class FFMPEG
     {
+        private const string FFMPEG_PATH = "./Resources/ffmpeg.exe";
+
+        public static void InitFFMPEGCore()
+        {
+            if (!File.Exists(FFMPEG_PATH))
+            {
+                throw new Exception();
+            }
+
+            GlobalFFOptions.Configure(new FFOptions
+            {
+                BinaryFolder = Path.GetDirectoryName(FFMPEG_PATH),
+                TemporaryFilesFolder = "/tmp"
+            });
+        }
+
         public static void ConvertToImageSequence(string inputPath, string outputPath)
         {
-            string ffmpegPath = Path.Join("C:", "Program Files", "ffmpeg", "bin", "ffmpeg.exe");
-
             Process process = new Process();
 
             process.StartInfo.RedirectStandardOutput = false;
             process.StartInfo.RedirectStandardError = false;
 
-            process.StartInfo.FileName = ffmpegPath;
+            process.StartInfo.FileName = FFMPEG_PATH;
 
             string args = $"-i \"{inputPath}\" -s 640x360 -q:v 4 \"{outputPath}/%d.jpg\"";
             process.StartInfo.Arguments = args;

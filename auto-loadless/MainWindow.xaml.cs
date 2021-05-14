@@ -27,6 +27,17 @@ namespace auto_loadless
         {
             InitializeComponent();
 
+            try
+            {
+                FFMPEG.InitFFMPEGCore();
+            }
+            catch
+            {
+                MessageBox.Show("Failed to initialize FFMpeg. Make sure to download FFMpeg and extract ffmpeg, ffprobe and ffplay executables into the Resources folder of this application.");
+
+                Application.Current.Shutdown();
+            }
+
             groupPickLoad.IsEnabled = false;
             groupVideo.IsEnabled = false;
             groupVideoControls.IsEnabled = false;
@@ -224,7 +235,7 @@ namespace auto_loadless
             Bitmap loadFrame = new Bitmap(Path.Join(workingDirectory, $"{pickedLoadingFrame}.jpg"));
             Rectangle cropPercentage = CropSlidersToRectange();
             loadFrame = ImageProcessor.CropImage(loadFrame, cropPercentage);
-            
+
             Dictionary<int, float> frameSimilarities = ImageProcessor.GetHashDictSimilarity(hashedFrames, loadFrame, concurrentTasks);
 
             int loadScreenCounter = 0;
@@ -249,7 +260,7 @@ namespace auto_loadless
                 else
                 {
                     if (subsequentLoadFrame)
-                    {         
+                    {
                         lbxLoads.Items.Add($"{loadScreenCounter}\t{currentLoadStartFrame}\t{i - 1}\t{i - currentLoadStartFrame}");
 
                         sliderTimeline.Ticks.Add(currentLoadStartFrame);
@@ -385,7 +396,7 @@ namespace auto_loadless
             {
                 frame = Math.Clamp(int.Parse(txtFrame.Text), 1, totalVideoFrames);
             }
-  
+
             sliderTimeline.Value = frame;
             txtFrame.Text = frame.ToString();
 
