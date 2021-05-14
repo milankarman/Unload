@@ -22,13 +22,13 @@
             </Grid.RowDefinitions>
             <GroupBox x:Name="groupVideo" Header="Video">
                 <Grid Margin="5,5,5,5">
-                    <Rectangle Stroke="Black" Fill="Black"/>
+                    <Rectangle Stroke="#3F000000"/>
                     <Image x:Name="imageVideo" StretchDirection="Both" Stretch="Uniform"/>
                 </Grid>
             </GroupBox>
             <GroupBox x:Name="groupVideoControls" Header="Video Controls" Margin="0,5,0,10" Grid.Row="1">
                 <Grid Margin="5,0,5,0">
-                    <Slider x:Name="sliderTimeline" Margin="0,5,0,0" VerticalAlignment="Top" Height="27" ValueChanged="sliderTimeline_ValueChanged" TickPlacement="BottomRight"/>
+                    <Slider x:Name="sliderTimeline" Margin="0,5,0,0" VerticalAlignment="Top" Height="27" ValueChanged="sliderTimeline_ValueChanged" TickPlacement="BottomRight" SmallChange="1" Minimum="1" IsSnapToTickEnabled="True"/>
                     <Grid x:Name="gridVideoControls" VerticalAlignment="Top" Height="20" Margin="0,36,0,0">
                         <Grid.RowDefinitions>
                             <RowDefinition/>
@@ -39,14 +39,18 @@
                             <ColumnDefinition Width="40"/>
                             <ColumnDefinition Width="35"/>
                             <ColumnDefinition/>
+                            <ColumnDefinition Width="65"/>
+                            <ColumnDefinition Width="65"/>
                             <ColumnDefinition Width="115"/>
                         </Grid.ColumnDefinitions>
-                        <Button x:Name="buttonBackFar" Content="&lt;&lt;" Margin="0,0,5,0" VerticalAlignment="Stretch" Click="buttonBackFar_Click" Height="Auto"/>
-                        <Button x:Name="buttonBack" Content="&lt;" Margin="5,0,5,0" Grid.Column="1" Click="buttonBack_Click" Height="Auto" VerticalAlignment="Bottom"/>
-                        <Button x:Name="buttonForward" Content="&gt;" Margin="5,0,5,0" Grid.Column="2" Click="buttonForward_Click" Height="Auto" VerticalAlignment="Stretch"/>
-                        <Button x:Name="buttonForwardFar" Content="&gt;&gt;" Margin="5,0,0,0" Grid.Column="3" Click="buttonForwardFar_Click" Height="Auto" VerticalAlignment="Stretch"/>
-                        <TextBox x:Name="txtFrame" Grid.Column="5" HorizontalAlignment="Right" Margin="45,0,0,0" Text="1" TextWrapping="Wrap" Width="70" TextInput="txtFrame_TextChanged" TextAlignment="Left" VerticalContentAlignment="Center"/>
-                        <Label x:Name="lblFrame" Content="Frame:" Grid.Column="5" HorizontalAlignment="Left" Padding="0,0,0,0" Width="40" VerticalContentAlignment="Center"/>
+                        <Button x:Name="btnBackFar" Content="&lt;&lt;" Margin="0,0,5,0" Click="btnBackFar_Click" Height="Auto"/>
+                        <Button x:Name="btnBack" Content="&lt;" Margin="5,0,5,0" Grid.Column="1" Click="btnBack_Click" Height="20" VerticalAlignment="Center"/>
+                        <Button x:Name="btnForward" Content="&gt;" Margin="5,0,5,0" Grid.Column="2" Click="btnForwardFar_Click" Height="Auto"/>
+                        <Button x:Name="btnForwardFar" Content="&gt;&gt;" Margin="5,0,0,0" Grid.Column="3" Click="btnForward_Click" Height="Auto"/>
+                        <TextBox x:Name="txtFrame" Grid.Column="7" HorizontalAlignment="Left" Margin="45,0,0,0" Text="1" TextWrapping="Wrap" Width="70" TextInput="txtFrame_TextChanged" TextAlignment="Left" VerticalContentAlignment="Center"/>
+                        <Label x:Name="lblFrame" Content="Frame:" Grid.Column="7" HorizontalAlignment="Left" Padding="0,0,0,0" Width="40" VerticalContentAlignment="Center"/>
+                        <Button x:Name="btnSetStart" Content="Set Start" Margin="0,0,10,0" Grid.Column="5" Click="btnSetStart_Click" Height="Auto"/>
+                        <Button x:Name="btnSetEnd" Content="Set End" Margin="0,0,10,0" Grid.Column="6" Height="Auto" Click="btnSetEnd_Click"/>
                     </Grid>
                 </Grid>
             </GroupBox>
@@ -61,8 +65,8 @@
             </Grid.ColumnDefinitions>
             <GroupBox x:Name="groupStart" Header="Start" Margin="10,0,10,0" VerticalAlignment="Top" Height="81">
                 <Grid VerticalAlignment="Stretch" Margin="5,5,5,5">
-                    <Button x:Name="btnConvert" Content="Video To Images" VerticalAlignment="Top" Click="btnConvert_Click"/>
-                    <Button x:Name="btnLoad" Content="Load Images Folder" Margin="0,28,0,0" VerticalAlignment="Top" Click="btnLoad_Click"/>
+                    <Button x:Name="btnConvert" Content="Convert &amp; Load" VerticalAlignment="Top" Click="btnConvert_Click"/>
+                    <Button x:Name="btnLoad" Content="Load" Margin="0,28,0,0" VerticalAlignment="Top" Click="btnLoad_Click"/>
                 </Grid>
             </GroupBox>
             <GroupBox x:Name="groupPickLoad" Header="Pick Load" Margin="10,86,10,0" VerticalAlignment="Top" Height="230">
@@ -71,10 +75,10 @@
                     <Slider x:Name="sliderCropY" Margin="0,154,90,0" VerticalAlignment="Top" ValueChanged="slidersCropping_OnValueChanged" Maximum="100"/>
                     <Slider x:Name="sliderCropWidth" Margin="90,131,0,0" VerticalAlignment="Top" ValueChanged="slidersCropping_OnValueChanged" Maximum="100" Minimum="1" Value="100"/>
                     <Slider x:Name="sliderCropHeight" Margin="89,154,0,0" VerticalAlignment="Top" ValueChanged="slidersCropping_OnValueChanged" Maximum="100" Value="100" Minimum="1"/>
-                    <Button x:Name="btnPickLoadFrame" Content="Pick Frame as Load" HorizontalAlignment="Stretch" Margin="0,106,0,0" VerticalAlignment="Top" Click="btnPickLoadFrame_Click" Width="178"/>
-                    <Rectangle Stroke="Black" Fill="Black" VerticalAlignment="Top" Height="99"/>
+                    <Button x:Name="btnPickLoadFrame" Content="Pick Frame as Load Frame" HorizontalAlignment="Stretch" Margin="0,106,0,0" VerticalAlignment="Top" Click="btnPickLoadFrame_Click" Width="178"/>
+                    <Rectangle Stroke="#3F000000" VerticalAlignment="Top" Height="99"/>
                     <Image x:Name="imageLoadFrame" Height="99" Margin="0,0,0,0" VerticalAlignment="Top"/>
-                    <Button x:Name="btnCheckSimilarity" Content="Similarity to Current Frame" Margin="0,177,0,0" VerticalAlignment="Top" Click="btnCheckSimilarity_Click"/>
+                    <Button x:Name="btnCheckSimilarity" Content="Check Similarity To Video Frame" Margin="0,177,0,0" VerticalAlignment="Top" Click="btnCheckSimilarity_Click"/>
                 </Grid>
             </GroupBox>
             <GroupBox x:Name="groupFrameCount" Header="Frame Count" Margin="10,322,10,10" Grid.RowSpan="2">
@@ -95,29 +99,30 @@
                     <Label x:Name="lblFPS" Content="FPS:" Margin="0,54,0,0" VerticalAlignment="Top" Padding="0,0,0,0" Height="22" VerticalContentAlignment="Center"/>
                     <TextBox x:Name="txtLoadFrames" Margin="0,81,0,0" Text="0" TextWrapping="Wrap" VerticalAlignment="Top" Height="22" PreviewTextInput="IntegerValidationTextBox" TextInput="txtFrame_TextChanged" Grid.Column="1" VerticalContentAlignment="Center"/>
                     <Label x:Name="lblLoadFrames" Content="Load Frames:" Margin="0,81,0,0" VerticalAlignment="Top" Padding="0,0,0,0" Height="22" VerticalContentAlignment="Center"/>
-                    <Button x:Name="buttonCalcTimes" Content="Calculate Load Times" Margin="0,115,0,0" VerticalAlignment="Top" Click="buttonRetime_Click" Grid.ColumnSpan="2" Height="20"/>
-                    <TextBox x:Name="txtTimeOutput" Margin="0,5,0,0" Text="Output" TextWrapping="Wrap" VerticalAlignment="Stretch" IsReadOnly="True" Grid.ColumnSpan="2" Grid.Row="1"/>
+                    <Button x:Name="btnCalcTimes" Content="Calculate Load Times" Margin="0,115,0,0" VerticalAlignment="Top" Click="btnCalcTimes_Click" Grid.ColumnSpan="2" Height="20"/>
+                    <TextBox x:Name="txtTimeOutput" Margin="0,5,0,0" TextWrapping="Wrap" VerticalAlignment="Stretch" IsReadOnly="True" Grid.ColumnSpan="2" Grid.Row="1"/>
                 </Grid>
             </GroupBox>
         </Grid>
         <Grid x:Name="gridRight" Grid.Column="2">
             <Grid.RowDefinitions>
-                <RowDefinition Height="113"/>
+                <RowDefinition Height="145"/>
                 <RowDefinition/>
             </Grid.RowDefinitions>
-            <GroupBox x:Name="groupLoadDetection" Header="Load Detection" Margin="5,0,10,5">
+            <GroupBox x:Name="groupLoadDetection" Header="Load Detection" Margin="10,0,10,5">
                 <Grid HorizontalAlignment="Stretch" Margin="5,5,5,5" VerticalAlignment="Stretch">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="1*"/>
                         <ColumnDefinition Width="1*"/>
                     </Grid.ColumnDefinitions>
-                    <Label x:Name="lblSimilarity" Content="Similarity:" Padding="0,0,0,0" Grid.ColumnSpan="2" Margin="0,30,0,0" VerticalContentAlignment="Center" Height="20" VerticalAlignment="Top"/>
-                    <TextBox x:Name="txtSimilarity" TextWrapping="Wrap" VerticalAlignment="Top" Text="0.98" Height="20" PreviewTextInput="DoubleValidationTextBox" Grid.Column="1" Margin="0,30,0,0" VerticalContentAlignment="Center"/>
-                    <Button x:Name="btnCountLoads" Content="Index Frame Similarity" VerticalAlignment="Top" Click="btnCountLoads_Click" Height="20" Grid.ColumnSpan="2"/>
-                    <Button x:Name="btnCountLoads_Copy" Content="Detect Load Frames" VerticalAlignment="Top" Click="btnCountLoads_Click" Height="20" Grid.ColumnSpan="2" Margin="0,55,0,0"/>
+                    <Label x:Name="lblSimilarity" Content="Similarity:" Padding="0,0,0,0" Grid.ColumnSpan="2" Margin="0,62,0,0" VerticalContentAlignment="Center" Height="20" VerticalAlignment="Top"/>
+                    <TextBox x:Name="txtSimilarity" TextWrapping="Wrap" VerticalAlignment="Top" Text="0.98" Height="20" PreviewTextInput="DoubleValidationTextBox" Grid.Column="1" Margin="0,62,0,0" VerticalContentAlignment="Center"/>
+                    <Button x:Name="btnIndexFrameHashes" Content="Index Frame Hashes" VerticalAlignment="Top" Click="btnIndexFrameHashes_Click" Height="20" Grid.ColumnSpan="2"/>
+                    <Button x:Name="btnDetectLoadFrames" Content="Detect Load Frames" VerticalAlignment="Top" Height="20" Grid.ColumnSpan="2" Margin="0,87,0,0" Click="btnDetectLoadFrames_Click"/>
+                    <Button x:Name="btnClearFrameHashes" Content="Clear Frame Hashes" VerticalAlignment="Top" Height="20" Grid.ColumnSpan="2" Margin="0,25,0,0" Click="btnClearFrameHashes_Click"/>
                 </Grid>
             </GroupBox>
-            <GroupBox x:Name="groupDetectedLoadFrames" Header="Detected Load Frames" Margin="5,0,10,10" Grid.Row="1">
+            <GroupBox x:Name="groupDetectedLoadFrames" Header="Detected Load Frames" Margin="10,0,10,10" Grid.Row="1">
                 <ListBox x:Name="lbxLoads" Margin="5,5,5,5" SelectionChanged="lbxLoads_SelectionChanged" BorderBrush="#00ABADB3"/>
             </GroupBox>
         </Grid>
