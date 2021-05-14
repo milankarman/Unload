@@ -3,13 +3,14 @@ using System.IO;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Windows;
+using System.Windows.Controls;
 using System.Globalization;
 using System.Windows.Input;
 using System.Windows.Media.Imaging;
 using System.Text.RegularExpressions;
 using Microsoft.Win32;
 using Shipwreck.Phash;
-using Shipwreck.Phash.Bitmaps;
+using FFMpegCore;
 
 namespace auto_loadless
 {
@@ -31,14 +32,7 @@ namespace auto_loadless
             groupVideoControls.IsEnabled = false;
             groupFrameCount.IsEnabled = false;
             groupLoadDetection.IsEnabled = false;
-            groupDetectedLoadFrames.IsEnabled = false;
-
-            btnIndexFrameHashes.IsEnabled = false;
-            btnCheckSimilarity.IsEnabled = false;
-            btnDetectLoadFrames.IsEnabled = false;
-            btnClearFrameHashes.IsEnabled = false;
-
-            txtSimilarity.IsEnabled = false;
+            groupDetectedLoads.IsEnabled = false;
         }
 
         private void btnConvert_Click(object sender, RoutedEventArgs e)
@@ -55,7 +49,9 @@ namespace auto_loadless
                 }
 
                 FFMPEG.ConvertToImageSequence(dialog.FileName, targetDirectory);
-                MessageBox.Show("Done!");
+
+                txtFPS.Text = FFProbe.Analyse(dialog.FileName).PrimaryVideoStream.FrameRate.ToString();
+                LoadFolder(targetDirectory);
             }
         }
 
@@ -69,31 +65,42 @@ namespace auto_loadless
 
                 if (!Directory.Exists(targetDirectory))
                 {
-                    MessageBox.Show("No _frames folder accompanying this video found. Convert it first.");
+                    MessageBox.Show("No _frames folder accompanying this video found. Convert the video first.");
                     return;
                 }
 
-                totalVideoFrames = Directory.GetFiles(targetDirectory, "*.jpg").Length;
-                workingDirectory = targetDirectory;
-
-                sliderTimeline.Minimum = 1;
-                sliderTimeline.Maximum = totalVideoFrames;
-                sliderTimeline.Value = 1;
-
-                groupPickLoad.IsEnabled = true;
-                groupVideo.IsEnabled = true;
-                groupVideoControls.IsEnabled = true;
-                groupFrameCount.IsEnabled = true;
-                groupLoadDetection.IsEnabled = true;
-                groupDetectedLoadFrames.IsEnabled = true;
-
-                SetVideoFrame(1);
+                txtFPS.Text = FFProbe.Analyse(dialog.FileName).PrimaryVideoStream.FrameRate.ToString();
+                LoadFolder(targetDirectory);
             }
+        }
+
+        private void LoadFolder(string dir)
+        {
+            hashedFrames = null;
+
+            totalVideoFrames = Directory.GetFiles(dir, "*.jpg").Length;
+            txtEndFrame.Text = totalVideoFrames.ToString();
+
+            workingDirectory = dir;
+
+            pickedLoadingFrame = 0;
+
+            sliderTimeline.Maximum = totalVideoFrames;
+            sliderTimeline.Value = 1;
+
+            imageLoadFrame.Source = null;
+
+            groupPickLoad.IsEnabled = true;
+            groupVideo.IsEnabled = true;
+            groupVideoControls.IsEnabled = true;
+            groupFrameCount.IsEnabled = true;
+
+            SetVideoFrame(1);
         }
 
         private void sliderTimeline_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
-            SetVideoFrame((int)Math.Round(sliderTimeline.Value));
+            SetVideoFrame((int)sliderTimeline.Value);
         }
 
         private void SetVideoFrame(int frame)
@@ -118,12 +125,18 @@ namespace auto_loadless
             }
 
             UpdateCropPreview();
-            btnIndexFrameHashes.IsEnabled = true;
         }
 
         private void btnPickLoadFrame_Click(object sender, RoutedEventArgs e)
         {
+            btnIndexFrameHashes.IsEnabled = true;
+            groupLoadDetection.IsEnabled = true;
+            groupDetectedLoads.IsEnabled = true;
             btnCheckSimilarity.IsEnabled = true;
+
+            btnDetectLoadFrames.IsEnabled = false;
+            btnClearFrameHashes.IsEnabled = false;
+
             pickedLoadingFrame = (int)sliderTimeline.Value;
             UpdateCropPreview();
         }
@@ -135,7 +148,7 @@ namespace auto_loadless
             Bitmap loadFrame = new Bitmap(Path.Join(workingDirectory, $"{pickedLoadingFrame}.jpg"));
             loadFrame = ImageProcessor.CropImage(loadFrame, crop);
 
-            Bitmap currentFrame = new Bitmap(Path.Join(workingDirectory, $"{(int)Math.Round(sliderTimeline.Value)}.jpg"));
+            Bitmap currentFrame = new Bitmap(Path.Join(workingDirectory, $"{(int)sliderTimeline.Value}.jpg"));
             currentFrame = ImageProcessor.CropImage(currentFrame, crop);
 
             MessageBox.Show($"Similarity: {ImageProcessor.CompareBitmapPhash(loadFrame, currentFrame)}");
@@ -143,8 +156,8 @@ namespace auto_loadless
 
         private void btnIndexFrameHashes_Click(object sender, RoutedEventArgs e)
         {
-            string text = "This will start the lengthy process of hashing every frame from start to end." + Environment.NewLine +
-                "Make sure your start frame, end frame and load image are set properly before doing this, changing these after requires the frames to be hashed again.";
+            string text = "This will start the long and intense process of hashing every frame from start to end." + Environment.NewLine +
+                "Make sure your start frame, end frame and load image are set properly before doing this, to change these you will have the clear the hash.";
             string caption = "Information";
 
             MessageBoxResult result = MessageBox.Show(text, caption, MessageBoxButton.YesNo, MessageBoxImage.Information);
@@ -170,6 +183,7 @@ namespace auto_loadless
             btnDetectLoadFrames.IsEnabled = true;
             btnClearFrameHashes.IsEnabled = true;
         }
+
         private void btnClearFrameHashes_Click(object sender, RoutedEventArgs e)
         {
             string text = "Doing this value will require the frame hashes to be indexed again. Are you sure?";
@@ -195,6 +209,9 @@ namespace auto_loadless
 
         private void btnDetectLoadFrames_Click(object sender, RoutedEventArgs e)
         {
+            lbxLoads.Items.Clear();
+            lbxLoads.Items.Add($"#\tFirst\tLast\tTotal");
+
             int startFrame = int.Parse(txtStartFrame.Text);
             int endFrame = int.Parse(txtEndFrame.Text);
 
@@ -203,28 +220,52 @@ namespace auto_loadless
             Bitmap loadFrame = new Bitmap(Path.Join(workingDirectory, $"{pickedLoadingFrame}.jpg"));
             Rectangle cropPercentage = CropSlidersToRectange();
             loadFrame = ImageProcessor.CropImage(loadFrame, cropPercentage);
-            Digest loadFrameHash = ImagePhash.ComputeDigest(loadFrame.ToLuminanceImage());
-
+            
             Dictionary<int, float> frameSimilarities = ImageProcessor.GetHashDictSimilarity(hashedFrames, loadFrame);
 
-            int loadCounter = 0;
+            int loadScreenCounter = 0;
+            int loadFrameCounter = 0;
+
+            int currentLoadStartFrame = 0;
+            bool subsequentLoadFrame = false;
 
             for (int i = startFrame; i < endFrame; i++)
             {
-                if (frameSimilarities[i] > minSimilarity)
+                if (frameSimilarities[i] > minSimilarity && i < endFrame)
                 {
-                    lbxLoads.Items.Add(i + "\t" + frameSimilarities[i]);
-                    loadCounter += 1;
+                    loadFrameCounter += 1;
+
+                    if (!subsequentLoadFrame)
+                    {
+                        loadScreenCounter += 1;
+                        currentLoadStartFrame = i;
+                        subsequentLoadFrame = true;
+                    }
+                }
+                else
+                {
+                    if (subsequentLoadFrame)
+                    {         
+                        lbxLoads.Items.Add($"{loadScreenCounter}\t{currentLoadStartFrame}\t{i - 1}\t{i - currentLoadStartFrame}");
+
+                        subsequentLoadFrame = false;
+                        currentLoadStartFrame = 0;
+                    }
                 }
             }
 
-            txtLoadFrames.Text = loadCounter.ToString();
+            txtLoadFrames.Text = loadFrameCounter.ToString();
             btnDetectLoadFrames.IsEnabled = true;
 
-            MessageBox.Show($"Done. {loadCounter} frames of loading found.");
+            CalculateTimes();
         }
 
         private void btnCalcTimes_Click(object sender, RoutedEventArgs e)
+        {
+            CalculateTimes();
+        }
+
+        private void CalculateTimes()
         {
             double framesPerSecond = double.Parse(txtFPS.Text, CultureInfo.InvariantCulture);
 
@@ -241,14 +282,19 @@ namespace auto_loadless
             txtTimeOutput.Text += timeWithLoads.ToString(@"hh\:mm\:ss\:fff") + Environment.NewLine;
             txtTimeOutput.Text += "Time without loads:" + Environment.NewLine;
             txtTimeOutput.Text += timeWithoutLoads.ToString(@"hh\:mm\:ss\:fff") + Environment.NewLine;
-
         }
 
-        private void lbxLoads_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
+        private void lbxLoads_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            int frame = int.Parse(lbxLoads.SelectedItem.ToString().Split("\t")[0]);
-            sliderTimeline.Value = frame;
-            SetVideoFrame(frame);
+            if (lbxLoads.SelectedItem != null && lbxLoads.SelectedIndex > 0)
+            {
+                int frame = 0;
+
+                frame = int.Parse(lbxLoads.SelectedItem.ToString().Split("\t")[1]);
+
+                sliderTimeline.Value = frame;
+                SetVideoFrame(frame);
+            }
         }
 
         private void btnBackFar_Click(object sender, RoutedEventArgs e)
@@ -277,16 +323,6 @@ namespace auto_loadless
             sliderTimeline.Value += (int)Math.Round(int.Parse(txtFPS.Text) / 4d);
 
             SetVideoFrame((int)sliderTimeline.Value);
-        }
-
-        private void txtFrame_TextChanged(object sender, System.Windows.Input.TextCompositionEventArgs e)
-        {
-            // Figure out later
-            if (totalVideoFrames > 0)
-            {
-                sliderTimeline.Value = int.Parse(txtFrame.Text);
-                SetVideoFrame((int)sliderTimeline.Value);
-            }
         }
 
         private void btnSetStart_Click(object sender, RoutedEventArgs e)
@@ -328,6 +364,26 @@ namespace auto_loadless
             cropPercentage.Height = (int)Math.Round(sliderCropHeight.Value);
 
             return cropPercentage;
+        }
+
+        private void txtFrame_TextChanged(object sender, EventArgs e)
+        {
+            if (totalVideoFrames <= 0)
+            {
+                return;
+            }
+
+            int frame = 1;
+
+            if (!string.IsNullOrEmpty(txtFrame.Text))
+            {
+                frame = Math.Clamp(int.Parse(txtFrame.Text), 1, totalVideoFrames);
+            }
+  
+            sliderTimeline.Value = frame;
+            txtFrame.Text = frame.ToString();
+
+            SetVideoFrame(frame);
         }
     }
 }
