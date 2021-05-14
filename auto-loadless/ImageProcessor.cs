@@ -2,6 +2,7 @@
 using System.IO;
 using System.Drawing;
 using System.Drawing.Imaging;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.Collections.Concurrent;
@@ -23,11 +24,11 @@ namespace auto_loadless
             return score;
         }
 
-        public static Dictionary<int, Digest> CropAndPhashFolder(string path, Rectangle cropPercentage, int startFrame, int endFrame, int concurrentTasks)
+        public static Dictionary<int, Digest> CropAndPhashFolder(string path, Rectangle cropPercentage, int startFrame, int endFrame, int concurrentTasks, CancellationTokenSource cts, Action onProgress)
         {
             ConcurrentDictionary<int, Digest> frameHashes = new ConcurrentDictionary<int, Digest>();
 
-            Parallel.For(startFrame, endFrame, new ParallelOptions { MaxDegreeOfParallelism = concurrentTasks }, i =>
+            Parallel.For(startFrame, endFrame, new ParallelOptions { MaxDegreeOfParallelism = concurrentTasks, CancellationToken = cts.Token }, i =>
             {
                 Bitmap currentFrame = new Bitmap(Path.Join(path, $"{i}.jpg"));
                 currentFrame = CropImage(currentFrame, cropPercentage);
@@ -36,6 +37,7 @@ namespace auto_loadless
                 frameHashes[i] = currentFrameHash;
 
                 currentFrame.Dispose();
+                onProgress();
             });
 
             return new Dictionary<int, Digest>(frameHashes);

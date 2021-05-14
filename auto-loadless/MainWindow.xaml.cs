@@ -3,6 +3,7 @@ using System.IO;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Windows;
+using System.Threading;
 using System.Windows.Controls;
 using System.Globalization;
 using System.Windows.Input;
@@ -154,7 +155,7 @@ namespace auto_loadless
 
         private void btnCheckSimilarity_Click(object sender, RoutedEventArgs e)
         {
-            Rectangle crop = CropSlidersToRectange();
+            Rectangle crop = CropSlidersToRectangle();
 
             Bitmap loadFrame = new Bitmap(Path.Join(workingDirectory, $"{pickedLoadingFrame}.jpg"));
             loadFrame = ImageProcessor.CropImage(loadFrame, crop);
@@ -181,9 +182,37 @@ namespace auto_loadless
             int startFrame = int.Parse(txtStartFrame.Text);
             int endFrame = int.Parse(txtEndFrame.Text);
             int concurrentTasks = int.Parse(txtConcurrentTasks.Text);
+            Rectangle crop = CropSlidersToRectangle();
 
-            hashedFrames = ImageProcessor.CropAndPhashFolder(workingDirectory, CropSlidersToRectange(), startFrame, endFrame, concurrentTasks);
+            ProgressWindow progress = new ProgressWindow();
+            progress.Show();
 
+            progress.totalTasks = endFrame - startFrame;
+            progress.onFinishedAction = FinishIndexingFrameHashes;
+
+            Thread thread = new Thread(() =>
+            {
+                try
+                {
+                    hashedFrames = ImageProcessor.CropAndPhashFolder(workingDirectory, crop, startFrame, endFrame, concurrentTasks, progress.cts, () => {
+                        progress.currentTask += 1;
+                    });
+                }
+                catch (OperationCanceledException e)
+                {
+                    MessageBox.Show("Cancelled");
+                }
+                finally
+                {
+                    progress.cts.Dispose();
+                }
+            });
+
+            thread.Start();
+        }
+
+        private void FinishIndexingFrameHashes()
+        {
             groupPickLoad.IsEnabled = false;
             txtStartFrame.IsEnabled = false;
             txtEndFrame.IsEnabled = false;
@@ -233,7 +262,7 @@ namespace auto_loadless
             double minSimilarity = double.Parse(txtSimilarity.Text, CultureInfo.InvariantCulture);
 
             Bitmap loadFrame = new Bitmap(Path.Join(workingDirectory, $"{pickedLoadingFrame}.jpg"));
-            Rectangle cropPercentage = CropSlidersToRectange();
+            Rectangle cropPercentage = CropSlidersToRectangle();
             loadFrame = ImageProcessor.CropImage(loadFrame, cropPercentage);
 
             Dictionary<int, float> frameSimilarities = ImageProcessor.GetHashDictSimilarity(hashedFrames, loadFrame, concurrentTasks);
@@ -367,11 +396,11 @@ namespace auto_loadless
         private void UpdateCropPreview()
         {
             Bitmap image = new Bitmap(Path.Join(workingDirectory, $"{pickedLoadingFrame}.jpg"));
-            Bitmap croppedImage = ImageProcessor.CropImage(image, CropSlidersToRectange());
+            Bitmap croppedImage = ImageProcessor.CropImage(image, CropSlidersToRectangle());
             imageLoadFrame.Source = ImageProcessor.BitmapToBitmapImage(croppedImage);
         }
 
-        private Rectangle CropSlidersToRectange()
+        private Rectangle CropSlidersToRectangle()
         {
             Rectangle cropPercentage = new Rectangle();
 
