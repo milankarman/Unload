@@ -82,7 +82,7 @@
                     <Slider x:Name="sliderCropHeight" Margin="0,187,0,0" VerticalAlignment="Top" ValueChanged="slidersCropping_OnValueChanged" Maximum="100" Value="100" Minimum="1" Grid.Column="1"/>
                     <Button x:Name="btnPickLoadFrame" Content="Pick Frame as Load Frame" Margin="0,139,0,0" VerticalAlignment="Top" Click="btnPickLoadFrame_Click" Grid.ColumnSpan="2"/>
                     <Rectangle Stroke="#3F000000" VerticalAlignment="Top" Height="134" Grid.ColumnSpan="2"/>
-                    <Image x:Name="imageLoadFrame" Height="147" Margin="0,0,0,0" VerticalAlignment="Top" Grid.ColumnSpan="2"/>
+                    <Image x:Name="imageLoadFrame" Height="134" Margin="0,0,0,0" VerticalAlignment="Top" Grid.ColumnSpan="2"/>
                     <Button x:Name="btnCheckSimilarity" Content="Check Similarity to Video Frame" Margin="0,210,0,0" VerticalAlignment="Top" Click="btnCheckSimilarity_Click" Grid.ColumnSpan="2"/>
                 </Grid>
             </GroupBox>

@@ -88,14 +88,15 @@ namespace auto_loadless
 
         private void LoadFolder(string dir)
         {
-            hashedFrames = null;
-
+            workingDirectory = dir;
             totalVideoFrames = Directory.GetFiles(dir, "*.jpg").Length;
+
+            txtStartFrame.Text = "1";
             txtEndFrame.Text = totalVideoFrames.ToString();
 
-            workingDirectory = dir;
-
+            hashedFrames = null;
             pickedLoadingFrame = 0;
+            lbxLoads.Items.Clear();
 
             sliderTimeline.Maximum = totalVideoFrames;
             sliderTimeline.Value = 1;
@@ -106,6 +107,16 @@ namespace auto_loadless
             groupVideo.IsEnabled = true;
             groupVideoControls.IsEnabled = true;
             groupFrameCount.IsEnabled = true;
+
+            btnClearFrameHashes.IsEnabled = false;
+            btnDetectLoadFrames.IsEnabled = false;
+            btnCheckSimilarity.IsEnabled = false;
+
+            btnSetStart.IsEnabled = true;
+            btnSetEnd.IsEnabled = true;
+
+            txtLoadFrames.Clear();
+            txtTimeOutput.Clear();
 
             SetVideoFrame(1);
         }
@@ -184,27 +195,29 @@ namespace auto_loadless
             int concurrentTasks = int.Parse(txtConcurrentTasks.Text);
             Rectangle crop = CropSlidersToRectangle();
 
-            ProgressWindow progress = new ProgressWindow();
+            ProgressWindow progress = new ProgressWindow("Indexing Frame Hashes", endFrame - startFrame, FinishIndexingFrameHashes);
+            progress.Owner = this;
             progress.Show();
 
-            progress.totalTasks = endFrame - startFrame;
-            progress.onFinishedAction = FinishIndexingFrameHashes;
+            IsEnabled = false;
 
             Thread thread = new Thread(() =>
             {
                 try
                 {
-                    hashedFrames = ImageProcessor.CropAndPhashFolder(workingDirectory, crop, startFrame, endFrame, concurrentTasks, progress.cts, () => {
+                    hashedFrames = ImageProcessor.CropAndPhashFolder(workingDirectory, crop, startFrame, endFrame, concurrentTasks, progress.cts, () =>
+                    {
                         progress.currentTask += 1;
                     });
+
+                    progress.finished = true;
+                    Dispatcher.Invoke(() => FinishIndexingFrameHashes());
                 }
-                catch (OperationCanceledException e)
-                {
-                    MessageBox.Show("Cancelled");
-                }
+                catch (OperationCanceledException) { }
                 finally
                 {
                     progress.cts.Dispose();
+                    Dispatcher.Invoke(() => IsEnabled = true);
                 }
             });
 

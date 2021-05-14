@@ -5,13 +5,18 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:auto_loadless"
         mc:Ignorable="d"
-        Title="ProgressWindow" Height="220" Width="360" Closing="Window_Closing">
-    <Grid>
+        Title="UnLoad" Height="93" Width="360" ResizeMode="NoResize" ShowInTaskbar="False" WindowStyle="None" WindowStartupLocation="CenterOwner" Background="Transparent" AllowsTransparency="True">
+    <Grid Margin="10,10,10,10" Background="White">
+        <Grid.Effect>
+            <DropShadowEffect ShadowDepth="4" Direction="330" Opacity="0.5" BlurRadius="4"/>
+        </Grid.Effect>
         <Grid.ColumnDefinitions>
             <ColumnDefinition/>
         </Grid.ColumnDefinitions>
-        <ProgressBar x:Name="progressBar" HorizontalAlignment="Left" Height="20" Margin="10,174,0,0" VerticalAlignment="Top" Width="340" Grid.ColumnSpan="2"/>
-        <Label x:Name="label" Content="Label" HorizontalAlignment="Left" Margin="55,28,0,0" VerticalAlignment="Top"/>
+        <ProgressBar x:Name="progressBar" Height="20" Margin="10,0,101,10" VerticalAlignment="Bottom"/>
+        <Label x:Name="label" Content="Text: 0 / 0" Margin="10,10,10,0" VerticalAlignment="Top" Padding="0,0,0,0" VerticalContentAlignment="Center" Height="26"/>
+        <Button x:Name="buttonCancel" Content="Cancel" HorizontalAlignment="Right" Margin="244,0,10,10" VerticalAlignment="Bottom" Width="86" Click="buttonCancel_Click"/>
+        <Rectangle HorizontalAlignment="Center" Height="73" Stroke="#4C000000" VerticalAlignment="Center" Width="340"/>
 
     </Grid>
 </Window>

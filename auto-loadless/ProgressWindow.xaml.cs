@@ -7,24 +7,25 @@ namespace auto_loadless
 {
     public partial class ProgressWindow : Window
     {
-        public int totalTasks = 0;
         public int currentTask = 0;
-
         public bool finished = false;
-
-        public Action onFinishedAction = null;
-        public Action onCloseAction = null;
-
         public CancellationTokenSource cts = new CancellationTokenSource();
 
-        public ProgressWindow()
+        private string text = "";
+        public int totalTasks = 0;
+        private Action onFinishedAction = null;
+
+        public ProgressWindow(string _text, int _totalTask, Action _onFinishedAction = null)
         {
             InitializeComponent();
+
+            text = _text;
+            totalTasks = _totalTask;
+            onFinishedAction = _onFinishedAction;
 
             DispatcherTimer timer = new DispatcherTimer();
             timer.Interval = TimeSpan.FromSeconds(0.25);
             timer.Tick += timer_Tick;
-
             timer.Start();
         }
 
@@ -32,19 +33,19 @@ namespace auto_loadless
         {
             if (finished)
             {
-                onFinishedAction();
                 Close();
             }
 
-            label.Content = $"{currentTask} / {totalTasks}";
+            label.Content = $"{text}: {currentTask} / {totalTasks}";
 
             double percentage = (double)currentTask / (double)totalTasks * 100d;
             progressBar.Value = percentage;
         }
 
-        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        private void buttonCancel_Click(object sender, RoutedEventArgs e)
         {
             cts.Cancel();
+            Close();
         }
     }
 }
