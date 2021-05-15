@@ -13,15 +13,13 @@ namespace unload
 
         private string text = "";
         public int totalTasks = 0;
-        private Action onFinishedAction = null;
 
-        public ProgressWindow(string _text, int _totalTask, Action _onFinishedAction = null)
+        public ProgressWindow(string _text, int _totalTask)
         {
             InitializeComponent();
 
             text = _text;
             totalTasks = _totalTask;
-            onFinishedAction = _onFinishedAction;
 
             DispatcherTimer timer = new DispatcherTimer();
             timer.Interval = TimeSpan.FromSeconds(0.25);
@@ -33,7 +31,6 @@ namespace unload
         {
             if (finished)
             {
-                onFinishedAction();
                 Close();
             }
 

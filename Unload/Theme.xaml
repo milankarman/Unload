@@ -7,9 +7,10 @@
     <SolidColorBrush  Color="#434343" x:Key="borderDarkPrimary" />
     <SolidColorBrush  Color="#393939" x:Key="borderDarkSecondary" />
     <SolidColorBrush  Color="#E5E5E5" x:Key="primaryLight" />
-    <SolidColorBrush  Color="#BABABA" x:Key="secondaryLight" />
+    <SolidColorBrush  Color="#979797" x:Key="secondaryLight" />
     <SolidColorBrush  Color="#5844FE" x:Key="highlight" />
     <SolidColorBrush  Color="#382BA4" x:Key="highlightDark" />
+    
     <Style TargetType="TextBox">
         <Setter Property="Background" Value="{DynamicResource primaryDark}" />
         <Setter Property="BorderBrush" Value="{DynamicResource borderDarkPrimary}" />
@@ -24,6 +25,8 @@
         <Setter Property="Foreground" Value="{DynamicResource primaryLight}" />
     </Style>
     <Style TargetType="GroupBox">
+        <Setter Property="Background" Value="{DynamicResource primaryDark}" />
+        <Setter Property="Foreground" Value="{DynamicResource primaryLight}" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="GroupBox">
@@ -36,12 +39,12 @@
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="1*" />
                             </Grid.ColumnDefinitions>
-                            <Border Grid.Row="0" BorderThickness="1" BorderBrush="{DynamicResource primaryDark}" Background="{DynamicResource primaryDark}">
-                                <Label Foreground="White" Padding="10 2 10 2">
+                            <Border Grid.Row="0" BorderThickness="1" BorderBrush="{DynamicResource primaryDark}" Background="{TemplateBinding Background}">
+                                <Label Foreground="{TemplateBinding Foreground}" Padding="10 2 10 2">
                                     <ContentPresenter Margin="0" ContentSource="Header" RecognizesAccessKey="True" />
                                 </Label>
                             </Border>
-                            <Border Grid.Row="1" BorderThickness="1" BorderBrush="{DynamicResource primaryDark}" />
+                            <Border Grid.Row="1" BorderThickness="0 1 0 0" BorderBrush="{DynamicResource borderDarkPrimary}" />
 
                             <ContentPresenter Grid.ColumnSpan="2" Grid.Column="0" Margin="5" Grid.Row="2" x:Name="Content" />
                         </Grid>
@@ -49,6 +52,12 @@
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
+        <Style.Triggers>
+            <Trigger Property="IsEnabled" Value="False">
+                <Setter Property="Background" Value="{DynamicResource secondaryDark}"/>
+                <Setter Property="Foreground" Value="{DynamicResource secondaryLight}"/>
+            </Trigger>
+        </Style.Triggers>
     </Style>
     <Style TargetType="Button">
         <Setter Property="Background" Value="{DynamicResource primaryDark}" />
@@ -75,10 +84,10 @@
                 <Setter Property="Foreground" Value="{DynamicResource secondaryLight}"/>
             </Trigger>
             <Trigger Property="IsMouseOver" Value="True">
-                <Setter Property="Background" Value="{DynamicResource highlight}"/>
+                <Setter Property="Background" Value="{DynamicResource highlightDark}"/>
             </Trigger>
             <Trigger Property="IsPressed" Value="True">
-                <Setter Property="Background" Value="{DynamicResource highlightDark}"/>
+                <Setter Property="Background" Value="{DynamicResource highlight}"/>
             </Trigger>
         </Style.Triggers>
     </Style>
@@ -95,7 +104,6 @@
             </Setter.Value>
         </Setter>
     </Style>
-
     <Style x:Key="SliderRepeatButton1" TargetType="RepeatButton">
         <Setter Property="SnapsToDevicePixels" Value="true" />
         <Setter Property="OverridesDefaultStyle" Value="true" />
@@ -107,7 +115,6 @@
             </Setter.Value>
         </Setter>
     </Style>
-
     <Style x:Key="SliderThumb" TargetType="Thumb">
         <Setter Property="SnapsToDevicePixels" Value="true" />
         <Setter Property="OverridesDefaultStyle" Value="true" />
@@ -119,7 +126,6 @@
             </Setter.Value>
         </Setter>
     </Style>
-
     <ControlTemplate x:Key="Slider"  TargetType="Slider">
         <Grid>
             <Grid.RowDefinitions>
@@ -127,12 +133,12 @@
                 <RowDefinition Height="Auto" MinHeight="{TemplateBinding MinHeight}" />
                 <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
-            <Track Grid.Row="1" x:Name="PART_Track"   >
+            <Track Grid.Row="1" x:Name="PART_Track">
                 <Track.DecreaseRepeatButton>
                     <RepeatButton Style="{StaticResource SliderRepeatButton1}"  Command="Slider.DecreaseLarge" />
                 </Track.DecreaseRepeatButton>
                 <Track.Thumb>
-                    <Thumb Style="{StaticResource SliderThumb}"  />
+                    <Thumb Style="{StaticResource SliderThumb}" />
                 </Track.Thumb>
                 <Track.IncreaseRepeatButton>
                     <RepeatButton Style="{StaticResource SliderRepeatButton}" Command="Slider.IncreaseLarge" />
@@ -140,7 +146,6 @@
             </Track>
         </Grid>
     </ControlTemplate>
-
     <Style TargetType="Slider">
         <Setter Property="Focusable" Value="False"/>
         <Setter Property="SnapsToDevicePixels" Value="true" />
@@ -153,6 +158,4 @@
             </Trigger>
         </Style.Triggers>
     </Style>
-    
-    
 </ResourceDictionary>

@@ -192,7 +192,7 @@ namespace unload
             int concurrentTasks = int.Parse(txtConcurrentTasks.Text);
             Rectangle crop = CropSlidersToRectangle();
 
-            ProgressWindow progress = new ProgressWindow("Indexing Frame Hashes", endFrame - startFrame, FinishIndexingFrameHashes);
+            ProgressWindow progress = new ProgressWindow("Indexing Frame Hashes", endFrame - startFrame);
             progress.Owner = this;
             progress.Show();
 
