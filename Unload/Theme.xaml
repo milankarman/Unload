@@ -1,7 +1,7 @@
 ﻿<ResourceDictionary x:Class="Themes.Theme"
                     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
-    <SolidColorBrush  Color="#121212" x:Key="bgDark" />
+    <SolidColorBrush  Color="#171717" x:Key="bgDark" />
     <SolidColorBrush  Color="#2C2C2C" x:Key="primaryDark" />
     <SolidColorBrush  Color="#2C2C2C" x:Key="secondaryDark" />
     <SolidColorBrush  Color="#434343" x:Key="borderDarkPrimary" />
@@ -10,17 +10,173 @@
     <SolidColorBrush  Color="#979797" x:Key="secondaryLight" />
     <SolidColorBrush  Color="#5844FE" x:Key="highlight" />
     <SolidColorBrush  Color="#382BA4" x:Key="highlightDark" />
-    
+
+    <Style x:Key="CustomWindowStyle" TargetType="{x:Type Window}">
+        <Setter Property="BorderBrush" Value="Black" />
+        <Setter Property="Background" Value="{StaticResource bgDark}" />
+        <Setter Property="Foreground" Value="{StaticResource primaryLight}"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="ResizeMode" Value="CanResizeWithGrip"/>
+        <Setter Property="WindowStyle" Value="SingleBorderWindow"/>
+        <Setter Property="WindowChrome.WindowChrome">
+            <Setter.Value>
+                <WindowChrome CaptionHeight="26"
+                              ResizeBorderThickness="6"
+                              CornerRadius="0"
+                              GlassFrameThickness="1"
+                              NonClientFrameEdges="None"
+                              UseAeroCaptionButtons="False"/>
+            </Setter.Value>
+        </Setter>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type Window}">
+                    <Grid>
+                        <Border Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}">
+                            <Grid>
+                                <AdornerDecorator Margin="0,30,0,0">
+                                    <ContentPresenter />
+                                </AdornerDecorator>
+                                <Grid Height="30" x:Name="titlebar"
+                                      Background="{TemplateBinding BorderBrush}"
+                                      VerticalAlignment="Top" Margin="0">
+                                    <DockPanel Margin="0,0,130,0">
+                                        <Image HorizontalAlignment="Left" VerticalAlignment="Top" Margin="4,4,0,0" 
+                                               Source="{Binding Icon, RelativeSource={RelativeSource TemplatedParent}}" Height="24"  />
+                                        <TextBlock Margin="5,3"
+                                                   VerticalAlignment="Center"
+                                                   HorizontalAlignment="Stretch"
+                                                   TextWrapping="NoWrap"
+                                                   FontSize="14" Width="Auto"
+                                                   Foreground="{StaticResource primaryLight}"
+                                                   Text="{Binding Title, RelativeSource={RelativeSource TemplatedParent}}"   
+                                                   Grid.Column="1" TextAlignment="Left"/>
+                                    </DockPanel>
+                                    <StackPanel Orientation="Horizontal"
+                                        Grid.Column="0" HorizontalAlignment="Right">
+                                        <Button x:Name="btnMinimize"
+                                                Background="Transparent"
+                                                BorderBrush="Transparent"
+                                                Template="{DynamicResource ResizeWindowButton}"
+                                                Width="40"
+                                                VerticalContentAlignment="Bottom"
+                                                WindowChrome.IsHitTestVisibleInChrome="True" 
+                                                Click="Minimize_Event">
+                                            <Rectangle Width="10" 
+                                                       VerticalAlignment="Center" 
+                                                       Margin="1 1 0 0" 
+                                                       Stroke="{StaticResource primaryLight}" 
+                                                       StrokeThickness="1"/>
+                                        </Button>
+
+                                        <Button x:Name="btnRestore"
+                                                Background="Transparent"
+                                                BorderBrush="Transparent"
+                                                Template="{DynamicResource ResizeWindowButton}"
+                                                Width="40"
+                                                WindowChrome.IsHitTestVisibleInChrome="True" 
+                                                Click="AutoMinimize_Event">
+                                            <Grid Width="12" Height="12">
+                                                <Rectangle StrokeThickness="1" 
+                                                           Stroke="{StaticResource primaryLight}"
+                                                           Margin="3,0,0,3"/>
+                                                <Rectangle StrokeThickness="1" 
+                                                           Fill="{TemplateBinding BorderBrush}"
+                                                           Stroke="{StaticResource primaryLight}"
+                                                           Margin="0 3 3 0"/>
+                                            </Grid>
+                                        </Button>
+                                        <Button x:Name="btnClose"
+                                                Background="Transparent"
+                                                BorderBrush="Transparent"
+                                                Template="{DynamicResource CloseWindowButton}"
+                                                Width="40"
+                                                WindowChrome.IsHitTestVisibleInChrome="True" 
+                                                Click="CloseWindow_Event">
+                                            <Grid Margin="0 1 0 0">
+                                                <Line X1="0" Y1="0" X2="11" Y2="11" Stroke="{StaticResource primaryLight}" StrokeThickness="1" />
+                                                <Line X1="0" Y2="0" Y1="11" X2="11" Stroke="{StaticResource primaryLight}" StrokeThickness="1" />
+                                            </Grid>
+                                        </Button>
+                                    </StackPanel>
+                                </Grid>
+                            </Grid>
+                        </Border>
+                    </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+        <Style.Triggers>
+            <Trigger Property="WindowState" Value="Maximized">
+                <Setter Property="BorderThickness" Value="8"/>
+            </Trigger>
+            <Trigger Property="WindowState" Value="Normal">
+                <Setter Property="BorderThickness" Value="1"/>
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
+    <ControlTemplate x:Key="CloseWindowButton" TargetType="{x:Type Button}">
+        <Border x:Name="border" 
+                BorderBrush="{TemplateBinding BorderBrush}" 
+                BorderThickness="{TemplateBinding BorderThickness}" 
+                Background="{TemplateBinding Background}" 
+                SnapsToDevicePixels="true"
+                HorizontalAlignment="Stretch" 
+                VerticalAlignment="Stretch">
+            <ContentPresenter x:Name="contentPresenter" 
+                              Focusable="False" 
+                              Margin="{TemplateBinding Padding}" 
+                              RecognizesAccessKey="True" 
+                              SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" 
+                              VerticalAlignment="Center"
+                              HorizontalAlignment="Center"/>
+        </Border>
+        <ControlTemplate.Triggers>
+            <Trigger Property="IsMouseOver" Value="true">
+                <Setter Property="Background" TargetName="border" Value="#DD0A1D"/>
+                <Setter Property="BorderBrush" TargetName="border" Value="#DD0A1D"/>
+            </Trigger>
+            <Trigger Property="IsPressed" Value="true">
+                <Setter Property="Background" TargetName="border" Value="#FF940A14"/>
+                <Setter Property="BorderBrush" TargetName="border" Value="#FF940A14"/>
+            </Trigger>
+        </ControlTemplate.Triggers>
+    </ControlTemplate>
+    <ControlTemplate x:Key="ResizeWindowButton" TargetType="{x:Type Button}">
+        <Border x:Name="border" 
+                BorderBrush="{TemplateBinding BorderBrush}" 
+                BorderThickness="{TemplateBinding BorderThickness}" 
+                Background="{TemplateBinding Background}" 
+                SnapsToDevicePixels="true"
+                HorizontalAlignment="Stretch" 
+                VerticalAlignment="Stretch">
+            <ContentPresenter x:Name="contentPresenter" 
+                              Focusable="False" 
+                              Margin="{TemplateBinding Padding}" 
+                              RecognizesAccessKey="True" 
+                              SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" 
+                              VerticalAlignment="Center"
+                              HorizontalAlignment="Center"/>
+        </Border>
+        <ControlTemplate.Triggers>
+            <Trigger Property="IsMouseOver" Value="true">
+                <Setter Property="Background" TargetName="border" Value="{DynamicResource bgDark}"/>
+                <Setter Property="BorderBrush" TargetName="border" Value="{DynamicResource bgDark}"/>
+            </Trigger>
+            <Trigger Property="IsPressed" Value="true">
+                <Setter Property="Background" TargetName="border" Value="{DynamicResource primaryDark}"/>
+                <Setter Property="BorderBrush" TargetName="border" Value="{DynamicResource primaryDark}"/>
+            </Trigger>
+        </ControlTemplate.Triggers>
+    </ControlTemplate>
     <Style TargetType="TextBox">
         <Setter Property="Background" Value="{DynamicResource primaryDark}" />
         <Setter Property="BorderBrush" Value="{DynamicResource borderDarkPrimary}" />
         <Setter Property="Foreground" Value="{DynamicResource primaryLight}" />
     </Style>
-    <!--<Style TargetType="ListBox">
-        <Setter Property="Background" Value="{DynamicResource primaryDark}" />
-        <Setter Property="BorderBrush" Value="{DynamicResource borderDarkPrimary}" />
-        <Setter Property="Foreground" Value="{DynamicResource primaryLight}" />
-    </Style>-->
     <Style TargetType="Label">
         <Setter Property="Foreground" Value="{DynamicResource primaryLight}" />
     </Style>
