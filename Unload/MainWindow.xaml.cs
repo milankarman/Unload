@@ -44,7 +44,6 @@ namespace unload
             groupVideoControls.IsEnabled = false;
             groupFrameCount.IsEnabled = false;
             groupLoadDetection.IsEnabled = false;
-            groupDetectedLoads.IsEnabled = false;
         }
 
         private void btnConvert_Click(object sender, RoutedEventArgs e)
@@ -153,7 +152,6 @@ namespace unload
         {
             btnIndexFrameHashes.IsEnabled = true;
             groupLoadDetection.IsEnabled = true;
-            groupDetectedLoads.IsEnabled = true;
             btnCheckSimilarity.IsEnabled = true;
 
             btnDetectLoadFrames.IsEnabled = false;
@@ -219,7 +217,9 @@ namespace unload
                     Dispatcher.Invoke(() => IsEnabled = true);
                 }
             })
-            { IsBackground = true };
+            {
+                IsBackground = true
+            };
 
             thread.Start();
         }

@@ -33,6 +33,7 @@ namespace unload
         {
             if (finished)
             {
+                onFinishedAction();
                 Close();
             }
 
