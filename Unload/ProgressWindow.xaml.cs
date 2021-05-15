@@ -11,7 +11,7 @@ namespace unload
         public bool finished = false;
         public CancellationTokenSource cts = new CancellationTokenSource();
 
-        private string text = "";
+        private string text = string.Empty;
         public int totalTasks = 0;
 
         public ProgressWindow(string _text, int _totalTask)

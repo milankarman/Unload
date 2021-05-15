@@ -16,11 +16,11 @@
         <Setter Property="BorderBrush" Value="{DynamicResource borderDarkPrimary}" />
         <Setter Property="Foreground" Value="{DynamicResource primaryLight}" />
     </Style>
-    <Style TargetType="ListBox">
+    <!--<Style TargetType="ListBox">
         <Setter Property="Background" Value="{DynamicResource primaryDark}" />
         <Setter Property="BorderBrush" Value="{DynamicResource borderDarkPrimary}" />
         <Setter Property="Foreground" Value="{DynamicResource primaryLight}" />
-    </Style>
+    </Style>-->
     <Style TargetType="Label">
         <Setter Property="Foreground" Value="{DynamicResource primaryLight}" />
     </Style>
@@ -107,26 +107,38 @@
     <Style x:Key="SliderRepeatButton1" TargetType="RepeatButton">
         <Setter Property="SnapsToDevicePixels" Value="true" />
         <Setter Property="OverridesDefaultStyle" Value="true" />
+        <Setter Property="Background" Value="{DynamicResource highlightDark}" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="RepeatButton">
-                    <Border Background="{DynamicResource highlightDark}" Height="3"/>
+                    <Border Background="{TemplateBinding Background}" Height="3"/>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
+        <Style.Triggers>
+            <Trigger Property="IsEnabled" Value="False">
+                <Setter Property="Background" Value="{DynamicResource secondaryDark}"/>
+            </Trigger>
+        </Style.Triggers>
     </Style>
     <Style x:Key="SliderThumb" TargetType="Thumb">
         <Setter Property="SnapsToDevicePixels" Value="true" />
         <Setter Property="OverridesDefaultStyle" Value="true" />
+        <Setter Property="Background" Value="{DynamicResource highlight}" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="Thumb">
-                    <Ellipse Height="10" Width="10" Fill="{DynamicResource highlight}"></Ellipse>
+                    <Ellipse Height="10" Width="10" Fill="{TemplateBinding Background}"></Ellipse>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
+        <Style.Triggers>
+            <Trigger Property="IsEnabled" Value="False">
+                <Setter Property="Background" Value="{DynamicResource secondaryDark}"/>
+            </Trigger>
+        </Style.Triggers>
     </Style>
-    <ControlTemplate x:Key="Slider"  TargetType="Slider">
+    <ControlTemplate x:Key="Slider" TargetType="Slider">
         <Grid>
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto" />
@@ -157,5 +169,28 @@
                 <Setter Property="Template" Value="{StaticResource Slider}" />
             </Trigger>
         </Style.Triggers>
+    </Style>
+    <Style TargetType="ListBox">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="ListBox">
+                    <Grid Width="Auto" Height="Auto">
+                        <ScrollViewer Focusable="false" IsTabStop="False" HorizontalScrollBarVisibility="Disabled">
+                            <StackPanel IsItemsHost="true"/>
+                        </ScrollViewer>
+                    </Grid>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsEnabled" Value="false">
+                            <Setter Property="Foreground" Value="{DynamicResource secondaryLight}"/>
+                        </Trigger>
+                        <Trigger Property="IsGrouping" Value="true">
+                            <Setter Property="ScrollViewer.CanContentScroll" Value="false"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+        <Setter Property="BorderThickness" Value="0,0,0,0"/>
+        <Setter Property="Foreground" Value="{DynamicResource primaryLight}"/>
     </Style>
 </ResourceDictionary>

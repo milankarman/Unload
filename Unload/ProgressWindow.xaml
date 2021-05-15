@@ -5,18 +5,18 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:unload"
         mc:Ignorable="d"
-        Title="Unload" Height="93" Width="360" ResizeMode="NoResize" ShowInTaskbar="False" WindowStyle="None" WindowStartupLocation="CenterOwner" Background="Transparent" AllowsTransparency="True">
-    <Grid Margin="10,10,10,10" Background="White">
+        Title="Unload" Height="87" Width="360" ResizeMode="NoResize" ShowInTaskbar="False" WindowStyle="None" WindowStartupLocation="CenterOwner" Background="Transparent" AllowsTransparency="True">
+    <Grid Margin="10,10,10,10" Background="{DynamicResource bgDark}">
         <Grid.Effect>
             <DropShadowEffect ShadowDepth="4" Direction="330" Opacity="0.5" BlurRadius="4"/>
         </Grid.Effect>
         <Grid.ColumnDefinitions>
             <ColumnDefinition/>
         </Grid.ColumnDefinitions>
-        <ProgressBar x:Name="progressBar" Height="20" Margin="10,0,101,10" VerticalAlignment="Bottom"/>
-        <Label x:Name="label" Content="Text: 0 / 0" Margin="10,10,10,0" VerticalAlignment="Top" Padding="0,0,0,0" VerticalContentAlignment="Center" Height="26"/>
+        <ProgressBar x:Name="progressBar" Height="22" Margin="10,0,101,10" VerticalAlignment="Bottom"/>
+        <Label x:Name="label" Content="Text: 0 / 0" Margin="10,10,10,0" VerticalAlignment="Top" Padding="0,0,0,0" VerticalContentAlignment="Center" Height="19"/>
         <Button x:Name="buttonCancel" Content="Cancel" HorizontalAlignment="Right" Margin="244,0,10,10" VerticalAlignment="Bottom" Width="86" Click="buttonCancel_Click"/>
-        <Rectangle HorizontalAlignment="Center" Height="73" Stroke="#4C000000" VerticalAlignment="Center" Width="340"/>
+        <Rectangle HorizontalAlignment="Stretch" Stroke="{DynamicResource highlight}" VerticalAlignment="Stretch"/>
 
     </Grid>
 </Window>

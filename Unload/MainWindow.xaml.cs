@@ -44,6 +44,7 @@ namespace unload
             groupVideoControls.IsEnabled = false;
             groupFrameCount.IsEnabled = false;
             groupLoadDetection.IsEnabled = false;
+            groupDetectedLoads.IsEnabled = false;
         }
 
         private void btnConvert_Click(object sender, RoutedEventArgs e)
@@ -126,7 +127,7 @@ namespace unload
 
         private void SetVideoFrame(int frame)
         {
-            if (frame <= 0 || frame >= totalVideoFrames)
+            if (frame <= 0 || frame > totalVideoFrames)
             {
                 return;
             }
@@ -252,6 +253,7 @@ namespace unload
                 sliderTimeline.Ticks.Clear();
 
                 groupPickLoad.IsEnabled = true;
+                groupDetectedLoads.IsEnabled = false;
                 txtStartFrame.IsEnabled = true;
                 txtEndFrame.IsEnabled = true;
                 btnSetEnd.IsEnabled = true;
@@ -313,8 +315,14 @@ namespace unload
                 }
             }
 
+            sliderTimeline.Ticks.Add(startFrame);
+            sliderTimeline.Ticks.Add(1);
+            sliderTimeline.Ticks.Add(endFrame);
+            sliderTimeline.Ticks.Add(totalVideoFrames);
+
             txtLoadFrames.Text = loadFrameCounter.ToString();
             btnDetectLoadFrames.IsEnabled = true;
+            groupDetectedLoads.IsEnabled = true;
 
             CalculateTimes();
         }
