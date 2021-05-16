@@ -7,7 +7,7 @@ namespace unload
 {
     public static class FFMPEG
     {
-        private const string FFMPEG_PATH = "./Resources/ffmpeg.exe";
+        private const string FFMPEG_PATH = "./ffmpeg/ffmpeg.exe";
 
         public static void InitFFMPEGCore()
         {
