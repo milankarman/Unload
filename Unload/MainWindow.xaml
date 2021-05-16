@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:unload"
         mc:Ignorable="d"
-        Title="Unload" Height="750" Width="1330" Closed="Window_Closed" Style="{DynamicResource CustomWindowStyle}">
+        Title="Unload" Height="750" Width="1330" Closed="Window_Closed" Style="{DynamicResource CustomWindowStyle}" Icon="icon/icon_32.png">
     <Grid x:Name="gridMain">
         <Grid.RowDefinitions>
             <RowDefinition Height="1*"/>
@@ -144,7 +144,7 @@
                     <Label x:Name="lblSimilarity_Copy" Content="Concurrent Tasks:" Padding="0,0,0,0" VerticalContentAlignment="Center" Height="20" VerticalAlignment="Top"/>
                     <TextBox x:Name="txtConcurrentTasks" TextWrapping="Wrap" VerticalAlignment="Top" Text="20" Height="20" PreviewTextInput="IntegerValidationTextBox" VerticalContentAlignment="Center" Grid.Column="1"/>
                     <Button x:Name="btnExportTimes" Content="Export Times" VerticalAlignment="Bottom" Click="btnExportTimes_Click" Height="22" Grid.ColumnSpan="2" Margin="0,0,0,1"/>
-                    <CheckBox x:Name="cbxSnapLoads" Content="Snap to Detected Loads" HorizontalAlignment="Left" Margin="0,25,0,0" Height="22" VerticalContentAlignment="Center" Grid.ColumnSpan="2" Width="238" VerticalAlignment="Top" Checked="cbxSnapLoads_Checked" Unchecked="cbxSnapLoads_Unchecked"/>
+                    <CheckBox x:Name="cbxSnapLoads" Content="Snap to Detected Loads" HorizontalAlignment="Left" Margin="0,25,0,0" Height="22" VerticalContentAlignment="Center" Grid.ColumnSpan="2" Width="238" VerticalAlignment="Top" Checked="cbxSnapLoads_Checked" Unchecked="cbxSnapLoads_Unchecked" IsChecked="True"/>
                 </Grid>
             </GroupBox>
         </Grid>

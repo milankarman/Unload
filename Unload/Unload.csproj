@@ -3,14 +3,32 @@
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
     <TargetFramework>netcoreapp3.1</TargetFramework>
-    <RootNamespace>auto_loadless</RootNamespace>
+    <RootNamespace>unload</RootNamespace>
     <UseWPF>true</UseWPF>
+    <ApplicationIcon>icon/icon.ico</ApplicationIcon>
   </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="icon\icon_32.png" />
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="FFMpegCore" Version="4.2.0" />
     <PackageReference Include="Shipwreck.Phash" Version="0.5.0" />
     <PackageReference Include="Shipwreck.Phash.Bitmaps" Version="0.5.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="icon\icon_32.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="ffmpeg\ffmpeg.exe">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="ffmpeg\ffprobe.exe">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   
 </Project>

@@ -47,6 +47,7 @@ namespace unload
             groupLoadDetection.IsEnabled = false;
             groupDetectedLoads.IsEnabled = false;
             btnExportTimes.IsEnabled = false;
+            cbxSnapLoads.IsEnabled = false;
         }
 
         private void btnConvert_Click(object sender, RoutedEventArgs e)
@@ -117,6 +118,7 @@ namespace unload
             btnClearFrameHashes.IsEnabled = false;
             btnDetectLoadFrames.IsEnabled = false;
             btnCheckSimilarity.IsEnabled = false;
+            cbxSnapLoads.IsEnabled = false;
 
             btnSetStart.IsEnabled = true;
             btnSetEnd.IsEnabled = true;
@@ -261,6 +263,7 @@ namespace unload
                 txtLoadFrames.Text = "0";
                 txtTimeOutput.Text = string.Empty;
                 btnExportTimes.IsEnabled = false;
+                cbxSnapLoads.IsEnabled = true;
 
                 groupPickLoad.IsEnabled = true;
                 groupDetectedLoads.IsEnabled = false;
@@ -334,6 +337,7 @@ namespace unload
 
             txtLoadFrames.Text = loadFrameCounter.ToString();
             btnDetectLoadFrames.IsEnabled = true;
+            cbxSnapLoads.IsEnabled = true;
             groupDetectedLoads.IsEnabled = true;
 
             SetTimelineTicks();

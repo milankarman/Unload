@@ -12,7 +12,7 @@
     <SolidColorBrush  Color="#382BA4" x:Key="highlightDark" />
 
     <Style x:Key="CustomWindowStyle" TargetType="{x:Type Window}">
-        <Setter Property="BorderBrush" Value="Black" />
+        <Setter Property="BorderBrush" Value="{StaticResource highlight}" />
         <Setter Property="Background" Value="{StaticResource bgDark}" />
         <Setter Property="Foreground" Value="{StaticResource primaryLight}"/>
         <Setter Property="BorderThickness" Value="1"/>
@@ -40,11 +40,11 @@
                                     <ContentPresenter />
                                 </AdornerDecorator>
                                 <Grid Height="30" x:Name="titlebar"
-                                      Background="{TemplateBinding BorderBrush}"
+                                      Background="black"
                                       VerticalAlignment="Top" Margin="0">
                                     <DockPanel Margin="0,0,130,0">
-                                        <Image HorizontalAlignment="Left" VerticalAlignment="Top" Margin="4,4,0,0" 
-                                               Source="{Binding Icon, RelativeSource={RelativeSource TemplatedParent}}" Height="24"  />
+                                        <Image HorizontalAlignment="Left" VerticalAlignment="Top" Margin="4,4,4,0" 
+                                               Source="{Binding Icon, RelativeSource={RelativeSource TemplatedParent}}" Height="22"  />
                                         <TextBlock Margin="5,3"
                                                    VerticalAlignment="Center"
                                                    HorizontalAlignment="Stretch"
@@ -83,7 +83,7 @@
                                                            Stroke="{StaticResource primaryLight}"
                                                            Margin="3,0,0,3"/>
                                                 <Rectangle StrokeThickness="1" 
-                                                           Fill="{TemplateBinding BorderBrush}"
+                                                           Fill="{TemplateBinding Background}"
                                                            Stroke="{StaticResource primaryLight}"
                                                            Margin="0 3 3 0"/>
                                             </Grid>
@@ -163,12 +163,12 @@
         </Border>
         <ControlTemplate.Triggers>
             <Trigger Property="IsMouseOver" Value="true">
-                <Setter Property="Background" TargetName="border" Value="{DynamicResource bgDark}"/>
-                <Setter Property="BorderBrush" TargetName="border" Value="{DynamicResource bgDark}"/>
-            </Trigger>
-            <Trigger Property="IsPressed" Value="true">
                 <Setter Property="Background" TargetName="border" Value="{DynamicResource primaryDark}"/>
                 <Setter Property="BorderBrush" TargetName="border" Value="{DynamicResource primaryDark}"/>
+            </Trigger>
+            <Trigger Property="IsPressed" Value="true">
+                <Setter Property="Background" TargetName="border" Value="{DynamicResource bgDark}"/>
+                <Setter Property="BorderBrush" TargetName="border" Value="{DynamicResource bgDark}"/>
             </Trigger>
         </ControlTemplate.Triggers>
     </ControlTemplate>
@@ -182,6 +182,11 @@
     </Style>
     <Style TargetType="CheckBox">
         <Setter Property="Foreground" Value="{DynamicResource primaryLight}"/>
+        <Style.Triggers>
+            <Trigger Property="IsEnabled" Value="False">
+                <Setter Property="Foreground" Value="{DynamicResource secondaryLight}"/>
+            </Trigger>
+        </Style.Triggers>
     </Style>
     <Style TargetType="GroupBox">
         <Setter Property="Background" Value="{DynamicResource primaryDark}" />
@@ -243,10 +248,10 @@
                 <Setter Property="Foreground" Value="{DynamicResource secondaryLight}"/>
             </Trigger>
             <Trigger Property="IsMouseOver" Value="True">
-                <Setter Property="Background" Value="{DynamicResource highlightDark}"/>
+                <Setter Property="Background" Value="{DynamicResource highlight}"/>
             </Trigger>
             <Trigger Property="IsPressed" Value="True">
-                <Setter Property="Background" Value="{DynamicResource highlight}"/>
+                <Setter Property="Background" Value="{DynamicResource highlightDark}"/>
             </Trigger>
         </Style.Triggers>
     </Style>
@@ -266,7 +271,7 @@
     <Style x:Key="SliderRepeatButton1" TargetType="RepeatButton">
         <Setter Property="SnapsToDevicePixels" Value="true" />
         <Setter Property="OverridesDefaultStyle" Value="true" />
-        <Setter Property="Background" Value="{DynamicResource highlightDark}" />
+        <Setter Property="Background" Value="{DynamicResource highlight}" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="RepeatButton">
