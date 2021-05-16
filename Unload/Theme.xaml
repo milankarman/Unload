@@ -180,6 +180,9 @@
     <Style TargetType="Label">
         <Setter Property="Foreground" Value="{DynamicResource primaryLight}" />
     </Style>
+    <Style TargetType="CheckBox">
+        <Setter Property="Foreground" Value="{DynamicResource primaryLight}"/>
+    </Style>
     <Style TargetType="GroupBox">
         <Setter Property="Background" Value="{DynamicResource primaryDark}" />
         <Setter Property="Foreground" Value="{DynamicResource primaryLight}" />

@@ -32,7 +32,7 @@ namespace unload
 
             process.StartInfo.FileName = FFMPEG_PATH;
 
-            string args = $"-i \"{inputPath}\" -s 640x360 -q:v 4 \"{outputPath}/%d.jpg\"";
+            string args = $"-i \"{inputPath}\" -s 640x360 -q:v 2 \"{outputPath}/%d.jpg\"";
             process.StartInfo.Arguments = args;
 
             process.Start();

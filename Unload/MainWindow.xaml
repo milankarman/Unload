@@ -106,7 +106,7 @@
                     <Label x:Name="lblEndFrame" Content="End Frame:" Margin="0,27,0,0" VerticalAlignment="Top" Padding="0,0,0,0" Height="22" VerticalContentAlignment="Center"/>
                     <TextBox x:Name="txtFPS" Margin="0,54,0,0" Text="30" TextWrapping="Wrap" VerticalAlignment="Top" Height="22" PreviewTextInput="DoubleValidationTextBox" Grid.Column="1" VerticalContentAlignment="Center"/>
                     <Label x:Name="lblFPS" Content="FPS:" Margin="0,54,0,0" VerticalAlignment="Top" Padding="0,0,0,0" Height="22" VerticalContentAlignment="Center"/>
-                    <TextBox x:Name="txtLoadFrames" Margin="0,81,0,0" Text="0" TextWrapping="Wrap" VerticalAlignment="Top" Height="22" PreviewTextInput="IntegerValidationTextBox" Grid.Column="1" VerticalContentAlignment="Center"/>
+                    <TextBox x:Name="txtLoadFrames" Margin="0,81,0,0" Text="0" TextWrapping="Wrap" VerticalAlignment="Top" Height="22" PreviewTextInput="IntegerValidationTextBox" Grid.Column="1" VerticalContentAlignment="Center" IsReadOnly="True"/>
                     <Label x:Name="lblLoadFrames" Content="Load Frames:" Margin="0,81,0,0" VerticalAlignment="Top" Padding="0,0,0,0" Height="22" VerticalContentAlignment="Center"/>
                     <Button x:Name="btnCalcTimes" Content="Calculate Times" Margin="0,115,0,0" VerticalAlignment="Top" Click="btnCalcTimes_Click" Grid.ColumnSpan="2" Height="22"/>
                     <TextBox x:Name="txtTimeOutput" Margin="0,5,0,0" TextWrapping="Wrap" VerticalAlignment="Stretch" IsReadOnly="True" Grid.ColumnSpan="2" Grid.Row="1"/>
@@ -117,7 +117,7 @@
             <Grid.RowDefinitions>
                 <RowDefinition Height="171"/>
                 <RowDefinition/>
-                <RowDefinition Height="82.04"/>
+                <RowDefinition Height="134.04"/>
             </Grid.RowDefinitions>
             <GroupBox x:Name="groupLoadDetection" Header="Load Detection" Margin="10,10,10,5">
                 <Grid HorizontalAlignment="Stretch" Margin="5,5,5,5" VerticalAlignment="Stretch">
@@ -143,6 +143,8 @@
                     </Grid.ColumnDefinitions>
                     <Label x:Name="lblSimilarity_Copy" Content="Concurrent Tasks:" Padding="0,0,0,0" VerticalContentAlignment="Center" Height="20" VerticalAlignment="Top"/>
                     <TextBox x:Name="txtConcurrentTasks" TextWrapping="Wrap" VerticalAlignment="Top" Text="20" Height="20" PreviewTextInput="IntegerValidationTextBox" VerticalContentAlignment="Center" Grid.Column="1"/>
+                    <Button x:Name="btnExportTimes" Content="Export Times" VerticalAlignment="Bottom" Click="btnExportTimes_Click" Height="22" Grid.ColumnSpan="2" Margin="0,0,0,1"/>
+                    <CheckBox x:Name="cbxSnapLoads" Content="Snap to Detected Loads" HorizontalAlignment="Left" Margin="0,25,0,0" Height="22" VerticalContentAlignment="Center" Grid.ColumnSpan="2" Width="238" VerticalAlignment="Top" Checked="cbxSnapLoads_Checked" Unchecked="cbxSnapLoads_Unchecked"/>
                 </Grid>
             </GroupBox>
         </Grid>

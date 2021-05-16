@@ -23,6 +23,7 @@ namespace unload
         int pickedLoadingFrame = 0;
 
         Dictionary<int, Digest> hashedFrames = null;
+        List<int> sliderTicks = new List<int>();
 
         public MainWindow()
         {
@@ -45,6 +46,7 @@ namespace unload
             groupFrameCount.IsEnabled = false;
             groupLoadDetection.IsEnabled = false;
             groupDetectedLoads.IsEnabled = false;
+            btnExportTimes.IsEnabled = false;
         }
 
         private void btnConvert_Click(object sender, RoutedEventArgs e)
@@ -92,7 +94,9 @@ namespace unload
             totalVideoFrames = Directory.GetFiles(dir, "*.jpg").Length;
 
             txtStartFrame.Text = "1";
+            txtStartFrame.IsEnabled = true;
             txtEndFrame.Text = totalVideoFrames.ToString();
+            txtEndFrame.IsEnabled = true;
             txtLoadFrames.Text = "0";
             txtTimeOutput.Clear();
 
@@ -117,6 +121,8 @@ namespace unload
             btnSetStart.IsEnabled = true;
             btnSetEnd.IsEnabled = true;
 
+            sliderTicks.Clear();
+            SetTimelineTicks();
             SetVideoFrame(1);
         }
 
@@ -252,6 +258,10 @@ namespace unload
                 lbxLoads.Items.Clear();
                 sliderTimeline.Ticks.Clear();
 
+                txtLoadFrames.Text = "0";
+                txtTimeOutput.Text = string.Empty;
+                btnExportTimes.IsEnabled = false;
+
                 groupPickLoad.IsEnabled = true;
                 groupDetectedLoads.IsEnabled = false;
                 txtStartFrame.IsEnabled = true;
@@ -262,6 +272,8 @@ namespace unload
 
                 btnDetectLoadFrames.IsEnabled = false;
                 btnClearFrameHashes.IsEnabled = false;
+                sliderTicks.Clear();
+                SetTimelineTicks();
             }
         }
 
@@ -307,23 +319,24 @@ namespace unload
                     {
                         lbxLoads.Items.Add($"{loadScreenCounter}\t{currentLoadStartFrame}\t{i - 1}\t{i - currentLoadStartFrame}");
 
-                        sliderTimeline.Ticks.Add(currentLoadStartFrame);
-                        sliderTimeline.Ticks.Add(i - 1);
+                        sliderTicks.Add(currentLoadStartFrame);
+                        sliderTicks.Add(i - 1);
                         subsequentLoadFrame = false;
                         currentLoadStartFrame = 0;
                     }
                 }
             }
 
-            sliderTimeline.Ticks.Add(startFrame);
-            sliderTimeline.Ticks.Add(1);
-            sliderTimeline.Ticks.Add(endFrame);
-            sliderTimeline.Ticks.Add(totalVideoFrames);
+            sliderTicks.Add(startFrame);
+            sliderTicks.Add(1);
+            sliderTicks.Add(endFrame);
+            sliderTicks.Add(totalVideoFrames);
 
             txtLoadFrames.Text = loadFrameCounter.ToString();
             btnDetectLoadFrames.IsEnabled = true;
             groupDetectedLoads.IsEnabled = true;
 
+            SetTimelineTicks();
             CalculateTimes();
         }
 
@@ -332,25 +345,82 @@ namespace unload
             CalculateTimes();
         }
 
-        private void CalculateTimes()
+        private string GetLoadlessTimeString()
         {
-            double framesPerSecond = double.Parse(txtFPS.Text, CultureInfo.InvariantCulture);
+            if (!IsValidFramedata())
+            {
+                return "Error. Make sure start/end frame and FPS are filled in properly.";
+            }
 
+            double framesPerSecond = double.Parse(txtFPS.Text, CultureInfo.InvariantCulture);
             int totalFrames = int.Parse(txtEndFrame.Text) - int.Parse(txtStartFrame.Text) + 1;
+
+            if (totalFrames <= 0)
+            {
+                return "End frame must be after start frame.";
+            }
+
+            if (framesPerSecond <= 0)
+            {
+                return "Frames per second must be greater than 0.";
+            }
+
             double totalSecondsDouble = totalFrames / framesPerSecond;
             int totalSecondsInt = (int)totalSecondsDouble;
             double totalMilliseconds = totalSecondsDouble - totalSecondsInt;
             TimeSpan timeWithLoads = TimeSpan.FromSeconds(totalSecondsDouble);
-            txtTimeOutput.Text = "Time with loads:" + Environment.NewLine;
-            txtTimeOutput.Text += $"{timeWithLoads.ToString(@"hh\:mm\:ss")}.{Math.Round(totalMilliseconds * 1000, 0)}{Environment.NewLine}";
+
+            return $"{timeWithLoads.ToString(@"hh\:mm\:ss")}.{Math.Round(totalMilliseconds * 1000, 0)}";
+        }
+
+        private string GetTotalTimeString()
+        {
+            if (!IsValidFramedata())
+            {
+                return "Error. Make sure start/end frame and FPS are filled in properly.";
+            }
+
+            double framesPerSecond = double.Parse(txtFPS.Text, CultureInfo.InvariantCulture);
+            int totalFrames = int.Parse(txtEndFrame.Text) - int.Parse(txtStartFrame.Text) + 1;
+
+            if (totalFrames <= 0)
+            {
+                return "End frame must be after start frame.";
+            }
+
+            if (framesPerSecond <= 0)
+            {
+                return "Frames per second must be greater than 0.";
+            }
 
             int loadlessFrames = totalFrames - int.Parse(txtLoadFrames.Text);
             double loadlessSecondsDouble = loadlessFrames / framesPerSecond;
             int loadlessSecondsInt = (int)loadlessSecondsDouble;
             double loadlessMilliseconds = loadlessSecondsDouble - loadlessSecondsInt;
             TimeSpan timeWithoutLoads = TimeSpan.FromSeconds(loadlessSecondsDouble);
-            txtTimeOutput.Text += "Time without loads:" + Environment.NewLine;
-            txtTimeOutput.Text += $"{timeWithoutLoads.ToString(@"hh\:mm\:ss")}.{Math.Round(loadlessMilliseconds * 1000, 0)}{Environment.NewLine}";
+
+            return $"{timeWithoutLoads.ToString(@"hh\:mm\:ss")}.{Math.Round(loadlessMilliseconds * 1000, 0)}";
+        }
+
+        public bool IsValidFramedata()
+        {
+            if (string.IsNullOrEmpty(txtFPS.Text) || string.IsNullOrEmpty(txtEndFrame.Text) || string.IsNullOrEmpty(txtStartFrame.Text) || string.IsNullOrEmpty(txtLoadFrames.Text))
+            {
+                return false;
+            }
+
+            return true;
+        }
+
+        private void CalculateTimes()
+        {
+            txtTimeOutput.Text = "Time without loads:" + Environment.NewLine;
+            txtTimeOutput.Text += GetLoadlessTimeString() + Environment.NewLine;
+
+            txtTimeOutput.Text += "Time with loads:" + Environment.NewLine;
+            txtTimeOutput.Text += GetTotalTimeString();
+
+            btnExportTimes.IsEnabled = true;
         }
 
         private void lbxLoads_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -404,18 +474,6 @@ namespace unload
             txtEndFrame.Text = sliderTimeline.Value.ToString();
         }
 
-        private void IntegerValidationTextBox(object sender, TextCompositionEventArgs e)
-        {
-            Regex regex = new Regex("[^0-9]+");
-            e.Handled = regex.IsMatch(e.Text);
-        }
-
-        private void DoubleValidationTextBox(object sender, TextCompositionEventArgs e)
-        {
-            Regex regex = new Regex("[^0-9.]+");
-            e.Handled = regex.IsMatch(e.Text);
-        }
-
         private void UpdateCropPreview()
         {
             Bitmap image = new Bitmap(Path.Join(workingDirectory, $"{pickedLoadingFrame}.jpg"));
@@ -455,9 +513,69 @@ namespace unload
             SetVideoFrame(frame);
         }
 
+        private void btnExportTimes_Click(object sender, RoutedEventArgs e)
+        {
+            SaveFileDialog dialog = new SaveFileDialog();
+            dialog.Filter = "Comma Seperated Values (*.csv)|*.csv|All files (*.*)|*.*";
+
+            if (dialog.ShowDialog() == true)
+            {
+                string path = dialog.FileName;
+
+                List<string> lines = new List<string>();
+
+                foreach (string loadString in lbxLoads.Items)
+                {
+                    lines.Add(loadString.Replace('\t', ','));
+                }
+
+                lines.Add("");
+                lines.Add($"Time without loads,{GetLoadlessTimeString()}");
+                lines.Add($"Time with loads,{GetTotalTimeString()}");
+
+
+                File.WriteAllLinesAsync(path, lines);
+            }
+        }
+
+        private void SetTimelineTicks()
+        {
+            sliderTimeline.Ticks.Clear();
+
+            if (cbxSnapLoads.IsChecked == true)
+            {
+                foreach (int tick in sliderTicks)
+                {
+                    sliderTimeline.Ticks.Add(tick);
+                }
+            }
+        }
+
+        private void IntegerValidationTextBox(object sender, TextCompositionEventArgs e)
+        {
+            Regex regex = new Regex("[^0-9]+");
+            e.Handled = regex.IsMatch(e.Text);
+        }
+
+        private void DoubleValidationTextBox(object sender, TextCompositionEventArgs e)
+        {
+            Regex regex = new Regex("[^0-9.]+");
+            e.Handled = regex.IsMatch(e.Text);
+        }
+
         private void Window_Closed(object sender, EventArgs e)
         {
             Application.Current.Shutdown();
+        }
+
+        private void cbxSnapLoads_Checked(object sender, RoutedEventArgs e)
+        {
+            SetTimelineTicks();
+        }
+
+        private void cbxSnapLoads_Unchecked(object sender, RoutedEventArgs e)
+        {
+            SetTimelineTicks();
         }
     }
 }
