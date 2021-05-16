@@ -349,7 +349,7 @@ namespace unload
             CalculateTimes();
         }
 
-        private string GetLoadlessTimeString()
+        private string GetTotalTimeString()
         {
             if (!IsValidFramedata())
             {
@@ -377,7 +377,7 @@ namespace unload
             return $"{timeWithLoads.ToString(@"hh\:mm\:ss")}.{Math.Round(totalMilliseconds * 1000, 0)}";
         }
 
-        private string GetTotalTimeString()
+        private string GetLoadlessTimeString()
         {
             if (!IsValidFramedata())
             {
