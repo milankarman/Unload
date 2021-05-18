@@ -7,19 +7,19 @@ namespace unload
 {
     public partial class ProgressWindow : Window
     {
-        public int currentTask = 0;
+        public double percentage = 0;
         public bool finished = false;
         public CancellationTokenSource cts = new CancellationTokenSource();
 
         private string text = string.Empty;
-        public int totalTasks = 0;
 
-        public ProgressWindow(string _text, int _totalTask)
+        public ProgressWindow(string _text)
         {
             InitializeComponent();
 
             text = _text;
-            totalTasks = _totalTask;
+
+            SetProgress();
 
             DispatcherTimer timer = new DispatcherTimer();
             timer.Interval = TimeSpan.FromSeconds(0.25);
@@ -34,9 +34,12 @@ namespace unload
                 Close();
             }
 
-            label.Content = $"{text}: {currentTask} / {totalTasks}";
+            SetProgress();
+        }
 
-            double percentage = (double)currentTask / (double)totalTasks * 100d;
+        private void SetProgress()
+        {
+            label.Content = $"{text}: {percentage}%";
             progressBar.Value = percentage;
         }
 

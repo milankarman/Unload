@@ -1,17 +1,18 @@
 ﻿using System;
 using System.IO;
-using System.Collections.Generic;
+using System.Linq;
 using System.Drawing;
 using System.Windows;
 using System.Threading;
 using System.Windows.Controls;
 using System.Globalization;
 using System.Windows.Input;
+using System.Collections.Generic;
 using System.Windows.Media.Imaging;
 using System.Text.RegularExpressions;
 using Microsoft.Win32;
 using Shipwreck.Phash;
-using FFMpegCore;
+using Xabe.FFmpeg;
 
 namespace unload
 {
@@ -31,12 +32,11 @@ namespace unload
 
             try
             {
-                FFMPEG.InitFFMPEGCore();
+                VideoProcessor.SetFFMpegPath();
             }
             catch
             {
-                MessageBox.Show("Failed to initialize FFMpeg. Make sure to download FFMpeg and extract ffmpeg, ffprobe and ffplay executables into the Resources folder of this application.");
-
+                MessageBox.Show("Failed to initialize FFMpeg. Make sure ffmpeg.exe and ffprobe.exe are located in the ffmpeg folder of this application.");
                 Application.Current.Shutdown();
             }
 
@@ -63,14 +63,51 @@ namespace unload
                     Directory.CreateDirectory(targetDirectory);
                 }
 
-                FFMPEG.ConvertToImageSequence(dialog.FileName, targetDirectory);
+                ProgressWindow progress = new ProgressWindow("Converting Video");
+                progress.Owner = this;
+                progress.Show();
 
-                txtFPS.Text = FFProbe.Analyse(dialog.FileName).PrimaryVideoStream.FrameRate.ToString();
-                LoadFolder(targetDirectory);
+                IsEnabled = false;
+
+                Thread thread = new Thread(async () =>
+                {
+                    try
+                    {
+                        await VideoProcessor.ConvertToImageSequence(dialog.FileName, targetDirectory, progress.cts, (percent) =>
+                        {
+                            progress.percentage = percent;
+                        });
+
+                        await Dispatcher.Invoke(async () =>
+                        {
+                            IMediaInfo info = await FFmpeg.GetMediaInfo(dialog.FileName);
+                            txtFPS.Text = info.VideoStreams.First()?.Framerate.ToString();
+                            LoadFolder(targetDirectory);
+                        });
+                
+                    }
+                    catch (OperationCanceledException) { }
+                    finally
+                    {
+                        progress.cts.Dispose();
+
+                        Dispatcher.Invoke(() =>
+                        {
+                            IsEnabled = true;
+                        });
+                    }
+                })
+                {
+                    IsBackground = true
+                };
+
+                thread.Start();
+
+
             }
         }
 
-        private void btnLoad_Click(object sender, RoutedEventArgs e)
+        private async void btnLoad_Click(object sender, RoutedEventArgs e)
         {
             OpenFileDialog dialog = new OpenFileDialog();
 
@@ -84,7 +121,8 @@ namespace unload
                     return;
                 }
 
-                txtFPS.Text = FFProbe.Analyse(dialog.FileName).PrimaryVideoStream.FrameRate.ToString();
+                IMediaInfo info = await FFmpeg.GetMediaInfo(dialog.FileName);
+                txtFPS.Text = info.VideoStreams.First()?.Framerate.ToString();
                 LoadFolder(targetDirectory);
             }
         }
@@ -201,7 +239,7 @@ namespace unload
             int concurrentTasks = int.Parse(txtConcurrentTasks.Text);
             Rectangle crop = CropSlidersToRectangle();
 
-            ProgressWindow progress = new ProgressWindow("Indexing Frame Hashes", endFrame - startFrame);
+            ProgressWindow progress = new ProgressWindow("Indexing Frame Hashes");
             progress.Owner = this;
             progress.Show();
 
@@ -211,9 +249,13 @@ namespace unload
             {
                 try
                 {
+                    int doneFrames = 0;
+
                     hashedFrames = ImageProcessor.CropAndPhashFolder(workingDirectory, crop, startFrame, endFrame, concurrentTasks, progress.cts, () =>
                     {
-                        progress.currentTask += 1;
+                        doneFrames += 1;
+                        double percentage = doneFrames / endFrame * 100;
+                        progress.percentage = percentage;
                     });
 
                     progress.finished = true;
