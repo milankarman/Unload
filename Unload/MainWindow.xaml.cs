@@ -41,7 +41,8 @@ namespace unload
             }
             catch
             {
-                MessageBox.Show("Failed to initialize FFMpeg. Make sure ffmpeg.exe and ffprobe.exe are located in the ffmpeg folder of this application.");
+                string message = "Failed to initialize FFMpeg. Make sure ffmpeg.exe and ffprobe.exe are located in the ffmpeg folder of this application.";
+                MessageBox.Show(message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 Application.Current.Shutdown();
             }
 
@@ -89,12 +90,10 @@ namespace unload
                             progress.percentage = percent;
                         });
 
-                        // When done update the interface and load in the files
-                        await Dispatcher.Invoke(async () =>
+                        // When done load in the files
+                        Dispatcher.Invoke(() =>
                         {
-                            IMediaInfo info = await FFmpeg.GetMediaInfo(dialog.FileName);
-                            txtFPS.Text = info.VideoStreams.First()?.Framerate.ToString();
-                            LoadFolder(targetDirectory);
+                            LoadFolder(dialog.FileName, targetDirectory);
                         });
 
                     }
@@ -102,7 +101,6 @@ namespace unload
                     finally
                     {
                         // Dispose our now unneeded cancellation token and re-enable the main window
-
                         progress.cts.Dispose();
                         Dispatcher.Invoke(() =>
                         {
@@ -121,7 +119,7 @@ namespace unload
         }
 
         // Checks if the video file has been converted, if so it loads it
-        private async void btnLoad_Click(object sender, RoutedEventArgs e)
+        private void btnLoad_Click(object sender, RoutedEventArgs e)
         {
             OpenFileDialog dialog = new OpenFileDialog();
 
@@ -132,24 +130,35 @@ namespace unload
 
                 if (!Directory.Exists(targetDirectory))
                 {
-                    MessageBox.Show("No _frames folder accompanying this video found. Convert the video first.");
+                    MessageBox.Show("No _frames folder accompanying this video found. Convert the video first.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                     return;
                 }
 
-                // Get the video framerate
-                IMediaInfo info = await FFmpeg.GetMediaInfo(dialog.FileName);
-                txtFPS.Text = info.VideoStreams.First()?.Framerate.ToString();
-
-                LoadFolder(targetDirectory);
+                LoadFolder(dialog.FileName, targetDirectory);
             }
         }
 
         // Prepares an image sequence and resets the application state
-        private void LoadFolder(string dir)
+        private async void LoadFolder(string file, string dir)
         {
             workingDirectory = dir;
             totalVideoFrames = Directory.GetFiles(dir, "*.jpg").Length;
 
+            // Get the video framerate
+            IMediaInfo info = await FFmpeg.GetMediaInfo(file);
+
+            double framerate = info.VideoStreams.First().Framerate;
+            TimeSpan duration = info.VideoStreams.First().Duration;
+            int expectedFrames = (int)(duration.TotalSeconds * framerate) - 1;
+
+            // Check if the same amount of converted images are found as the video has frames
+            if (totalVideoFrames < expectedFrames)
+            {
+                string message = "Warning, fewer converted frames are found than expected. If you run into issues try converting the video again.";
+                MessageBox.Show(message, "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
+
+            txtFPS.Text = framerate.ToString();
             txtStartFrame.Text = "1";
             txtStartFrame.IsEnabled = true;
             txtEndFrame.Text = totalVideoFrames.ToString();
@@ -260,9 +269,7 @@ namespace unload
             // Warn the user on the length of this process
             string text = "This will start the long and intense process of hashing every frame from start to end using the specified cropping." + Environment.NewLine + Environment.NewLine +
                 "Make sure your start frame, end frame and load image are set properly before doing this, to change these you will have the clear the hash.";
-            string caption = "Info";
-
-            MessageBoxResult result = MessageBox.Show(text, caption, MessageBoxButton.YesNo, MessageBoxImage.Information);
+            MessageBoxResult result = MessageBox.Show(text, "Info", MessageBoxButton.YesNo, MessageBoxImage.Information);
 
             if (result == MessageBoxResult.No)
             {
@@ -338,9 +345,7 @@ namespace unload
         {
             // Warn user of the consequences of this action
             string text = "Doing this will require the frame hashes to be indexed again. Are you sure?";
-            string caption = "Info";
-
-            MessageBoxResult result = MessageBox.Show(text, caption, MessageBoxButton.YesNo, MessageBoxImage.Information);
+            MessageBoxResult result = MessageBox.Show(text, "Info", MessageBoxButton.YesNo, MessageBoxImage.Information);
 
             if (result == MessageBoxResult.Yes)
             {
