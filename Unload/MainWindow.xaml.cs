@@ -142,7 +142,6 @@ namespace unload
         private async void LoadFolder(string file, string dir)
         {
             workingDirectory = dir;
-            totalVideoFrames = Directory.GetFiles(dir, "*.jpg").Length;
 
             // Get the video framerate
             IMediaInfo info = await FFmpeg.GetMediaInfo(file);
@@ -152,10 +151,16 @@ namespace unload
             int expectedFrames = (int)(duration.TotalSeconds * framerate) - 1;
 
             // Check if the same amount of converted images are found as the video has frames
-            if (totalVideoFrames < expectedFrames)
+            if (File.Exists(expectedFrames + ".jpg"))
+            {
+                totalVideoFrames = expectedFrames;
+            }
+            else
             {
                 string message = "Warning, fewer converted frames are found than expected. If you run into issues try converting the video again.";
                 MessageBox.Show(message, "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+
+                totalVideoFrames = Directory.GetFiles(dir, "*.jpg").Length;
             }
 
             txtFPS.Text = framerate.ToString();
