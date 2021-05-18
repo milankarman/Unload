@@ -18,18 +18,23 @@ namespace unload
 {
     public partial class MainWindow : Window
     {
+        // Keeps the directory of frames being used
         string workingDirectory = string.Empty;
 
         int totalVideoFrames = 0;
         int pickedLoadingFrame = 0;
 
+        // Dictionary to keep hashed frames for quick comparison against multiple similarities
         Dictionary<int, Digest> hashedFrames = null;
+
+        // List to keep every tick the timeline slider will snap to such as loading screens
         List<int> sliderTicks = new List<int>();
 
         public MainWindow()
         {
             InitializeComponent();
 
+            // Confirm FFmpeg is available
             try
             {
                 VideoProcessor.SetFFMpegPath();
@@ -40,6 +45,7 @@ namespace unload
                 Application.Current.Shutdown();
             }
 
+            // Set initial interface state
             groupPickLoad.IsEnabled = false;
             groupVideo.IsEnabled = false;
             groupVideoControls.IsEnabled = false;
@@ -50,51 +56,60 @@ namespace unload
             cbxSnapLoads.IsEnabled = false;
         }
 
+        // Prompts the user for a file to convert and attempts to convert it
         private void btnConvert_Click(object sender, RoutedEventArgs e)
         {
             OpenFileDialog dialog = new OpenFileDialog();
 
             if (dialog.ShowDialog() == true)
             {
-                string targetDirectory = dialog.FileName + "_frames";
+                // Create _frames folder to store the image sequence, ommiting illegal symbols
+                string targetDirectory = RemoveSymbols(dialog.FileName) + "_frames";
 
                 if (!Directory.Exists(targetDirectory))
                 {
                     Directory.CreateDirectory(targetDirectory);
                 }
 
-                ProgressWindow progress = new ProgressWindow("Converting Video");
+                // Show a progress window and disable the main window
+                ProgressWindow progress = new ProgressWindow("Converting video");
                 progress.Owner = this;
                 progress.Show();
 
                 IsEnabled = false;
 
+                // Attempt to run the convertion in a new background thread
                 Thread thread = new Thread(async () =>
                 {
                     try
                     {
                         await VideoProcessor.ConvertToImageSequence(dialog.FileName, targetDirectory, progress.cts, (percent) =>
                         {
+                            // Update the progress windows
                             progress.percentage = percent;
                         });
 
+                        // When done update the interface and load in the files
                         await Dispatcher.Invoke(async () =>
                         {
                             IMediaInfo info = await FFmpeg.GetMediaInfo(dialog.FileName);
                             txtFPS.Text = info.VideoStreams.First()?.Framerate.ToString();
                             LoadFolder(targetDirectory);
                         });
-                
+
                     }
                     catch (OperationCanceledException) { }
                     finally
                     {
-                        progress.cts.Dispose();
+                        // Dispose our now unneeded cancellation token and re-enable the main window
 
+                        progress.cts.Dispose();
                         Dispatcher.Invoke(() =>
                         {
                             IsEnabled = true;
+                            progress.Close();
                         });
+
                     }
                 })
                 {
@@ -102,18 +117,18 @@ namespace unload
                 };
 
                 thread.Start();
-
-
             }
         }
 
+        // Checks if the video file has been converted, if so it loads it
         private async void btnLoad_Click(object sender, RoutedEventArgs e)
         {
             OpenFileDialog dialog = new OpenFileDialog();
 
             if (dialog.ShowDialog() == true)
             {
-                string targetDirectory = dialog.FileName + "_frames";
+                // Remove symbols from path and append _frames
+                string targetDirectory = RemoveSymbols(dialog.FileName) + "_frames";
 
                 if (!Directory.Exists(targetDirectory))
                 {
@@ -121,12 +136,15 @@ namespace unload
                     return;
                 }
 
+                // Get the video framerate
                 IMediaInfo info = await FFmpeg.GetMediaInfo(dialog.FileName);
                 txtFPS.Text = info.VideoStreams.First()?.Framerate.ToString();
+
                 LoadFolder(targetDirectory);
             }
         }
 
+        // Prepares an image sequence and resets the application state
         private void LoadFolder(string dir)
         {
             workingDirectory = dir;
@@ -166,27 +184,39 @@ namespace unload
             SetVideoFrame(1);
         }
 
+        // Removes symbols that conflict with FFmpeg arguments
+        private string RemoveSymbols(string path)
+        {
+            return Regex.Replace(path, @"[^0-9a-zA-Z\/\\:]+", ""); ;
+        }
+
+        // Update our video preview when moving the slider
         private void sliderTimeline_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
             SetVideoFrame((int)sliderTimeline.Value);
         }
 
+        // Loads in a given frame in the video preview
         private void SetVideoFrame(int frame)
         {
+            // Ensure the requested frame should exist
             if (frame <= 0 || frame > totalVideoFrames)
             {
                 return;
             }
 
+            // Set the video frame and update the interface
             Uri image = new Uri(Path.Join(workingDirectory, $"{frame}.jpg"));
-            txtFrame.Text = frame.ToString(); ;
             imageVideo.Source = new BitmapImage(image);
 
+            txtFrame.Text = frame.ToString();
             txtSimilarity.IsEnabled = true;
         }
 
+        // Update the cropping of the selected load screen when the cropping sliders change
         private void slidersCropping_OnValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
+            // Ensure a load frame is picked beforehand
             if (pickedLoadingFrame <= 0)
             {
                 return;
@@ -195,6 +225,7 @@ namespace unload
             UpdateCropPreview();
         }
 
+        // Update interface and cropping preview when the user selects a load frame
         private void btnPickLoadFrame_Click(object sender, RoutedEventArgs e)
         {
             btnIndexFrameHashes.IsEnabled = true;
@@ -208,8 +239,10 @@ namespace unload
             UpdateCropPreview();
         }
 
+        // Notifies the user of the similarity between the selected load frame and the current previewed frame
         private void btnCheckSimilarity_Click(object sender, RoutedEventArgs e)
         {
+            // Load snd crop the loading screen and current frame
             Rectangle crop = CropSlidersToRectangle();
 
             Bitmap loadFrame = new Bitmap(Path.Join(workingDirectory, $"{pickedLoadingFrame}.jpg"));
@@ -221,8 +254,10 @@ namespace unload
             MessageBox.Show($"Similarity: {ImageProcessor.CompareBitmapPhash(loadFrame, currentFrame)}");
         }
 
+        // Hashes every frame into a dictionary so similarity can be quickly checked and adjust without having to hash again.
         private void btnIndexFrameHashes_Click(object sender, RoutedEventArgs e)
         {
+            // Warn the user on the length of this process
             string text = "This will start the long and intense process of hashing every frame from start to end using the specified cropping." + Environment.NewLine + Environment.NewLine +
                 "Make sure your start frame, end frame and load image are set properly before doing this, to change these you will have the clear the hash.";
             string caption = "Info";
@@ -234,17 +269,22 @@ namespace unload
                 return;
             }
 
+            // Read user defined arguments
             int startFrame = int.Parse(txtStartFrame.Text);
             int endFrame = int.Parse(txtEndFrame.Text);
             int concurrentTasks = int.Parse(txtConcurrentTasks.Text);
+
             Rectangle crop = CropSlidersToRectangle();
 
+            // Create a new progress window to track progress
             ProgressWindow progress = new ProgressWindow("Indexing Frame Hashes");
             progress.Owner = this;
             progress.Show();
 
+            // Disable the main window
             IsEnabled = false;
 
+            // Attempt to hash every frame in a new thread
             Thread thread = new Thread(() =>
             {
                 try
@@ -253,19 +293,37 @@ namespace unload
 
                     hashedFrames = ImageProcessor.CropAndPhashFolder(workingDirectory, crop, startFrame, endFrame, concurrentTasks, progress.cts, () =>
                     {
+                        // Notify the progress window when a new frame is hashed
                         doneFrames += 1;
                         double percentage = doneFrames / endFrame * 100;
                         progress.percentage = percentage;
                     });
 
-                    progress.finished = true;
-                    Dispatcher.Invoke(() => FinishIndexingFrameHashes());
+                    // Enable new options when frame hashing succeeds
+                    Dispatcher.Invoke(() =>
+                    {
+                        groupPickLoad.IsEnabled = false;
+                        txtStartFrame.IsEnabled = false;
+                        txtEndFrame.IsEnabled = false;
+
+                        btnSetEnd.IsEnabled = false;
+                        btnSetStart.IsEnabled = false;
+                        btnIndexFrameHashes.IsEnabled = false;
+
+                        btnDetectLoadFrames.IsEnabled = true;
+                        btnClearFrameHashes.IsEnabled = true;
+                    });
                 }
                 catch (OperationCanceledException) { }
                 finally
                 {
+                    // Dispose our now unneeded cancellation token and re-enable the main window even if hashing failed
                     progress.cts.Dispose();
-                    Dispatcher.Invoke(() => IsEnabled = true);
+                    Dispatcher.Invoke(() =>
+                    {
+                        IsEnabled = true;
+                        progress.Close();
+                    });
                 }
             })
             {
@@ -275,22 +333,10 @@ namespace unload
             thread.Start();
         }
 
-        private void FinishIndexingFrameHashes()
-        {
-            groupPickLoad.IsEnabled = false;
-            txtStartFrame.IsEnabled = false;
-            txtEndFrame.IsEnabled = false;
-
-            btnSetEnd.IsEnabled = false;
-            btnSetStart.IsEnabled = false;
-            btnIndexFrameHashes.IsEnabled = false;
-
-            btnDetectLoadFrames.IsEnabled = true;
-            btnClearFrameHashes.IsEnabled = true;
-        }
-
+        // Clears the frame hash dictionairy and reenables load screen picking
         private void btnClearFrameHashes_Click(object sender, RoutedEventArgs e)
         {
+            // Warn user of the consequences of this action
             string text = "Doing this will require the frame hashes to be indexed again. Are you sure?";
             string caption = "Info";
 
@@ -298,6 +344,7 @@ namespace unload
 
             if (result == MessageBoxResult.Yes)
             {
+                // Clear dictionairy and update interface states
                 hashedFrames = null;
                 lbxLoads.Items.Clear();
                 sliderTimeline.Ticks.Clear();
@@ -322,21 +369,26 @@ namespace unload
             }
         }
 
+        // Compares the hashed frames against the picked loading screen and counts frames above the specified similarity as load frames
         private void btnDetectLoadFrames_Click(object sender, RoutedEventArgs e)
         {
+            // Reset the listbox and add headers
             lbxLoads.Items.Clear();
             lbxLoads.Items.Add($"#\tFirst\tLast\tTotal");
 
+            // Read user arguments
             int startFrame = int.Parse(txtStartFrame.Text);
             int endFrame = int.Parse(txtEndFrame.Text);
             int concurrentTasks = int.Parse(txtConcurrentTasks.Text);
 
             double minSimilarity = double.Parse(txtSimilarity.Text, CultureInfo.InvariantCulture);
 
+            // Process the user's picked loading frame
             Bitmap loadFrame = new Bitmap(Path.Join(workingDirectory, $"{pickedLoadingFrame}.jpg"));
             Rectangle cropPercentage = CropSlidersToRectangle();
             loadFrame = ImageProcessor.CropImage(loadFrame, cropPercentage);
 
+            // Store the similarity of all frames and store this in another dictionary
             Dictionary<int, float> frameSimilarities = ImageProcessor.GetHashDictSimilarity(hashedFrames, loadFrame, concurrentTasks);
 
             int loadScreenCounter = 0;
@@ -345,12 +397,14 @@ namespace unload
             int currentLoadStartFrame = 0;
             bool subsequentLoadFrame = false;
 
+            // Check every frame similarity against the minimum similarity and list them as loads
             for (int i = startFrame; i < endFrame; i++)
             {
                 if (frameSimilarities[i] > minSimilarity && i < endFrame)
                 {
                     loadFrameCounter += 1;
 
+                    // If the previous frame wasn't a load frame then mark this as a new loading screen
                     if (!subsequentLoadFrame)
                     {
                         loadScreenCounter += 1;
@@ -360,37 +414,46 @@ namespace unload
                 }
                 else
                 {
+                    // If the previous frame was a load frame but this isn't then write previous load frames as a single loading screen
                     if (subsequentLoadFrame)
                     {
+                        // Print out loading screen number, start and end frame - and total frames
                         lbxLoads.Items.Add($"{loadScreenCounter}\t{currentLoadStartFrame}\t{i - 1}\t{i - currentLoadStartFrame}");
 
+                        // Save screen start and end to snap the timeline slider to later
                         sliderTicks.Add(currentLoadStartFrame);
                         sliderTicks.Add(i - 1);
+
                         subsequentLoadFrame = false;
                         currentLoadStartFrame = 0;
                     }
                 }
             }
 
+            // Save start frame, end frame, first frame and last frame to snap the timeline slider to later
             sliderTicks.Add(startFrame);
             sliderTicks.Add(1);
             sliderTicks.Add(endFrame);
             sliderTicks.Add(totalVideoFrames);
 
+            // Update the interface
             txtLoadFrames.Text = loadFrameCounter.ToString();
             btnDetectLoadFrames.IsEnabled = true;
             cbxSnapLoads.IsEnabled = true;
             groupDetectedLoads.IsEnabled = true;
 
+            // Set the timeline ticks and calculate the final times
             SetTimelineTicks();
             CalculateTimes();
         }
 
+        // Calculates the final times
         private void btnCalcTimes_Click(object sender, RoutedEventArgs e)
         {
             CalculateTimes();
         }
 
+        // Verifies user input is correct and returns the total (with loads) time formatted as a string
         private string GetTotalTimeString()
         {
             if (!IsValidFramedata())
@@ -419,6 +482,7 @@ namespace unload
             return $"{timeWithLoads.ToString(@"hh\:mm\:ss")}.{Math.Round(totalMilliseconds * 1000, 0)}";
         }
 
+        // Verifies user input is correct and returns the loadless time formatted as a string
         private string GetLoadlessTimeString()
         {
             if (!IsValidFramedata())
@@ -448,6 +512,7 @@ namespace unload
             return $"{timeWithoutLoads.ToString(@"hh\:mm\:ss")}.{Math.Round(loadlessMilliseconds * 1000, 0)}";
         }
 
+        // Checks if all required fields for frame counting are filled in
         public bool IsValidFramedata()
         {
             if (string.IsNullOrEmpty(txtFPS.Text) || string.IsNullOrEmpty(txtEndFrame.Text) || string.IsNullOrEmpty(txtStartFrame.Text) || string.IsNullOrEmpty(txtLoadFrames.Text))
@@ -458,6 +523,7 @@ namespace unload
             return true;
         }
 
+        // Calculates the final times and adds them to the interface
         private void CalculateTimes()
         {
             txtTimeOutput.Text = "Time without loads:" + Environment.NewLine;
@@ -466,22 +532,23 @@ namespace unload
             txtTimeOutput.Text += "Time with loads:" + Environment.NewLine;
             txtTimeOutput.Text += GetTotalTimeString();
 
+            // Enable the export button when times are calculated
             btnExportTimes.IsEnabled = true;
         }
 
+        // Move the video preview to the selected loading screen
         private void lbxLoads_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (lbxLoads.SelectedItem != null && lbxLoads.SelectedIndex > 0)
             {
-                int frame = 0;
-
-                frame = int.Parse(lbxLoads.SelectedItem.ToString().Split("\t")[1]);
+                int frame = int.Parse(lbxLoads.SelectedItem.ToString().Split("\t")[1]);
 
                 sliderTimeline.Value = frame;
                 SetVideoFrame(frame);
             }
         }
 
+        // Move the timeline back 0.25 seconds
         private void btnBackFar_Click(object sender, RoutedEventArgs e)
         {
             sliderTimeline.Value -= (int)Math.Round(int.Parse(txtFPS.Text) / 4d);
@@ -489,6 +556,7 @@ namespace unload
             SetVideoFrame((int)sliderTimeline.Value);
         }
 
+        // Move the timeline back 1 frame
         private void btnBack_Click(object sender, RoutedEventArgs e)
         {
             sliderTimeline.Value -= 1;
@@ -496,6 +564,7 @@ namespace unload
             SetVideoFrame((int)sliderTimeline.Value);
         }
 
+        // Move the timeline forward 0.25 seconds
         private void btnForwardFar_Click(object sender, RoutedEventArgs e)
         {
             sliderTimeline.Value += 1;
@@ -503,6 +572,7 @@ namespace unload
             SetVideoFrame((int)sliderTimeline.Value);
         }
 
+        // Move the timeline forward 1 frame
         private void btnForward_Click(object sender, RoutedEventArgs e)
         {
             sliderTimeline.Value += (int)Math.Round(int.Parse(txtFPS.Text) / 4d);
@@ -510,16 +580,19 @@ namespace unload
             SetVideoFrame((int)sliderTimeline.Value);
         }
 
+        // Mark the current video preview frame as the start frame for timing
         private void btnSetStart_Click(object sender, RoutedEventArgs e)
         {
             txtStartFrame.Text = sliderTimeline.Value.ToString();
         }
 
+        // Mark the current video preivew frame as the end frame for timing
         private void btnSetEnd_Click(object sender, RoutedEventArgs e)
         {
             txtEndFrame.Text = sliderTimeline.Value.ToString();
         }
 
+        // Applies cropping to the picked load screen and shows it on the interface
         private void UpdateCropPreview()
         {
             Bitmap image = new Bitmap(Path.Join(workingDirectory, $"{pickedLoadingFrame}.jpg"));
@@ -527,6 +600,7 @@ namespace unload
             imageLoadFrame.Source = ImageProcessor.BitmapToBitmapImage(croppedImage);
         }
 
+        // Reads cropping slider values and returns them in a rectangle class
         private Rectangle CropSlidersToRectangle()
         {
             Rectangle cropPercentage = new Rectangle();
@@ -539,13 +613,16 @@ namespace unload
             return cropPercentage;
         }
 
+        // Moves the timeline and updates the video preview to the frame the user entered
         private void txtFrame_TextChanged(object sender, EventArgs e)
         {
+            // Ensure this action is not attempted when no frames are loaded
             if (totalVideoFrames <= 0)
             {
                 return;
             }
 
+            // Limit the selected frame to frames that exist
             int frame = 1;
 
             if (!string.IsNullOrEmpty(txtFrame.Text))
@@ -553,12 +630,14 @@ namespace unload
                 frame = Math.Clamp(int.Parse(txtFrame.Text), 1, totalVideoFrames);
             }
 
+            // Update the interface
             sliderTimeline.Value = frame;
             txtFrame.Text = frame.ToString();
 
             SetVideoFrame(frame);
         }
 
+        // Exports the frame count and load times ranges to a CSV file
         private void btnExportTimes_Click(object sender, RoutedEventArgs e)
         {
             SaveFileDialog dialog = new SaveFileDialog();
@@ -568,6 +647,7 @@ namespace unload
             {
                 string path = dialog.FileName;
 
+                // Read all load screens into to write to file
                 List<string> lines = new List<string>();
 
                 foreach (string loadString in lbxLoads.Items)
@@ -575,15 +655,17 @@ namespace unload
                     lines.Add(loadString.Replace('\t', ','));
                 }
 
+                // Add final times into list to write to file
                 lines.Add("");
                 lines.Add($"Time without loads,{GetLoadlessTimeString()}");
                 lines.Add($"Time with loads,{GetTotalTimeString()}");
 
-
+                // Write all lines to file
                 File.WriteAllLinesAsync(path, lines);
             }
         }
 
+        // Checks if the user wants the timeline to snap to loads and makes it happen
         private void SetTimelineTicks()
         {
             sliderTimeline.Ticks.Clear();
@@ -597,28 +679,33 @@ namespace unload
             }
         }
 
+        // When applied to a text box this prevents anything other than a round number to be entered
         private void IntegerValidationTextBox(object sender, TextCompositionEventArgs e)
         {
             Regex regex = new Regex("[^0-9]+");
             e.Handled = regex.IsMatch(e.Text);
         }
 
+        // When applied to a text box this prevents anything other than any number to be entered
         private void DoubleValidationTextBox(object sender, TextCompositionEventArgs e)
         {
             Regex regex = new Regex("[^0-9.]+");
             e.Handled = regex.IsMatch(e.Text);
         }
 
+        // Ensures every thread is shut down when the main window closes
         private void Window_Closed(object sender, EventArgs e)
         {
             Application.Current.Shutdown();
         }
 
+        // Toggles snapping the timeline to load frames
         private void cbxSnapLoads_Checked(object sender, RoutedEventArgs e)
         {
             SetTimelineTicks();
         }
 
+        // Toggles snapping the timeline to load frames
         private void cbxSnapLoads_Unchecked(object sender, RoutedEventArgs e)
         {
             SetTimelineTicks();
