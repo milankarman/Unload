@@ -277,7 +277,7 @@ namespace unload
             Rectangle crop = CropSlidersToRectangle();
 
             // Create a new progress window to track progress
-            ProgressWindow progress = new ProgressWindow("Indexing Frame Hashes");
+            ProgressWindow progress = new ProgressWindow("Indexing frame hashes");
             progress.Owner = this;
             progress.Show();
 
@@ -295,7 +295,7 @@ namespace unload
                     {
                         // Notify the progress window when a new frame is hashed
                         doneFrames += 1;
-                        double percentage = doneFrames / endFrame * 100;
+                        double percentage = (double)doneFrames / (double)endFrame * 100d;
                         progress.percentage = percentage;
                     });
 
