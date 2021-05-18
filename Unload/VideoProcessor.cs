@@ -32,7 +32,8 @@ namespace unload
             // Prepares for converting every video frame to an image
             IConversion conversion = FFmpeg.Conversions.New()
                 .AddStream(videoStream)
-                .ExtractEveryNthFrame(1, outputFileNameBuilder);
+                .ExtractEveryNthFrame(1, outputFileNameBuilder)
+                .AddParameter("-q:v 3");
 
             // Notifies the calling location on the progress of converting
             conversion.OnProgress += (sender, args) =>
