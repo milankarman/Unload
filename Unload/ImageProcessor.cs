@@ -14,6 +14,7 @@ namespace unload
 {
     public static class ImageProcessor
     {
+        // Hashes bitmap images and returns their similarity using Phash
         public static float CompareBitmapPhash(Bitmap image1, Bitmap image2)
         {
             Digest hash1 = ImagePhash.ComputeDigest(image1.ToLuminanceImage());
@@ -24,18 +25,23 @@ namespace unload
             return score;
         }
 
+        // Applies cropping and hashes all frames in range in a folder and returns the hashes in a dictionary
         public static Dictionary<int, Digest> CropAndPhashFolder(string path, Rectangle cropPercentage, int startFrame, int endFrame, int concurrentTasks, CancellationTokenSource cts, Action onProgress)
         {
             ConcurrentDictionary<int, Digest> frameHashes = new ConcurrentDictionary<int, Digest>();
 
+            // Hashes frames in parallel to the max amount of concurrent tasks the user defined. Holds a cancellation token so it can be stopped
             Parallel.For(startFrame, endFrame, new ParallelOptions { MaxDegreeOfParallelism = concurrentTasks, CancellationToken = cts.Token }, i =>
             {
+                // Crops and hashes the current frame
                 Bitmap currentFrame = new Bitmap(Path.Join(path, $"{i}.jpg"));
                 currentFrame = CropImage(currentFrame, cropPercentage);
                 Digest currentFrameHash = ImagePhash.ComputeDigest(currentFrame.ToLuminanceImage());
 
+                // Stores the hash at the frame number
                 frameHashes[i] = currentFrameHash;
 
+                // Clears the current frame from memory and notifies the caller of its progress
                 currentFrame.Dispose();
                 onProgress();
             });
@@ -43,12 +49,15 @@ namespace unload
             return new Dictionary<int, Digest>(frameHashes);
         }
 
+        // Compares an entire dictiory against a single image and returns a dictionary of similarity
         public static Dictionary<int, float> GetHashDictSimilarity(Dictionary<int, Digest> hashDict, Bitmap reference, int concurrentTasks)
         {
+            // Calculated hash of reference image
             Digest referenceHash = ImagePhash.ComputeDigest(reference.ToLuminanceImage());
 
             ConcurrentDictionary<int, float> frameSimilarities = new ConcurrentDictionary<int, float>();
 
+            // Gets similarity of all frames in parallel
             Parallel.ForEach(hashDict, new ParallelOptions { MaxDegreeOfParallelism = concurrentTasks }, hash =>
             {
                 float score = ImagePhash.GetCrossCorrelation(hash.Value, referenceHash);
@@ -58,17 +67,19 @@ namespace unload
             return new Dictionary<int, float>(frameSimilarities);
         }
 
+        // Crops an image to by given percentages
         public static Bitmap CropImage(Image source, Rectangle cropPercentages)
         {
             Rectangle crop = new Rectangle();
 
+            // Converts crop values to pixels
             crop.X = (int)Math.Round(cropPercentages.X / 100d * source.Width);
             crop.Y = (int)Math.Round(cropPercentages.Y / 100d * source.Height);
             crop.Width = (int)Math.Round(cropPercentages.Width / 100d * source.Width);
             crop.Height = (int)Math.Round(cropPercentages.Height / 100d * source.Height);
 
+            // Draws old image on a new image cropped to the right size
             Bitmap bitmap = new Bitmap(crop.Width, crop.Height);
-
             using (Graphics graphics = Graphics.FromImage(bitmap))
             {
                 graphics.DrawImage(source, new Rectangle(0, 0, bitmap.Width, bitmap.Height), crop, GraphicsUnit.Pixel);
@@ -77,6 +88,7 @@ namespace unload
             return bitmap;
         }
 
+        // Converts a bitmap to a bitmap image that can be displayed on the interface
         public static BitmapImage BitmapToBitmapImage(this Bitmap bitmap)
         {
             using (var memory = new MemoryStream())

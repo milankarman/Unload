@@ -7,16 +7,18 @@ namespace unload
 {
     public partial class ProgressWindow : Window
     {
+        // Keeps track of the progress percentage
         public double percentage = 0;
-        public bool finished = false;
+
+        // Holds a cancellation token for the process this progress window is linked to
         public CancellationTokenSource cts = new CancellationTokenSource();
 
         private string text = string.Empty;
 
+        // Initalizes progress window and starts the timer to check for progress
         public ProgressWindow(string _text)
         {
             InitializeComponent();
-
             text = _text;
 
             SetProgress();
@@ -27,22 +29,20 @@ namespace unload
             timer.Start();
         }
 
+        // Updates the progress every timer tick
         public void timer_Tick(object sender, EventArgs e)
         {
-            if (finished)
-            {
-                Close();
-            }
-
             SetProgress();
         }
 
+        // Shows the user the percentage of progress
         private void SetProgress()
         {
-            label.Content = $"{text}: {percentage}%";
+            label.Content = $"{text}: {percentage.ToString("N2")}%";
             progressBar.Value = percentage;
         }
 
+        // Calls for a cancel on the cancellation token and closes the progress window when the user hits cancel 
         private void buttonCancel_Click(object sender, RoutedEventArgs e)
         {
             cts.Cancel();
