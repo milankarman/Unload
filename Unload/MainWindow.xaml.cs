@@ -151,7 +151,7 @@ namespace unload
             int expectedFrames = (int)(duration.TotalSeconds * framerate) - 1;
 
             // Check if the same amount of converted images are found as the video has frames
-            if (File.Exists(expectedFrames + ".jpg"))
+            if (File.Exists(Path.Join(dir, expectedFrames.ToString() + ".jpg")))
             {
                 totalVideoFrames = expectedFrames;
             }
