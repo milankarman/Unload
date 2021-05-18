@@ -71,13 +71,14 @@ Unfortunately Unload will likely only ever be available for Windows. Please don'
 
 To answer this you'll have to look at how your game looks when it loads:
 
-- If your loading screens contain a logo, image or anything that's distinct, and there on every load screen then there's a great chance Unload can detect it.
+- If your loading screens contain a logo, image or anything that's distinct on every load screen then there's a great chance Unload can detect it.
 
-- If you have a distinct point, but it moves around with animations, you might be out of luck because Unload expects it to always be in the same spot.
+- If your loading screens are pure black screens, Unload *could* work but you would have to be careful that no non-loading black screens get picked up.
 
-- If your loading screens are pure black screens, Unload could work but you would have to be careful that no non-loading black screens get picked up.
+- If you have a distinct point, but its animated, you might be out of luck because Unload compares against a static image.
 
-- And if you're still not sure, there's no harm in trying.
+
+And if you're still not sure, there's no harm in trying.
 
 
 <p align="center">
