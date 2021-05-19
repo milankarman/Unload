@@ -1,12 +1,14 @@
 ﻿using System;
 using System.Threading;
 using System.Windows;
+using System.Windows.Shell;
 using System.Windows.Threading;
 
 namespace unload
 {
     public partial class ProgressWindow : Window
     {
+        private MainWindow mainWindow = null;
         // Keeps track of the progress percentage
         public double percentage = 0;
 
@@ -16,10 +18,12 @@ namespace unload
         private string text = string.Empty;
 
         // Initalizes progress window and starts the timer to check for progress
-        public ProgressWindow(string _text)
+        public ProgressWindow(string _text, MainWindow _mainWindow)
         {
             InitializeComponent();
             text = _text;
+            mainWindow = _mainWindow;
+            mainWindow.TaskbarItemInfo.ProgressState = TaskbarItemProgressState.Normal;
 
             SetProgress();
 
@@ -38,6 +42,7 @@ namespace unload
         // Shows the user the percentage of progress
         private void SetProgress()
         {
+            mainWindow.TaskbarItemInfo.ProgressValue = percentage / 100d;
             label.Content = $"{text}: {percentage.ToString("N2")}%";
             progressBar.Value = percentage;
         }
@@ -47,6 +52,11 @@ namespace unload
         {
             cts.Cancel();
             Close();
+        }
+
+        private void Window_Closed(object sender, EventArgs e)
+        {
+            mainWindow.TaskbarItemInfo.ProgressState = TaskbarItemProgressState.None;
         }
     }
 }

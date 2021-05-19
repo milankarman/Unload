@@ -338,7 +338,7 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="ListBox">
-                    <Grid Width="Auto" Height="Auto">
+                    <Grid Width="Auto" Height="Auto" Background="{DynamicResource secondaryDark}">
                         <ScrollViewer Focusable="false" IsTabStop="False" HorizontalScrollBarVisibility="Disabled">
                             <StackPanel IsItemsHost="true"/>
                         </ScrollViewer>

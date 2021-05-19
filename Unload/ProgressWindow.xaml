@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:unload"
         mc:Ignorable="d"
-        Title="Unload" Height="87" Width="360" ResizeMode="NoResize" ShowInTaskbar="False" WindowStyle="None" WindowStartupLocation="CenterOwner" Background="Transparent" AllowsTransparency="True">
+        Title="Unload" Height="87" Width="360" ResizeMode="NoResize" ShowInTaskbar="False" WindowStyle="None" WindowStartupLocation="CenterOwner" Background="Transparent" AllowsTransparency="True" Closed="Window_Closed">
     <Grid Margin="10,10,10,10" Background="{DynamicResource bgDark}">
         <Grid.Effect>
             <DropShadowEffect ShadowDepth="4" Direction="330" Opacity="0.5" BlurRadius="4"/>

@@ -73,7 +73,7 @@ namespace unload
                 }
 
                 // Show a progress window and disable the main window
-                ProgressWindow progress = new ProgressWindow("Converting video");
+                ProgressWindow progress = new ProgressWindow("Converting video", this);
                 progress.Owner = this;
                 progress.Show();
 
@@ -289,7 +289,7 @@ namespace unload
             Rectangle crop = CropSlidersToRectangle();
 
             // Create a new progress window to track progress
-            ProgressWindow progress = new ProgressWindow("Indexing frame hashes");
+            ProgressWindow progress = new ProgressWindow("Indexing frame hashes", this);
             progress.Owner = this;
             progress.Show();
 

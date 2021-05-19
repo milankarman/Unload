@@ -6,6 +6,8 @@
     <RootNamespace>unload</RootNamespace>
     <UseWPF>true</UseWPF>
     <ApplicationIcon>icon/icon.ico</ApplicationIcon>
+    <EnableNETAnalyzers>true</EnableNETAnalyzers>
+    <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
   </PropertyGroup>
 
   <ItemGroup>
