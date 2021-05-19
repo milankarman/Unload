@@ -28,7 +28,7 @@ namespace unload
         Dictionary<int, Digest> hashedFrames = null;
 
         // List to keep every tick the timeline slider will snap to such as loading screens
-        List<int> sliderTicks = new List<int>();
+        readonly List<int> sliderTicks = new List<int>();
 
         public MainWindow()
         {
@@ -73,8 +73,10 @@ namespace unload
                 }
 
                 // Show a progress window and disable the main window
-                ProgressWindow progress = new ProgressWindow("Converting video", this);
-                progress.Owner = this;
+                ProgressWindow progress = new ProgressWindow("Converting video", this)
+                {
+                    Owner = this
+                };
                 progress.Show();
 
                 IsEnabled = false;
@@ -199,7 +201,7 @@ namespace unload
         }
 
         // Removes symbols that conflict with FFmpeg arguments
-        private string RemoveSymbols(string path)
+        private static string RemoveSymbols(string path)
         {
             return Regex.Replace(path, @"[^0-9a-zA-Z\/\\:]+", ""); ;
         }
@@ -289,8 +291,10 @@ namespace unload
             Rectangle crop = CropSlidersToRectangle();
 
             // Create a new progress window to track progress
-            ProgressWindow progress = new ProgressWindow("Indexing frame hashes", this);
-            progress.Owner = this;
+            ProgressWindow progress = new ProgressWindow("Indexing frame hashes", this)
+            {
+                Owner = this
+            };
             progress.Show();
 
             // Disable the main window
@@ -489,7 +493,7 @@ namespace unload
             double totalMilliseconds = totalSecondsDouble - totalSecondsInt;
             TimeSpan timeWithLoads = TimeSpan.FromSeconds(totalSecondsDouble);
 
-            return $"{timeWithLoads.ToString(@"hh\:mm\:ss")}.{Math.Round(totalMilliseconds * 1000, 0)}";
+            return $"{timeWithLoads:hh\\:mm\\:ss}.{Math.Round(totalMilliseconds * 1000, 0)}";
         }
 
         // Verifies user input is correct and returns the loadless time formatted as a string
@@ -519,7 +523,7 @@ namespace unload
             double loadlessMilliseconds = loadlessSecondsDouble - loadlessSecondsInt;
             TimeSpan timeWithoutLoads = TimeSpan.FromSeconds(loadlessSecondsDouble);
 
-            return $"{timeWithoutLoads.ToString(@"hh\:mm\:ss")}.{Math.Round(loadlessMilliseconds * 1000, 0)}";
+            return $"{timeWithoutLoads:hh\\:mm\\:ss)}.{Math.Round(loadlessMilliseconds * 1000, 0)}";
         }
 
         // Checks if all required fields for frame counting are filled in
@@ -613,12 +617,13 @@ namespace unload
         // Reads cropping slider values and returns them in a rectangle class
         private Rectangle CropSlidersToRectangle()
         {
-            Rectangle cropPercentage = new Rectangle();
-
-            cropPercentage.X = (int)Math.Round(sliderCropX.Value);
-            cropPercentage.Y = (int)Math.Round(sliderCropY.Value);
-            cropPercentage.Width = (int)Math.Round(sliderCropWidth.Value);
-            cropPercentage.Height = (int)Math.Round(sliderCropHeight.Value);
+            Rectangle cropPercentage = new Rectangle
+            {
+                X = (int)Math.Round(sliderCropX.Value),
+                Y = (int)Math.Round(sliderCropY.Value),
+                Width = (int)Math.Round(sliderCropWidth.Value),
+                Height = (int)Math.Round(sliderCropHeight.Value)
+            };
 
             return cropPercentage;
         }
@@ -650,8 +655,10 @@ namespace unload
         // Exports the frame count and load times ranges to a CSV file
         private void btnExportTimes_Click(object sender, RoutedEventArgs e)
         {
-            SaveFileDialog dialog = new SaveFileDialog();
-            dialog.Filter = "Comma Seperated Values (*.csv)|*.csv|All files (*.*)|*.*";
+            SaveFileDialog dialog = new SaveFileDialog
+            {
+                Filter = "Comma Seperated Values (*.csv)|*.csv|All files (*.*)|*.*"
+            };
 
             if (dialog.ShowDialog() == true)
             {

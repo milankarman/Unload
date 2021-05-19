@@ -8,14 +8,14 @@ namespace unload
 {
     public partial class ProgressWindow : Window
     {
-        private MainWindow mainWindow = null;
         // Keeps track of the progress percentage
         public double percentage = 0;
 
         // Holds a cancellation token for the process this progress window is linked to
         public CancellationTokenSource cts = new CancellationTokenSource();
 
-        private string text = string.Empty;
+        readonly private MainWindow mainWindow = null;
+        readonly private string text = string.Empty;
 
         // Initalizes progress window and starts the timer to check for progress
         public ProgressWindow(string _text, MainWindow _mainWindow)
@@ -27,8 +27,10 @@ namespace unload
 
             SetProgress();
 
-            DispatcherTimer timer = new DispatcherTimer();
-            timer.Interval = TimeSpan.FromSeconds(0.25);
+            DispatcherTimer timer = new DispatcherTimer
+            {
+                Interval = TimeSpan.FromSeconds(0.25)
+            };
             timer.Tick += timer_Tick;
             timer.Start();
         }
@@ -43,7 +45,7 @@ namespace unload
         private void SetProgress()
         {
             mainWindow.TaskbarItemInfo.ProgressValue = percentage / 100d;
-            label.Content = $"{text}: {percentage.ToString("N2")}%";
+            label.Content = $"{text}: {percentage:N2}%";
             progressBar.Value = percentage;
         }
 

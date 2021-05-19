@@ -21,9 +21,10 @@ namespace unload
         public static async Task<IConversionResult> ConvertToImageSequence(string inputPath, string outputPath, CancellationTokenSource cts, Action<double> onProgress)
         {
             // Names every image file as their frame number
-            Func<string, string> outputFileNameBuilder = _ => {
+            string outputFileNameBuilder(string _)
+            {
                 return Path.Join(outputPath, "%d.jpg");
-            };
+            }
 
             // Reads in the video file and configures to resize it
             IMediaInfo info = await FFmpeg.GetMediaInfo(inputPath).ConfigureAwait(false);

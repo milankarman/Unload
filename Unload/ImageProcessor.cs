@@ -70,13 +70,14 @@ namespace unload
         // Crops an image to by given percentages
         public static Bitmap CropImage(Image source, Rectangle cropPercentages)
         {
-            Rectangle crop = new Rectangle();
-
-            // Converts crop values to pixels
-            crop.X = (int)Math.Round(cropPercentages.X / 100d * source.Width);
-            crop.Y = (int)Math.Round(cropPercentages.Y / 100d * source.Height);
-            crop.Width = (int)Math.Round(cropPercentages.Width / 100d * source.Width);
-            crop.Height = (int)Math.Round(cropPercentages.Height / 100d * source.Height);
+            // Converts crop values to pixel sizes in a rectangle
+            Rectangle crop = new Rectangle
+            {
+                X = (int)Math.Round(cropPercentages.X / 100d * source.Width),
+                Y = (int)Math.Round(cropPercentages.Y / 100d * source.Height),
+                Width = (int)Math.Round(cropPercentages.Width / 100d * source.Width),
+                Height = (int)Math.Round(cropPercentages.Height / 100d * source.Height)
+            };
 
             // Draws old image on a new image cropped to the right size
             Bitmap bitmap = new Bitmap(crop.Width, crop.Height);
@@ -91,20 +92,21 @@ namespace unload
         // Converts a bitmap to a bitmap image that can be displayed on the interface
         public static BitmapImage BitmapToBitmapImage(this Bitmap bitmap)
         {
-            using (var memory = new MemoryStream())
-            {
-                bitmap.Save(memory, ImageFormat.Png);
-                memory.Position = 0;
+            using MemoryStream memory = new MemoryStream();
 
-                var bitmapImage = new BitmapImage();
-                bitmapImage.BeginInit();
-                bitmapImage.StreamSource = memory;
-                bitmapImage.CacheOption = BitmapCacheOption.OnLoad;
-                bitmapImage.EndInit();
-                bitmapImage.Freeze();
+            bitmap.Save(memory, ImageFormat.Png);
+            memory.Position = 0;
 
-                return bitmapImage;
-            }
+            BitmapImage bitmapImage = new BitmapImage();
+            bitmapImage.BeginInit();
+
+            bitmapImage.StreamSource = memory;
+            bitmapImage.CacheOption = BitmapCacheOption.OnLoad;
+
+            bitmapImage.EndInit();
+            bitmapImage.Freeze();
+
+            return bitmapImage;
         }
     }
 }
