@@ -50,21 +50,32 @@ namespace unload
         }
 
         // Compares an entire dictiory against a single image and returns a dictionary of similarity
-        public static Dictionary<int, float> GetHashDictSimilarity(Dictionary<int, Digest> hashDict, Bitmap reference, int concurrentTasks)
+        public static Dictionary<int, float[]> GetHashDictSimilarity(Dictionary<int, Digest> hashDict, Bitmap[] references, int concurrentTasks)
         {
-            // Calculated hash of reference image
-            Digest referenceHash = ImagePhash.ComputeDigest(reference.ToLuminanceImage());
+            Digest[] referenceHashes = new Digest[references.Length];
 
-            ConcurrentDictionary<int, float> frameSimilarities = new ConcurrentDictionary<int, float>();
+            // Calculated hashes of reference images
+            for (int i = 0; i < references.Length; i++)
+            {
+                referenceHashes[i] = ImagePhash.ComputeDigest(references[i].ToLuminanceImage());
+            }
+
+            ConcurrentDictionary<int, float[]> frameSimilarities = new ConcurrentDictionary<int, float[]>();
 
             // Gets similarity of all frames in parallel
             Parallel.ForEach(hashDict, new ParallelOptions { MaxDegreeOfParallelism = concurrentTasks }, hash =>
             {
-                float score = ImagePhash.GetCrossCorrelation(hash.Value, referenceHash);
-                frameSimilarities[hash.Key] = score;
+                frameSimilarities[hash.Key] = new float[referenceHashes.Length];
+
+                // Calculated hashes of reference images
+                for (int i = 0; i < referenceHashes.Length; i++)
+                {
+                    float score = ImagePhash.GetCrossCorrelation(hash.Value, referenceHashes[i]);    
+                    frameSimilarities[hash.Key][i] = score;
+                }
             });
 
-            return new Dictionary<int, float>(frameSimilarities);
+            return new Dictionary<int, float[]>(frameSimilarities);
         }
 
         // Crops an image to by given percentages

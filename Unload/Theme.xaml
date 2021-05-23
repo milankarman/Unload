@@ -1,15 +1,15 @@
 ﻿<ResourceDictionary x:Class="Themes.Theme"
                     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
-    <SolidColorBrush  Color="#171717" x:Key="bgDark" />
-    <SolidColorBrush  Color="#2C2C2C" x:Key="primaryDark" />
-    <SolidColorBrush  Color="#2C2C2C" x:Key="secondaryDark" />
-    <SolidColorBrush  Color="#434343" x:Key="borderDarkPrimary" />
-    <SolidColorBrush  Color="#393939" x:Key="borderDarkSecondary" />
-    <SolidColorBrush  Color="#E5E5E5" x:Key="primaryLight" />
-    <SolidColorBrush  Color="#979797" x:Key="secondaryLight" />
-    <SolidColorBrush  Color="#5844FE" x:Key="highlight" />
-    <SolidColorBrush  Color="#382BA4" x:Key="highlightDark" />
+    <SolidColorBrush Color="#171717" x:Key="bgDark" />
+    <SolidColorBrush Color="#2C2C2C" x:Key="primaryDark" />
+    <SolidColorBrush Color="#2C2C2C" x:Key="secondaryDark" />
+    <SolidColorBrush Color="#434343" x:Key="borderDarkPrimary" />
+    <SolidColorBrush Color="#393939" x:Key="borderDarkSecondary" />
+    <SolidColorBrush Color="#E5E5E5" x:Key="primaryLight" />
+    <SolidColorBrush Color="#979797" x:Key="secondaryLight" />
+    <SolidColorBrush Color="#5844FE" x:Key="highlight" />
+    <SolidColorBrush Color="#382BA4" x:Key="highlightDark" />
 
     <Style x:Key="CustomWindowStyle" TargetType="{x:Type Window}">
         <Setter Property="BorderBrush" Value="{StaticResource highlight}" />

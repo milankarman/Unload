@@ -20,12 +20,6 @@ namespace unload
         // Outputs a video file as images of every individual frame in the specified directory
         public static async Task<IConversionResult> ConvertToImageSequence(string inputPath, string outputPath, CancellationTokenSource cts, Action<double> onProgress)
         {
-            // Names every image file as their frame number
-            string outputFileNameBuilder(string _)
-            {
-                return Path.Join(outputPath, "%d.jpg");
-            }
-
             // Reads in the video file and configures to resize it
             IMediaInfo info = await FFmpeg.GetMediaInfo(inputPath).ConfigureAwait(false);
             IVideoStream videoStream = info.VideoStreams.First()?.SetSize(640, 360);
@@ -33,8 +27,9 @@ namespace unload
             // Prepares for converting every video frame to an image
             IConversion conversion = FFmpeg.Conversions.New()
                 .AddStream(videoStream)
-                .ExtractEveryNthFrame(1, outputFileNameBuilder)
-                .AddParameter("-q:v 3");
+                .AddParameter("-q:v 3")
+                .SetVideoSyncMethod(VideoSyncMethod.cfr)
+                .SetOutput(Path.Join(outputPath, "%d.jpg"));
 
             // Notifies the calling location on the progress of converting
             conversion.OnProgress += (sender, args) =>
@@ -43,7 +38,7 @@ namespace unload
                 onProgress(percent);
             };
 
-            // Starts and awaits the convertion gives it a cancellation token so it can be stopped
+            // Starts and awaits the convertion while giving it a cancellation token so it can be stopped at will
             return await conversion.Start(cts.Token);
         }
     }

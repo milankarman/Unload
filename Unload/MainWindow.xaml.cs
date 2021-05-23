@@ -19,10 +19,12 @@ namespace unload
     public partial class MainWindow : Window
     {
         // Keeps the directory of frames being used
-        string workingDirectory = string.Empty;
+        private string workingDirectory = string.Empty;
 
-        int totalVideoFrames = 0;
-        int pickedLoadingFrame = 0;
+        private int totalVideoFrames = 0;
+
+        private List<int> pickedLoadingFrames = new List<int>();
+        private int pickedLoadingFrameIndex = -1;
 
         // Dictionary to keep hashed frames for quick comparison against multiple similarities
         Dictionary<int, Digest> hashedFrames = null;
@@ -174,7 +176,8 @@ namespace unload
             txtTimeOutput.Clear();
 
             hashedFrames = null;
-            pickedLoadingFrame = 0;
+            pickedLoadingFrames.Clear();
+            pickedLoadingFrameIndex = -1;
             lbxLoads.Items.Clear();
 
             sliderTimeline.Maximum = totalVideoFrames;
@@ -190,6 +193,9 @@ namespace unload
             btnClearFrameHashes.IsEnabled = false;
             btnDetectLoadFrames.IsEnabled = false;
             btnCheckSimilarity.IsEnabled = false;
+            btnNextLoadFrame.IsEnabled = false;
+            btnPreviousLoadFrame.IsEnabled = false;
+            btnRemoveLoadFrame.IsEnabled = false;
             cbxSnapLoads.IsEnabled = false;
 
             btnSetStart.IsEnabled = true;
@@ -233,26 +239,12 @@ namespace unload
         private void slidersCropping_OnValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
             // Ensure a load frame is picked beforehand
-            if (pickedLoadingFrame <= 0)
+            if (pickedLoadingFrames.Count() == 0)
             {
                 return;
             }
 
-            UpdateCropPreview();
-        }
-
-        // Update interface and cropping preview when the user selects a load frame
-        private void btnPickLoadFrame_Click(object sender, RoutedEventArgs e)
-        {
-            btnIndexFrameHashes.IsEnabled = true;
-            groupLoadDetection.IsEnabled = true;
-            btnCheckSimilarity.IsEnabled = true;
-
-            btnDetectLoadFrames.IsEnabled = false;
-            btnClearFrameHashes.IsEnabled = false;
-
-            pickedLoadingFrame = (int)sliderTimeline.Value;
-            UpdateCropPreview();
+            UpdateLoadPreview();
         }
 
         // Notifies the user of the similarity between the selected load frame and the current previewed frame
@@ -261,7 +253,7 @@ namespace unload
             // Load snd crop the loading screen and current frame
             Rectangle crop = CropSlidersToRectangle();
 
-            Bitmap loadFrame = new Bitmap(Path.Join(workingDirectory, $"{pickedLoadingFrame}.jpg"));
+            Bitmap loadFrame = new Bitmap(Path.Join(workingDirectory, $"{pickedLoadingFrames[pickedLoadingFrameIndex]}.jpg"));
             loadFrame = ImageProcessor.CropImage(loadFrame, crop);
 
             Bitmap currentFrame = new Bitmap(Path.Join(workingDirectory, $"{(int)sliderTimeline.Value}.jpg"));
@@ -398,12 +390,17 @@ namespace unload
             double minSimilarity = double.Parse(txtSimilarity.Text, CultureInfo.InvariantCulture);
 
             // Process the user's picked loading frame
-            Bitmap loadFrame = new Bitmap(Path.Join(workingDirectory, $"{pickedLoadingFrame}.jpg"));
-            Rectangle cropPercentage = CropSlidersToRectangle();
-            loadFrame = ImageProcessor.CropImage(loadFrame, cropPercentage);
+            Bitmap[] loadFrames = new Bitmap[pickedLoadingFrames.Count];
+
+            for (int i = 0; i < pickedLoadingFrames.Count(); i++)
+            {
+                Bitmap loadFrame = new Bitmap(Path.Join(workingDirectory, $"{pickedLoadingFrames[i]}.jpg"));
+                Rectangle cropPercentage = CropSlidersToRectangle();
+                loadFrames[i] = ImageProcessor.CropImage(loadFrame, cropPercentage);
+            }
 
             // Store the similarity of all frames and store this in another dictionary
-            Dictionary<int, float> frameSimilarities = ImageProcessor.GetHashDictSimilarity(hashedFrames, loadFrame, concurrentTasks);
+            Dictionary<int, float[]> frameSimilarities = ImageProcessor.GetHashDictSimilarity(hashedFrames, loadFrames, concurrentTasks);
 
             int loadScreenCounter = 0;
             int loadFrameCounter = 0;
@@ -414,32 +411,40 @@ namespace unload
             // Check every frame similarity against the minimum similarity and list them as loads
             for (int i = startFrame; i < endFrame; i++)
             {
-                if (frameSimilarities[i] > minSimilarity && i < endFrame)
+                for (int j = 0; j < frameSimilarities[i].Length; j++)
                 {
-                    loadFrameCounter += 1;
-
-                    // If the previous frame wasn't a load frame then mark this as a new loading screen
-                    if (!subsequentLoadFrame)
+                    if (frameSimilarities[i][j] > minSimilarity && i < endFrame)
                     {
-                        loadScreenCounter += 1;
-                        currentLoadStartFrame = i;
-                        subsequentLoadFrame = true;
+                        loadFrameCounter += 1;
+
+                        // If the previous frame wasn't a load frame then mark this as a new loading screen
+                        if (!subsequentLoadFrame)
+                        {
+                            loadScreenCounter += 1;
+                            currentLoadStartFrame = i;
+                            subsequentLoadFrame = true;
+                        }
+
+                        continue;
                     }
-                }
-                else
-                {
-                    // If the previous frame was a load frame but this isn't then write previous load frames as a single loading screen
-                    if (subsequentLoadFrame)
+                    else
                     {
-                        // Print out loading screen number, start and end frame - and total frames
-                        lbxLoads.Items.Add($"{loadScreenCounter}\t{currentLoadStartFrame}\t{i - 1}\t{i - currentLoadStartFrame}");
+                        if (j >= frameSimilarities[i].Length)
+                        {
+                            // If the previous frame was a load frame but this isn't then write previous load frames as a single loading screen
+                            if (subsequentLoadFrame)
+                            {
+                                // Print out loading screen number, start and end frame - and total frames
+                                lbxLoads.Items.Add($"{loadScreenCounter}\t{currentLoadStartFrame}\t{i - 1}\t{i - currentLoadStartFrame}");
 
-                        // Save screen start and end to snap the timeline slider to later
-                        sliderTicks.Add(currentLoadStartFrame);
-                        sliderTicks.Add(i - 1);
+                                // Save screen start and end to snap the timeline slider to later
+                                sliderTicks.Add(currentLoadStartFrame);
+                                sliderTicks.Add(i - 1);
 
-                        subsequentLoadFrame = false;
-                        currentLoadStartFrame = 0;
+                                subsequentLoadFrame = false;
+                                currentLoadStartFrame = 0;
+                            }
+                        }   
                     }
                 }
             }
@@ -523,7 +528,7 @@ namespace unload
             double loadlessMilliseconds = loadlessSecondsDouble - loadlessSecondsInt;
             TimeSpan timeWithoutLoads = TimeSpan.FromSeconds(loadlessSecondsDouble);
 
-            return $"{timeWithoutLoads:hh\\:mm\\:ss)}.{Math.Round(loadlessMilliseconds * 1000, 0)}";
+            return $"{timeWithoutLoads:hh\\:mm\\:ss}.{Math.Round(loadlessMilliseconds * 1000, 0)}";
         }
 
         // Checks if all required fields for frame counting are filled in
@@ -607,11 +612,18 @@ namespace unload
         }
 
         // Applies cropping to the picked load screen and shows it on the interface
-        private void UpdateCropPreview()
+        private void UpdateLoadPreview()
         {
-            Bitmap image = new Bitmap(Path.Join(workingDirectory, $"{pickedLoadingFrame}.jpg"));
-            Bitmap croppedImage = ImageProcessor.CropImage(image, CropSlidersToRectangle());
-            imageLoadFrame.Source = ImageProcessor.BitmapToBitmapImage(croppedImage);
+            if (pickedLoadingFrames.Count >= 1)
+            {
+                Bitmap image = new Bitmap(Path.Join(workingDirectory, $"{pickedLoadingFrames[pickedLoadingFrameIndex]}.jpg"));
+                Bitmap croppedImage = ImageProcessor.CropImage(image, CropSlidersToRectangle());
+                imageLoadFrame.Source = ImageProcessor.BitmapToBitmapImage(croppedImage);
+            }
+            else
+            {
+                imageLoadFrame.Source = null;
+            }
         }
 
         // Reads cropping slider values and returns them in a rectangle class
@@ -726,6 +738,57 @@ namespace unload
         private void cbxSnapLoads_Unchecked(object sender, RoutedEventArgs e)
         {
             SetTimelineTicks();
+        }
+
+        private void btnPreviousLoadFrame_Click(object sender, RoutedEventArgs e)
+        {
+            pickedLoadingFrameIndex--;
+            UpdateLoadPreview();
+            ToggleLoadPickerButtons();
+        }
+
+        private void btnNextLoadFrame_Click(object sender, RoutedEventArgs e)
+        {
+            pickedLoadingFrameIndex++;
+            UpdateLoadPreview();
+            ToggleLoadPickerButtons();
+        }
+
+        private void btnAddLoadFrame_Click(object sender, RoutedEventArgs e)
+        {
+            pickedLoadingFrames.Add((int)sliderTimeline.Value);
+            pickedLoadingFrameIndex++;
+
+            UpdateLoadPreview();
+            ToggleLoadPickerButtons();
+        }
+
+        private void btnRemoveLoadFrame_Click(object sender, RoutedEventArgs e)
+        {
+            pickedLoadingFrames.RemoveAt(pickedLoadingFrameIndex);
+            pickedLoadingFrameIndex = Math.Clamp(pickedLoadingFrameIndex, -1, pickedLoadingFrames.Count() - 1);
+            UpdateLoadPreview();
+            ToggleLoadPickerButtons();
+        }
+
+        private void ToggleLoadPickerButtons()
+        {
+            btnNextLoadFrame.IsEnabled = pickedLoadingFrames.Count() > pickedLoadingFrameIndex;
+            btnPreviousLoadFrame.IsEnabled = pickedLoadingFrameIndex > 0;
+            btnRemoveLoadFrame.IsEnabled = pickedLoadingFrameIndex >= 0;
+
+            if (pickedLoadingFrames.Count() > 0)
+            {
+                btnIndexFrameHashes.IsEnabled = true;
+                groupLoadDetection.IsEnabled = true;
+                btnCheckSimilarity.IsEnabled = true;
+            }
+            else
+            {
+                btnIndexFrameHashes.IsEnabled = false;
+                groupLoadDetection.IsEnabled = false;
+                btnCheckSimilarity.IsEnabled = false;
+            }
         }
     }
 }
