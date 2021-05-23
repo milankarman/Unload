@@ -76,7 +76,7 @@ namespace unload
                 }
 
                 // Show a progress window and disable the main window
-                ProgressWindow progress = new ProgressWindow("Converting video", this)
+                ProgressWindow progress = new ProgressWindow("Converting video to images", this)
                 {
                     Owner = this
                 };
@@ -191,7 +191,7 @@ namespace unload
             groupVideoControls.IsEnabled = true;
             groupFrameCount.IsEnabled = true;
 
-            btnClearFrameHashes.IsEnabled = false;
+            btnResetFrames.IsEnabled = false;
             btnDetectLoadFrames.IsEnabled = false;
             btnCheckSimilarity.IsEnabled = false;
             btnNextLoadFrame.IsEnabled = false;
@@ -269,11 +269,11 @@ namespace unload
         }
 
         // Hashes every frame into a dictionary so similarity can be quickly checked and adjust without having to hash again.
-        private void btnIndexFrameHashes_Click(object sender, RoutedEventArgs e)
+        private void btnPrepareFrames_Click(object sender, RoutedEventArgs e)
         {
             // Warn the user on the length of this process
-            string text = "This will start the long and intense process of hashing every frame from start to end using the specified cropping." + Environment.NewLine + Environment.NewLine +
-                "Make sure your start frame, end frame and load image cropping are set properly before doing this, to change these you will have the clear the hash.";
+            string text = "This will start the long and intense process of preparing every frame from start to end using the specified cropping." + Environment.NewLine + Environment.NewLine +
+                "Make sure your start frame and end frame are set properly, and that the load image cropping is correct. To change these after you will have to reset frames first.";
             MessageBoxResult result = MessageBox.Show(text, "Info", MessageBoxButton.YesNo, MessageBoxImage.Information);
 
             if (result == MessageBoxResult.No)
@@ -289,7 +289,7 @@ namespace unload
             Rectangle crop = CropSlidersToRectangle();
 
             // Create a new progress window to track progress
-            ProgressWindow progress = new ProgressWindow("Indexing frame hashes", this)
+            ProgressWindow progress = new ProgressWindow("Preparing frames", this)
             {
                 Owner = this
             };
@@ -326,10 +326,10 @@ namespace unload
 
                         btnSetEnd.IsEnabled = false;
                         btnSetStart.IsEnabled = false;
-                        btnIndexFrameHashes.IsEnabled = false;
+                        btnPrepareFrames.IsEnabled = false;
 
                         btnDetectLoadFrames.IsEnabled = true;
-                        btnClearFrameHashes.IsEnabled = true;
+                        btnResetFrames.IsEnabled = true;
                     });
                 }
                 catch (OperationCanceledException) { }
@@ -352,10 +352,10 @@ namespace unload
         }
 
         // Clears the frame hash dictionairy and reenables load screen picking
-        private void btnClearFrameHashes_Click(object sender, RoutedEventArgs e)
+        private void btnResetFrames_Click(object sender, RoutedEventArgs e)
         {
             // Warn user of the consequences of this action
-            string text = "Doing this will require the frame hashes to be indexed again. Are you sure?";
+            string text = "Doing this will require the frames to be prepared again. Are you sure?";
             MessageBoxResult result = MessageBox.Show(text, "Info", MessageBoxButton.YesNo, MessageBoxImage.Information);
 
             if (result == MessageBoxResult.Yes)
@@ -380,10 +380,10 @@ namespace unload
                 txtEndFrame.IsEnabled = true;
                 btnSetEnd.IsEnabled = true;
                 btnSetStart.IsEnabled = true;
-                btnIndexFrameHashes.IsEnabled = true;
+                btnPrepareFrames.IsEnabled = true;
 
                 btnDetectLoadFrames.IsEnabled = false;
-                btnClearFrameHashes.IsEnabled = false;
+                btnResetFrames.IsEnabled = false;
                 sliderTicks.Clear();
                 SetTimelineTicks();
             }
@@ -797,11 +797,17 @@ namespace unload
             if (pickedLoadingFrames.Count > 0)
             {
                 groupLoadDetection.IsEnabled = true;
+
+                if (!btnDetectLoadFrames.IsEnabled)
+                {
+                    btnPrepareFrames.IsEnabled = true;
+                }
+
                 btnCheckSimilarity.IsEnabled = true;
             }
             else
             {
-                btnIndexFrameHashes.IsEnabled = false;
+                btnPrepareFrames.IsEnabled = false;
                 btnCheckSimilarity.IsEnabled = false;
             }
         }

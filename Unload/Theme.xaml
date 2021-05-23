@@ -338,7 +338,7 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="ListBox">
-                    <Grid Width="Auto" Height="Auto" Background="{DynamicResource secondaryDark}">
+                    <Grid Width="Auto" Height="Auto" Background="{DynamicResource bgDark}">
                         <ScrollViewer Focusable="false" IsTabStop="False" HorizontalScrollBarVisibility="Disabled">
                             <StackPanel IsItemsHost="true"/>
                         </ScrollViewer>
@@ -354,7 +354,7 @@
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
-        <Setter Property="BorderThickness" Value="0,0,0,0"/>
+        <Setter Property="BorderThickness" Value="0"/>
         <Setter Property="Foreground" Value="{DynamicResource primaryLight}"/>
     </Style>
 </ResourceDictionary>
