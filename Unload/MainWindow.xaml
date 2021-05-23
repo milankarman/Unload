@@ -95,12 +95,12 @@
                     <Slider x:Name="sliderCropHeight" Margin="4,60,6,0" VerticalAlignment="Top" ValueChanged="slidersCropping_OnValueChanged" Maximum="100" Value="100" Minimum="1" Grid.Column="2" Grid.Row="1" Height="21" Grid.ColumnSpan="2"/>
                     <Image x:Name="imageLoadFrame" Margin="1,1,1,1" Grid.ColumnSpan="4"/>
                     <Rectangle Grid.ColumnSpan="4" Stroke="{DynamicResource borderDarkSecondary}" />
-                    <Button x:Name="btnPreviousLoadFrame" Content="◄" Margin="0,10,4,0" Grid.Row="1" VerticalAlignment="Top" FontFamily="Arial" Height="22" Click="btnPreviousLoadFrame_Click"/>
-                    <Button x:Name="btnNextLoadFrame" Content="►" Margin="6,10,5,0" Grid.Row="1" VerticalAlignment="Top" Grid.Column="1" FontFamily="Arial" Height="22" Click="btnNextLoadFrame_Click"/>
-                    <Button x:Name="btnAddLoadFrame" Content="+" Margin="5,10,4,0" Grid.Row="1" VerticalAlignment="Top" Grid.Column="2" FontWeight="Normal" FontFamily="Arial" FontSize="14" Height="22" Click="btnAddLoadFrame_Click"/>
-                    <Button x:Name="btnRemoveLoadFrame" Content="-" Margin="6,10,-1,0" Grid.Row="1" VerticalAlignment="Top" Grid.Column="3" Width="54.2" FontFamily="Arial" FontWeight="Normal" FontSize="14" Height="22" Click="btnRemoveLoadFrame_Click"/>
+                    <Button x:Name="btnPreviousLoadFrame" Content="◄" Margin="0,10,8,0" Grid.Row="1" VerticalAlignment="Top" FontFamily="Arial" Height="22" Click="btnPreviousLoadFrame_Click"/>
+                    <Button x:Name="btnNextLoadFrame" Content="►" Margin="3,10,5,0" Grid.Row="1" VerticalAlignment="Top" Grid.Column="1" FontFamily="Arial" Height="22" Click="btnNextLoadFrame_Click"/>
+                    <Button x:Name="btnAddLoadFrame" Content="+" Margin="5,10,3,0" Grid.Row="1" VerticalAlignment="Top" Grid.Column="2" FontWeight="Normal" FontFamily="Arial" FontSize="14" Height="22" Click="btnAddLoadFrame_Click"/>
+                    <Button x:Name="btnRemoveLoadFrame" Content="-" Margin="8,10,0,0" Grid.Row="1" VerticalAlignment="Top" Grid.Column="3" FontFamily="Arial" FontWeight="Normal" FontSize="14" Height="22" Click="btnRemoveLoadFrame_Click"/>
                     <Button x:Name="btnCheckSimilarity" Content="Check Similarity to Video Frame" Margin="0,86,0,0" VerticalAlignment="Top" Click="btnCheckSimilarity_Click" Height="22" Grid.ColumnSpan="4" Grid.Row="1"/>
-                    <Label x:Name="lblPickedLoadCount" Content="0 / 0" Grid.Column="3" HorizontalAlignment="Right" Margin="0,120,1,0" VerticalAlignment="Top" Height="21" FontWeight="Normal" HorizontalContentAlignment="Right" Padding="10,2,10,2" Background="#FF5844FE"/>
+                    <Label x:Name="lblPickedLoadCount" Content="0 / 0" Grid.Column="3" HorizontalAlignment="Right" Margin="0,120,1,0" VerticalAlignment="Top" Height="21" FontWeight="Normal" HorizontalContentAlignment="Right" Padding="10,2,10,2" Background="#FF5844FE" BorderBrush="{DynamicResource highlightDark}" BorderThickness="1,1,0,0"/>
                 </Grid>
             </GroupBox>
             <GroupBox x:Name="groupFrameCount" Header="Frame Count" Margin="10,5,10,10" Grid.Row="2">
