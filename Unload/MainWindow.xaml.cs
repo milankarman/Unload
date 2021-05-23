@@ -23,7 +23,7 @@ namespace unload
 
         private int totalVideoFrames = 0;
 
-        private List<int> pickedLoadingFrames = new List<int>();
+        private readonly List<int> pickedLoadingFrames = new List<int>();
         private int pickedLoadingFrameIndex = -1;
 
         // Dictionary to keep hashed frames for quick comparison against multiple similarities
@@ -57,6 +57,7 @@ namespace unload
             groupDetectedLoads.IsEnabled = false;
             btnExportTimes.IsEnabled = false;
             cbxSnapLoads.IsEnabled = false;
+            lblPickedLoadCount.Visibility = Visibility.Hidden;
         }
 
         // Prompts the user for a file to convert and attempts to convert it
@@ -198,6 +199,11 @@ namespace unload
             btnRemoveLoadFrame.IsEnabled = false;
             cbxSnapLoads.IsEnabled = false;
 
+            sliderCropHeight.IsEnabled = true;
+            sliderCropWidth.IsEnabled = true;
+            sliderCropX.IsEnabled = true;
+            sliderCropY.IsEnabled = true;
+
             btnSetStart.IsEnabled = true;
             btnSetEnd.IsEnabled = true;
 
@@ -239,7 +245,7 @@ namespace unload
         private void slidersCropping_OnValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
             // Ensure a load frame is picked beforehand
-            if (pickedLoadingFrames.Count() == 0)
+            if (pickedLoadingFrames.Count == 0)
             {
                 return;
             }
@@ -267,7 +273,7 @@ namespace unload
         {
             // Warn the user on the length of this process
             string text = "This will start the long and intense process of hashing every frame from start to end using the specified cropping." + Environment.NewLine + Environment.NewLine +
-                "Make sure your start frame, end frame and load image are set properly before doing this, to change these you will have the clear the hash.";
+                "Make sure your start frame, end frame and load image cropping are set properly before doing this, to change these you will have the clear the hash.";
             MessageBoxResult result = MessageBox.Show(text, "Info", MessageBoxButton.YesNo, MessageBoxImage.Information);
 
             if (result == MessageBoxResult.No)
@@ -310,7 +316,11 @@ namespace unload
                     // Enable new options when frame hashing succeeds
                     Dispatcher.Invoke(() =>
                     {
-                        groupPickLoad.IsEnabled = false;
+                        sliderCropHeight.IsEnabled = false;
+                        sliderCropWidth.IsEnabled = false;
+                        sliderCropX.IsEnabled = false;
+                        sliderCropY.IsEnabled = false;
+
                         txtStartFrame.IsEnabled = false;
                         txtEndFrame.IsEnabled = false;
 
@@ -360,7 +370,11 @@ namespace unload
                 btnExportTimes.IsEnabled = false;
                 cbxSnapLoads.IsEnabled = true;
 
-                groupPickLoad.IsEnabled = true;
+                sliderCropHeight.IsEnabled = true;
+                sliderCropWidth.IsEnabled = true;
+                sliderCropX.IsEnabled = true;
+                sliderCropY.IsEnabled = true;
+
                 groupDetectedLoads.IsEnabled = false;
                 txtStartFrame.IsEnabled = true;
                 txtEndFrame.IsEnabled = true;
@@ -392,7 +406,7 @@ namespace unload
             // Process the user's picked loading frame
             Bitmap[] loadFrames = new Bitmap[pickedLoadingFrames.Count];
 
-            for (int i = 0; i < pickedLoadingFrames.Count(); i++)
+            for (int i = 0; i < pickedLoadingFrames.Count; i++)
             {
                 Bitmap loadFrame = new Bitmap(Path.Join(workingDirectory, $"{pickedLoadingFrames[i]}.jpg"));
                 Rectangle cropPercentage = CropSlidersToRectangle();
@@ -425,26 +439,19 @@ namespace unload
                             subsequentLoadFrame = true;
                         }
 
-                        continue;
+                        break;
                     }
-                    else
+                    else if (j >= frameSimilarities[i].Length - 1 && subsequentLoadFrame)
                     {
-                        if (j >= frameSimilarities[i].Length)
-                        {
-                            // If the previous frame was a load frame but this isn't then write previous load frames as a single loading screen
-                            if (subsequentLoadFrame)
-                            {
-                                // Print out loading screen number, start and end frame - and total frames
-                                lbxLoads.Items.Add($"{loadScreenCounter}\t{currentLoadStartFrame}\t{i - 1}\t{i - currentLoadStartFrame}");
+                        // Print out loading screen number, start and end frame - and total frames
+                        lbxLoads.Items.Add($"{loadScreenCounter}\t{currentLoadStartFrame}\t{i - 1}\t{i - currentLoadStartFrame}");
 
-                                // Save screen start and end to snap the timeline slider to later
-                                sliderTicks.Add(currentLoadStartFrame);
-                                sliderTicks.Add(i - 1);
+                        // Save screen start and end to snap the timeline slider to later
+                        sliderTicks.Add(currentLoadStartFrame);
+                        sliderTicks.Add(i - 1);
 
-                                subsequentLoadFrame = false;
-                                currentLoadStartFrame = 0;
-                            }
-                        }   
+                        subsequentLoadFrame = false;
+                        currentLoadStartFrame = 0;
                     }
                 }
             }
@@ -766,27 +773,35 @@ namespace unload
         private void btnRemoveLoadFrame_Click(object sender, RoutedEventArgs e)
         {
             pickedLoadingFrames.RemoveAt(pickedLoadingFrameIndex);
-            pickedLoadingFrameIndex = Math.Clamp(pickedLoadingFrameIndex, -1, pickedLoadingFrames.Count() - 1);
+            pickedLoadingFrameIndex = Math.Clamp(pickedLoadingFrameIndex, -1, pickedLoadingFrames.Count - 1);
             UpdateLoadPreview();
             ToggleLoadPickerButtons();
         }
 
         private void ToggleLoadPickerButtons()
         {
-            btnNextLoadFrame.IsEnabled = pickedLoadingFrames.Count() > pickedLoadingFrameIndex;
+            btnNextLoadFrame.IsEnabled = pickedLoadingFrameIndex < pickedLoadingFrames.Count - 1;
             btnPreviousLoadFrame.IsEnabled = pickedLoadingFrameIndex > 0;
             btnRemoveLoadFrame.IsEnabled = pickedLoadingFrameIndex >= 0;
 
-            if (pickedLoadingFrames.Count() > 0)
+            if (pickedLoadingFrames.Count > 1)
             {
-                btnIndexFrameHashes.IsEnabled = true;
+                lblPickedLoadCount.Visibility = Visibility.Visible;
+                lblPickedLoadCount.Content = $"{pickedLoadingFrameIndex + 1} / {pickedLoadingFrames.Count}";
+            }
+            else
+            {
+                lblPickedLoadCount.Visibility = Visibility.Hidden;
+            }
+
+            if (pickedLoadingFrames.Count > 0)
+            {
                 groupLoadDetection.IsEnabled = true;
                 btnCheckSimilarity.IsEnabled = true;
             }
             else
             {
                 btnIndexFrameHashes.IsEnabled = false;
-                groupLoadDetection.IsEnabled = false;
                 btnCheckSimilarity.IsEnabled = false;
             }
         }
