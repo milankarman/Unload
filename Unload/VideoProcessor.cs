@@ -38,7 +38,7 @@ namespace unload
                 onProgress(percent);
             };
 
-            // Starts and awaits the convertion while giving it a cancellation token so it can be stopped at will
+            // Starts and awaits the conversion while giving it a cancellation token so it can be stopped at will
             return await conversion.Start(cts.Token);
         }
     }

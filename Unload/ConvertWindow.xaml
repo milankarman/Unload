@@ -1,0 +1,41 @@
+﻿<Window x:Class="unload.ConvertWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:unload"
+        mc:Ignorable="d"
+        Title="Unload" Height="173" Width="437" ResizeMode="NoResize" ShowInTaskbar="False" WindowStyle="None" WindowStartupLocation="CenterOwner" Background="Transparent" AllowsTransparency="True">
+    <Grid Margin="10,10,10,10" Background="{DynamicResource bgDark}">
+        <Grid.RowDefinitions>
+            <RowDefinition/>
+            <RowDefinition Height="40"/>
+        </Grid.RowDefinitions>
+        <Grid.Effect>
+            <DropShadowEffect ShadowDepth="4" Direction="330" Opacity="0.5" BlurRadius="4"/>
+        </Grid.Effect>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition/>
+            <ColumnDefinition/>
+            <ColumnDefinition/>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+        <Rectangle Stroke="{DynamicResource highlight}" d:IsLocked="True" Grid.ColumnSpan="4" Grid.RowSpan="2"/>
+        <Label x:Name="lblFile" Content="File:" Margin="10,10,10,0" VerticalAlignment="Top" Padding="0,0,0,0" VerticalContentAlignment="Center" Height="19"/>
+        <Button x:Name="btnConvert" Content="Convert" HorizontalAlignment="Stretch" VerticalAlignment="Center" Grid.Column="2" Grid.Row="1" Margin="5,0,5,0" Height="22"/>
+        <Button x:Name="btnCancel" Content="Cancel" HorizontalAlignment="Stretch" VerticalAlignment="Center" Grid.Column="3" Grid.Row="1" Margin="5,0,10,0" Height="22"/>
+        <Label x:Name="lblStartTime" Content="Start Time:" Margin="10,41,10,0" VerticalAlignment="Top" Padding="0,0,0,0" VerticalContentAlignment="Center" Height="20"/>
+        <Label x:Name="lblEndTime" Content="End Time" Margin="10,66,10,0" VerticalAlignment="Top" Padding="0,0,0,0" VerticalContentAlignment="Center" Height="20"/>
+        <TextBox x:Name="txtStartTime" Margin="5,40,10,0" Text="00:00:00.000" TextWrapping="Wrap" VerticalAlignment="Top" Grid.Column="1" HorizontalContentAlignment="Right" Height="20" VerticalContentAlignment="Center" Padding="0,0,3,0"/>
+        <TextBox x:Name="txtEndTime" Margin="5,66,10,0" Text="00:00:00.000" TextWrapping="Wrap" VerticalAlignment="Top" Grid.Column="1" HorizontalContentAlignment="Right" Height="20" VerticalContentAlignment="Center" Padding="0,0,3,0"/>
+        <Label x:Name="lblFilePath" Content="C:\Video\my-video.mp4" Margin="5,10,10,0" VerticalAlignment="Top" Padding="0,0,0,0" VerticalContentAlignment="Center" Height="19" Grid.Column="1" Grid.ColumnSpan="3"/>
+        <Label x:Name="lblFrameWidth" Content="Frame Width:" Margin="6,41,15,0" VerticalAlignment="Top" Padding="0,0,0,0" VerticalContentAlignment="Center" Height="20" Grid.Column="2"/>
+        <Label x:Name="lblFrameHeight" Content="Frame Height:" Margin="6,66,15,0" VerticalAlignment="Top" Padding="0,0,0,0" VerticalContentAlignment="Center" Height="20" Grid.Column="2"/>
+        <TextBox x:Name="txtFrameWidth" Margin="5,40,10,0" Text="640" TextWrapping="Wrap" VerticalAlignment="Top" Grid.Column="3" HorizontalContentAlignment="Right" Height="20" VerticalContentAlignment="Center" Padding="0,0,3,0"/>
+        <TextBox x:Name="txtFrameHeight" Margin="5,66,10,0" Text="360" TextWrapping="Wrap" VerticalAlignment="Top" Grid.Column="3" HorizontalContentAlignment="Right" Height="20" VerticalContentAlignment="Center" Padding="0,0,3,0"/>
+        <Label x:Name="lblFramesPerSecond" Content="FPS:" Margin="10,89,10,0" VerticalAlignment="Top" Padding="0,0,0,0" VerticalContentAlignment="Center" Height="20"/>
+        <TextBox x:Name="txtFramesPerSecond" Margin="5,91,10,0" Text="30" TextWrapping="Wrap" VerticalAlignment="Top" Grid.Column="1" HorizontalContentAlignment="Right" Height="20" VerticalContentAlignment="Center" Padding="0,0,3,0"/>
+        <Label x:Name="label" Content="Default values are recommended" HorizontalAlignment="Left" Grid.Row="1" VerticalAlignment="Bottom" Height="20" Padding="0,0,5,0" Grid.ColumnSpan="2" Width="188" Margin="10,10,0,10" VerticalContentAlignment="Center"/>
+
+    </Grid>
+</Window>

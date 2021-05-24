@@ -84,7 +84,7 @@ namespace unload
 
                 IsEnabled = false;
 
-                // Attempt to run the convertion in a new background thread
+                // Attempt to run the conversion in a new background thread
                 Thread thread = new Thread(async () =>
                 {
                     try
