@@ -4,7 +4,6 @@ using System.Linq;
 using System.Windows;
 using System.Text.Json;
 using System.Threading;
-using System.Windows.Controls;
 using Xabe.FFmpeg;
 
 namespace unload
