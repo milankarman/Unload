@@ -66,6 +66,12 @@ namespace unload
                 Directory.CreateDirectory(targetDirectory);
             }
 
+            TimeSpan startTime = GetStartTime();
+            TimeSpan endTime = GetEndTime();
+            int width = int.Parse(txtFrameWidth.Text);
+            int height = int.Parse(txtFrameHeight.Text);
+            double fps = double.Parse(txtFramesPerSecond.Text);
+
             // Show a progress window and disable the main window
             ProgressWindow progress = new ProgressWindow("Converting video to images", mainWindow)
             {
@@ -80,7 +86,8 @@ namespace unload
             {
                 try
                 {
-                    await VideoProcessor.ConvertToImageSequence(filePath, targetDirectory, progress.cts, (percent) =>
+                    await VideoProcessor.ConvertToImageSequence(filePath, targetDirectory, startTime, endTime, width,
+                        height, fps, progress.cts, (percent) =>
                     {
                         // Update the progress windows
                         progress.percentage = percent;
@@ -181,8 +188,8 @@ namespace unload
                 return;
             }
 
-            TextBoxValidator.ClampInteger(txtStartTimeM, 0, 59);
-            TextBoxValidator.ClampInteger(txtStartTimeS, 0, 59);
+            TextBoxValidator.ClampInteger(txtStartTimeM, 0, 59, "00");
+            TextBoxValidator.ClampInteger(txtStartTimeS, 0, 59, "00");
             TextBoxValidator.ClampInteger(txtStartTimeMS, 0, 999, "000");
 
             TimeSpan startTime = GetStartTime();

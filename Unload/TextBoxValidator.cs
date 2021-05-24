@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Windows;
 using System.Windows.Input;
 using System.Windows.Controls;
 using System.Text.RegularExpressions;
@@ -8,6 +7,7 @@ namespace unload
 {
     public static class TextBoxValidator
     {
+        // Ensures a textbox only allows integer inputs
         public static void ClampInteger(TextBox textBox, int minValue, int maxValue, string formatting = "")
         {
             if (!string.IsNullOrEmpty(textBox.Text))
@@ -17,6 +17,7 @@ namespace unload
             }
         }
 
+        // Ensures a textbox only allows double inputs
         public static void ClampDouble(TextBox textBox, double minValue, double maxValue, string formatting = "")
         {
             if (!string.IsNullOrEmpty(textBox.Text))
