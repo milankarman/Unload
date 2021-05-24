@@ -120,6 +120,8 @@ namespace unload
             txtEndFrame.IsEnabled = true;
             txtLoadFrames.Text = "0";
             txtTimeOutput.Clear();
+            lblPickedLoadCount.Content = "0 / 0";
+            lblPickedLoadCount.Visibility = Visibility.Hidden;
 
             hashedFrames = null;
             pickedLoadingFrames.Clear();
