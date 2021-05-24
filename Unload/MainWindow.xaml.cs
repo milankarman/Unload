@@ -6,9 +6,9 @@ using System.Windows;
 using System.Threading;
 using System.Windows.Controls;
 using System.Globalization;
-using System.Windows.Input;
 using System.Collections.Generic;
 using System.Windows.Media.Imaging;
+using System.Text.Json;
 using System.Text.RegularExpressions;
 using Microsoft.Win32;
 using Shipwreck.Phash;
@@ -74,12 +74,30 @@ namespace unload
         {
             workingDirectory = dir;
 
-            // Get the video framerate
-            IMediaInfo info = await FFmpeg.GetMediaInfo(file);
+            double fps = 0;
+            int expectedFrames = 0;
 
-            double framerate = info.VideoStreams.First().Framerate;
-            TimeSpan duration = info.VideoStreams.First().Duration;
-            int expectedFrames = (int)(duration.TotalSeconds * framerate) - 1;
+            string infoPath = Path.Join(dir, "conversion-info.json");
+
+            if (File.Exists(infoPath))
+            {
+                string jsonString = File.ReadAllText(infoPath);
+                ConversionInfo info = JsonSerializer.Deserialize<ConversionInfo>(jsonString);
+
+                fps = info.FPS;
+                expectedFrames = info.ExpectedFrames;
+            }
+            else
+            {
+                string message = "Couldn't find \"conversion-info.json\" in frames folder. If you converted with a custom frame rate then make sure to adjust for it manually.";
+                MessageBox.Show(message, "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+
+                IMediaInfo info = await FFmpeg.GetMediaInfo(file);
+                TimeSpan duration = info.VideoStreams.First().Duration;
+
+                fps = info.VideoStreams.First().Framerate;
+                expectedFrames = (int)(duration.TotalSeconds * fps);
+            }
 
             // Check if the same amount of converted images are found as the video has frames
             if (File.Exists(Path.Join(dir, expectedFrames.ToString() + ".jpg")))
@@ -94,7 +112,7 @@ namespace unload
                 totalVideoFrames = Directory.GetFiles(dir, "*.jpg").Length;
             }
 
-            txtFPS.Text = framerate.ToString();
+            txtFPS.Text = fps.ToString();
             txtStartFrame.Text = "1";
             txtStartFrame.IsEnabled = true;
             txtEndFrame.Text = totalVideoFrames.ToString();

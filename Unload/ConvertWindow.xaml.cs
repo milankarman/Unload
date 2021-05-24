@@ -2,6 +2,7 @@
 using System.IO;
 using System.Linq;
 using System.Windows;
+using System.Text.Json;
 using System.Threading;
 using System.Windows.Controls;
 using Xabe.FFmpeg;
@@ -71,6 +72,16 @@ namespace unload
             int width = int.Parse(txtFrameWidth.Text);
             int height = int.Parse(txtFrameHeight.Text);
             double fps = double.Parse(txtFramesPerSecond.Text);
+            int expectedFrames = (int)(fps * (endTime - startTime).TotalSeconds);
+
+            ConversionInfo info = new ConversionInfo()
+            {
+                FPS = fps,
+                ExpectedFrames = expectedFrames
+            };
+
+            string jsonString = JsonSerializer.Serialize(info);
+            File.WriteAllText(Path.Join(targetDirectory, "conversion-info.json"), jsonString);
 
             // Show a progress window and disable the main window
             ProgressWindow progress = new ProgressWindow("Converting video to images", mainWindow)
