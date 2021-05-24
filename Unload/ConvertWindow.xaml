@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:unload"
         mc:Ignorable="d"
-        Title="Unload" Height="173" Width="437" ResizeMode="NoResize" ShowInTaskbar="False" WindowStyle="None" WindowStartupLocation="CenterOwner" Background="Transparent" AllowsTransparency="True">
+        Title="Unload" Height="173" Width="542" ResizeMode="NoResize" ShowInTaskbar="False" WindowStyle="None" WindowStartupLocation="CenterOwner" Background="Transparent" AllowsTransparency="True">
     <Grid Margin="10,10,10,10" Background="{DynamicResource bgDark}">
         <Grid.RowDefinitions>
             <RowDefinition/>
@@ -15,10 +15,10 @@
             <DropShadowEffect ShadowDepth="4" Direction="330" Opacity="0.5" BlurRadius="4"/>
         </Grid.Effect>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition/>
-            <ColumnDefinition/>
-            <ColumnDefinition/>
-            <ColumnDefinition/>
+            <ColumnDefinition Width="2*"/>
+            <ColumnDefinition Width="3*"/>
+            <ColumnDefinition Width="2*"/>
+            <ColumnDefinition Width="2*"/>
         </Grid.ColumnDefinitions>
         <Rectangle Stroke="{DynamicResource highlight}" d:IsLocked="True" Grid.ColumnSpan="4" Grid.RowSpan="2"/>
         <Label x:Name="lblFile" Content="File:" Margin="10,10,10,0" VerticalAlignment="Top" Padding="0,0,0,0" VerticalContentAlignment="Center" Height="19"/>
@@ -26,8 +26,6 @@
         <Button x:Name="btnCancel" Content="Cancel" HorizontalAlignment="Stretch" VerticalAlignment="Center" Grid.Column="3" Grid.Row="1" Margin="5,0,10,0" Height="22" Click="btnCancel_Click"/>
         <Label x:Name="lblStartTime" Content="Start Time:" Margin="10,41,10,0" VerticalAlignment="Top" Padding="0,0,0,0" VerticalContentAlignment="Center" Height="20"/>
         <Label x:Name="lblEndTime" Content="End Time" Margin="10,66,10,0" VerticalAlignment="Top" Padding="0,0,0,0" VerticalContentAlignment="Center" Height="20"/>
-        <TextBox x:Name="txtStartTime" Margin="5,40,10,0" Text="00:00:00.000" TextWrapping="Wrap" VerticalAlignment="Top" Grid.Column="1" HorizontalContentAlignment="Right" Height="20" VerticalContentAlignment="Center" Padding="0,0,3,0"/>
-        <TextBox x:Name="txtEndTime" Margin="5,66,10,0" Text="00:00:00.000" TextWrapping="Wrap" VerticalAlignment="Top" Grid.Column="1" HorizontalContentAlignment="Right" Height="20" VerticalContentAlignment="Center" Padding="0,0,3,0"/>
         <Label x:Name="lblFilePath" Content="C:\Video\my-video.mp4" Margin="5,10,10,0" VerticalAlignment="Top" Padding="0,0,0,0" VerticalContentAlignment="Center" Height="19" Grid.Column="1" Grid.ColumnSpan="3"/>
         <Label x:Name="lblFrameWidth" Content="Frame Width:" Margin="6,41,15,0" VerticalAlignment="Top" Padding="0,0,0,0" VerticalContentAlignment="Center" Height="20" Grid.Column="2"/>
         <Label x:Name="lblFrameHeight" Content="Frame Height:" Margin="6,66,15,0" VerticalAlignment="Top" Padding="0,0,0,0" VerticalContentAlignment="Center" Height="20" Grid.Column="2"/>
@@ -35,7 +33,42 @@
         <TextBox x:Name="txtFrameHeight" Margin="5,66,10,0" Text="360" TextWrapping="Wrap" VerticalAlignment="Top" Grid.Column="3" HorizontalContentAlignment="Right" Height="20" VerticalContentAlignment="Center" Padding="0,0,3,0"/>
         <Label x:Name="lblFramesPerSecond" Content="FPS:" Margin="10,89,10,0" VerticalAlignment="Top" Padding="0,0,0,0" VerticalContentAlignment="Center" Height="20"/>
         <TextBox x:Name="txtFramesPerSecond" Margin="5,91,10,0" Text="30" TextWrapping="Wrap" VerticalAlignment="Top" Grid.Column="1" HorizontalContentAlignment="Right" Height="20" VerticalContentAlignment="Center" Padding="0,0,3,0"/>
-        <Label x:Name="label" Content="Default values are recommended" HorizontalAlignment="Left" Grid.Row="1" VerticalAlignment="Bottom" Height="20" Padding="0,0,5,0" Grid.ColumnSpan="2" Width="188" Margin="10,10,0,10" VerticalContentAlignment="Center"/>
+        <Grid x:Name="gridStartTime" Margin="5,40,10,51" Grid.Column="1" VerticalAlignment="Top" Height="20">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="25*"/>
+                <ColumnDefinition Width="5*"/>
+                <ColumnDefinition Width="25*"/>
+                <ColumnDefinition Width="5*"/>
+                <ColumnDefinition Width="25*"/>
+                <ColumnDefinition Width="5*"/>
+                <ColumnDefinition Width="30*"/>
+            </Grid.ColumnDefinitions>
+            <TextBox x:Name="txtStartTimeH" Margin="0,0,0,0" Text="00" TextWrapping="Wrap" VerticalAlignment="Stretch" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Padding="0,0,0,0" HorizontalAlignment="Stretch"/>
+            <TextBox x:Name="txtStartTimeM" Margin="0,0,0,0" Text="00" TextWrapping="Wrap" VerticalAlignment="Stretch" Grid.Column="2" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Padding="0,0,0,0" HorizontalAlignment="Stretch"/>
+            <TextBox x:Name="txtStartTimeS" Margin="0,0,0,0" Text="00" TextWrapping="Wrap" VerticalAlignment="Stretch" Grid.Column="4" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Padding="0,0,0,0" HorizontalAlignment="Stretch"/>
+            <TextBox x:Name="txtStartTimeMS" Text="000" TextWrapping="Wrap" VerticalAlignment="Stretch" Grid.Column="6" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Padding="0,0,0,0"/>
+            <Label x:Name="label1" Content=":" Grid.Column="1" HorizontalAlignment="Stretch" Margin="0,0,0,0" VerticalAlignment="Stretch" Padding="0,0,0,0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Height="Auto"/>
+            <Label x:Name="label1_Copy" Content=":" Grid.Column="3" Padding="0,0,0,0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Margin="0,0,0,0" VerticalAlignment="Stretch" Height="Auto"/>
+            <Label x:Name="label1_Copy1" Content="." Grid.Column="5" Padding="0,0,0,0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Margin="0,0,0,0" VerticalAlignment="Stretch" Height="Auto"/>
+        </Grid>
+        <Grid x:Name="gridEndTime" Margin="5,66,10,0" Grid.Column="1" VerticalAlignment="Top" Height="20">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="25*"/>
+                <ColumnDefinition Width="5*"/>
+                <ColumnDefinition Width="25*"/>
+                <ColumnDefinition Width="5*"/>
+                <ColumnDefinition Width="25*"/>
+                <ColumnDefinition Width="5*"/>
+                <ColumnDefinition Width="30*"/>
+            </Grid.ColumnDefinitions>
+            <TextBox x:Name="txtEndTimeH" Margin="0,0,0,0" Text="00" TextWrapping="Wrap" VerticalAlignment="Stretch" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Padding="0,0,0,0" HorizontalAlignment="Stretch"/>
+            <TextBox x:Name="txtEndTimeM" Margin="0,0,0,0" Text="00" TextWrapping="Wrap" VerticalAlignment="Stretch" Grid.Column="2" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Padding="0,0,0,0" HorizontalAlignment="Stretch"/>
+            <TextBox x:Name="txtEndTimeS" Margin="0,0,0,0" Text="00" TextWrapping="Wrap" VerticalAlignment="Stretch" Grid.Column="4" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Padding="0,0,0,0" HorizontalAlignment="Stretch"/>
+            <TextBox x:Name="txtEndTimeMS" Text="000" TextWrapping="Wrap" VerticalAlignment="Stretch" Grid.Column="6" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Padding="0,0,0,0"/>
+            <Label x:Name="label2" Content=":" Grid.Column="1" HorizontalAlignment="Stretch" Margin="0,0,0,0" VerticalAlignment="Stretch" Padding="0,0,0,0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Height="Auto"/>
+            <Label x:Name="label1_Copy2" Content=":" Grid.Column="3" Padding="0,0,0,0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Margin="0,0,0,0" VerticalAlignment="Stretch" Height="Auto"/>
+            <Label x:Name="label1_Copy3" Content="." Grid.Column="5" Padding="0,0,0,0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Margin="0,0,0,0" VerticalAlignment="Stretch" Height="Auto"/>
+        </Grid>
 
     </Grid>
 </Window>
