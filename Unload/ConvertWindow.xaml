@@ -45,10 +45,10 @@
                     <ColumnDefinition Width="5*"/>
                     <ColumnDefinition Width="30*"/>
                 </Grid.ColumnDefinitions>
-                <TextBox x:Name="txtStartTimeH" Margin="0,0,0,0" Text="00" TextWrapping="Wrap" VerticalAlignment="Stretch" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Padding="0,0,0,0" HorizontalAlignment="Stretch"/>
-                <TextBox x:Name="txtStartTimeM" Margin="0,0,0,0" Text="00" TextWrapping="Wrap" VerticalAlignment="Stretch" Grid.Column="2" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Padding="0,0,0,0" HorizontalAlignment="Stretch"/>
-                <TextBox x:Name="txtStartTimeS" Margin="0,0,0,0" Text="00" TextWrapping="Wrap" VerticalAlignment="Stretch" Grid.Column="4" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Padding="0,0,0,0" HorizontalAlignment="Stretch"/>
-                <TextBox x:Name="txtStartTimeMS" Text="000" TextWrapping="Wrap" VerticalAlignment="Stretch" Grid.Column="6" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Padding="0,0,0,0"/>
+                <TextBox x:Name="txtStartTimeH" Margin="0,0,0,0" Text="00" TextWrapping="Wrap" VerticalAlignment="Stretch" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Padding="0,0,0,0" HorizontalAlignment="Stretch" PreviewTextInput="IntegerValidationTextBox" LostFocus="txtStartTimeH_LostFocus"/>
+                <TextBox x:Name="txtStartTimeM" Margin="0,0,0,0" Text="00" TextWrapping="Wrap" VerticalAlignment="Stretch" Grid.Column="2" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Padding="0,0,0,0" HorizontalAlignment="Stretch" PreviewTextInput="IntegerValidationTextBox" LostFocus="txtStartTimeM_LostFocus"/>
+                <TextBox x:Name="txtStartTimeS" Margin="0,0,0,0" Text="00" TextWrapping="Wrap" VerticalAlignment="Stretch" Grid.Column="4" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Padding="0,0,0,0" HorizontalAlignment="Stretch" PreviewTextInput="IntegerValidationTextBox" LostFocus="txtStartTimeS_LostFocus"/>
+                <TextBox x:Name="txtStartTimeMS" Text="000" TextWrapping="Wrap" VerticalAlignment="Stretch" Grid.Column="6" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Padding="0,0,0,0" PreviewTextInput="IntegerValidationTextBox" LostFocus="txtStartTimeMS_LostFocus"/>
                 <Label x:Name="label1" Content=":" Grid.Column="1" HorizontalAlignment="Stretch" Margin="0,0,0,0" VerticalAlignment="Stretch" Padding="0,0,0,0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Height="Auto"/>
                 <Label x:Name="label1_Copy" Content=":" Grid.Column="3" Padding="0,0,0,0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Margin="0,0,0,0" VerticalAlignment="Stretch" Height="Auto"/>
                 <Label x:Name="label1_Copy1" Content="." Grid.Column="5" Padding="0,0,0,0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Margin="0,0,0,0" VerticalAlignment="Stretch" Height="Auto"/>
@@ -63,10 +63,10 @@
                     <ColumnDefinition Width="5*"/>
                     <ColumnDefinition Width="30*"/>
                 </Grid.ColumnDefinitions>
-                <TextBox x:Name="txtEndTimeH" Margin="0,0,0,0" Text="00" TextWrapping="Wrap" VerticalAlignment="Stretch" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Padding="0,0,0,0" HorizontalAlignment="Stretch"/>
-                <TextBox x:Name="txtEndTimeM" Margin="0,0,0,0" Text="00" TextWrapping="Wrap" VerticalAlignment="Stretch" Grid.Column="2" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Padding="0,0,0,0" HorizontalAlignment="Stretch"/>
-                <TextBox x:Name="txtEndTimeS" Margin="0,0,0,0" Text="00" TextWrapping="Wrap" VerticalAlignment="Stretch" Grid.Column="4" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Padding="0,0,0,0" HorizontalAlignment="Stretch"/>
-                <TextBox x:Name="txtEndTimeMS" Text="000" TextWrapping="Wrap" VerticalAlignment="Stretch" Grid.Column="6" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Padding="0,0,0,0"/>
+                <TextBox x:Name="txtEndTimeH" Margin="0,0,0,0" Text="00" TextWrapping="Wrap" VerticalAlignment="Stretch" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Padding="0,0,0,0" HorizontalAlignment="Stretch" PreviewTextInput="IntegerValidationTextBox" LostFocus="txtEndTimeH_LostFocus"/>
+                <TextBox x:Name="txtEndTimeM" Margin="0,0,0,0" Text="00" TextWrapping="Wrap" VerticalAlignment="Stretch" Grid.Column="2" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Padding="0,0,0,0" HorizontalAlignment="Stretch" PreviewTextInput="IntegerValidationTextBox" LostFocus="txtEndTimeM_LostFocus"/>
+                <TextBox x:Name="txtEndTimeS" Margin="0,0,0,0" Text="00" TextWrapping="Wrap" VerticalAlignment="Stretch" Grid.Column="4" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Padding="0,0,0,0" HorizontalAlignment="Stretch" PreviewTextInput="IntegerValidationTextBox" LostFocus="txtEndTimeS_LostFocus"/>
+                <TextBox x:Name="txtEndTimeMS" Text="000" TextWrapping="Wrap" VerticalAlignment="Stretch" Grid.Column="6" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Padding="0,0,0,0" PreviewTextInput="IntegerValidationTextBox" LostFocus="txtEndTimeMS_LostFocus"/>
                 <Label x:Name="label2" Content=":" Grid.Column="1" HorizontalAlignment="Stretch" Margin="0,0,0,0" VerticalAlignment="Stretch" Padding="0,0,0,0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Height="Auto"/>
                 <Label x:Name="label1_Copy2" Content=":" Grid.Column="3" Padding="0,0,0,0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Margin="0,0,0,0" VerticalAlignment="Stretch" Height="Auto"/>
                 <Label x:Name="label1_Copy3" Content="." Grid.Column="5" Padding="0,0,0,0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Margin="0,0,0,0" VerticalAlignment="Stretch" Height="Auto"/>
@@ -76,6 +76,7 @@
         <Grid x:Name="gridButtons" Margin="10,0,10,10" Grid.Row="1">
             <Button x:Name="btnConvert" Content="Convert" VerticalAlignment="Bottom" Margin="0,0,90,10" Height="22" Click="btnConvert_Click" HorizontalAlignment="Right" Width="70"/>
             <Button x:Name="btnCancel" Content="Cancel" VerticalAlignment="Bottom" Margin="0,0,10,10" Height="22" Click="btnCancel_Click" Width="70" HorizontalAlignment="Right"/>
+            <Label x:Name="lblInfo" Content="Default values are recommended" HorizontalAlignment="Left" Margin="10,5,0,0" VerticalAlignment="Top" Padding="0,0,0,0" Height="21" Width="215" VerticalContentAlignment="Bottom"/>
         </Grid>
         <Rectangle Stroke="{DynamicResource highlight}" Margin="10,10,10,10" d:IsLocked="True" Grid.RowSpan="2"/>
     </Grid>
