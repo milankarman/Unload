@@ -56,6 +56,7 @@ namespace unload
             Close();
         }
 
+        // Clear the taskbar progres state when the progress window closes
         private void Window_Closed(object sender, EventArgs e)
         {
             mainWindow.TaskbarItemInfo.ProgressState = TaskbarItemProgressState.None;

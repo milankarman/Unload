@@ -73,12 +73,12 @@ namespace unload
         public async void LoadFolder(string file, string dir)
         {
             workingDirectory = dir;
-
-            double fps = 0;
-            int expectedFrames = 0;
+            double fps;
+            int expectedFrames;
 
             string infoPath = Path.Join(dir, "conversion-info.json");
 
+            // Attempt to get conversion info from json file, otherwise read values from original video
             if (File.Exists(infoPath))
             {
                 string jsonString = File.ReadAllText(infoPath);
@@ -112,6 +112,7 @@ namespace unload
                 totalVideoFrames = Directory.GetFiles(dir, "*.jpg").Length;
             }
 
+            // Set/reset default values
             txtFPS.Text = fps.ToString();
             txtStartFrame.Text = "1";
             txtStartFrame.IsEnabled = true;
@@ -388,7 +389,7 @@ namespace unload
 
             double minSimilarity = double.Parse(txtSimilarity.Text, CultureInfo.InvariantCulture);
 
-            // Process the user's picked loading frame
+            // Crop and store the user's picked loading frames
             Bitmap[] loadFrames = new Bitmap[pickedLoadingFrames.Count];
 
             for (int i = 0; i < pickedLoadingFrames.Count; i++)
@@ -407,7 +408,7 @@ namespace unload
             int currentLoadStartFrame = 0;
             bool subsequentLoadFrame = false;
 
-            // Check every frame similarity against the minimum similarity and list them as loads
+            // Check every frame similarities to the load images against the minimum similarity and list them as loads
             for (int i = startFrame; i < endFrame; i++)
             {
                 for (int j = 0; j < frameSimilarities[i].Length; j++)
@@ -718,6 +719,7 @@ namespace unload
             SetTimelineTicks();
         }
 
+        // Switch to the previous picked loading frames
         private void btnPreviousLoadFrame_Click(object sender, RoutedEventArgs e)
         {
             pickedLoadingFrameIndex--;
@@ -725,6 +727,7 @@ namespace unload
             ToggleLoadPickerButtons();
         }
 
+        // Switch to the next picked loading frame
         private void btnNextLoadFrame_Click(object sender, RoutedEventArgs e)
         {
             pickedLoadingFrameIndex++;
@@ -732,6 +735,7 @@ namespace unload
             ToggleLoadPickerButtons();
         }
 
+        // Pick and add the current video frame as loading frame
         private void btnAddLoadFrame_Click(object sender, RoutedEventArgs e)
         {
             pickedLoadingFrames.Add((int)sliderTimeline.Value);
@@ -741,6 +745,7 @@ namespace unload
             ToggleLoadPickerButtons();
         }
 
+        // Remove the current loading frame from the list of picked loading frames
         private void btnRemoveLoadFrame_Click(object sender, RoutedEventArgs e)
         {
             pickedLoadingFrames.RemoveAt(pickedLoadingFrameIndex);
@@ -749,6 +754,7 @@ namespace unload
             ToggleLoadPickerButtons();
         }
 
+        // Checks which buttons for picking loading frames should be enabled/disabled and applies that action
         private void ToggleLoadPickerButtons()
         {
             btnNextLoadFrame.IsEnabled = pickedLoadingFrameIndex < pickedLoadingFrames.Count - 1;
