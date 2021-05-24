@@ -4,17 +4,15 @@ using System.Linq;
 using System.Windows;
 using System.Threading;
 using System.Windows.Controls;
-using System.Text.RegularExpressions;
-using System.Windows.Input;
 using Xabe.FFmpeg;
 
 namespace unload
 {
     public partial class ConvertWindow : Window
     {
-        private MainWindow mainWindow;
-        private string filePath;
-        private string targetDirectory;
+        private readonly MainWindow mainWindow;
+        private readonly string filePath;
+        private readonly string targetDirectory;
 
         private TimeSpan fileDuration;
         private double fileFramerate;
@@ -26,6 +24,20 @@ namespace unload
             targetDirectory = _targetDirectory;
 
             InitializeComponent();
+
+            txtEndTimeH.PreviewTextInput += TextBoxValidator.ForceInteger;
+            txtEndTimeM.PreviewTextInput += TextBoxValidator.ForceInteger;
+            txtEndTimeS.PreviewTextInput += TextBoxValidator.ForceInteger;
+            txtEndTimeMS.PreviewTextInput += TextBoxValidator.ForceInteger;
+
+            txtStartTimeH.PreviewTextInput += TextBoxValidator.ForceInteger;
+            txtStartTimeM.PreviewTextInput += TextBoxValidator.ForceInteger;
+            txtStartTimeS.PreviewTextInput += TextBoxValidator.ForceInteger;
+            txtStartTimeMS.PreviewTextInput += TextBoxValidator.ForceInteger;
+
+            txtFrameWidth.PreviewTextInput += TextBoxValidator.ForceInteger;
+            txtFrameHeight.PreviewTextInput += TextBoxValidator.ForceInteger;
+            txtFramesPerSecond.PreviewTextInput += TextBoxValidator.ForceDouble;
         }
 
         public async void GetVideoInfoAndShow()
@@ -169,27 +181,27 @@ namespace unload
                 return;
             }
 
-            ClampTextboxValue(txtStartTimeM, 0, 59);
-            ClampTextboxValue(txtStartTimeS, 0, 59);
-            ClampTextboxValue(txtStartTimeMS, 0, 999, "000");
+            TextBoxValidator.ClampInteger(txtStartTimeM, 0, 59);
+            TextBoxValidator.ClampInteger(txtStartTimeS, 0, 59);
+            TextBoxValidator.ClampInteger(txtStartTimeMS, 0, 999, "000");
 
             TimeSpan startTime = GetStartTime();
             TimeSpan endTime = GetEndTime();
 
             if (startTime > fileDuration)
             {
-                ClampTextboxValue(txtStartTimeH, 0, fileDuration.Hours);
-                ClampTextboxValue(txtStartTimeM, 0, fileDuration.Minutes);
-                ClampTextboxValue(txtStartTimeS, 0, fileDuration.Seconds);
-                ClampTextboxValue(txtStartTimeMS, 0, fileDuration.Milliseconds, "000");
+                TextBoxValidator.ClampInteger(txtStartTimeH, 0, fileDuration.Hours, "00");
+                TextBoxValidator.ClampInteger(txtStartTimeM, 0, fileDuration.Minutes, "00");
+                TextBoxValidator.ClampInteger(txtStartTimeS, 0, fileDuration.Seconds, "00");
+                TextBoxValidator.ClampInteger(txtStartTimeMS, 0, fileDuration.Milliseconds, "000");
             }
 
             if (startTime > endTime)
             {
-                ClampTextboxValue(txtStartTimeH, 0, endTime.Hours);
-                ClampTextboxValue(txtStartTimeM, 0, endTime.Minutes);
-                ClampTextboxValue(txtStartTimeS, 0, endTime.Seconds);
-                ClampTextboxValue(txtStartTimeMS, 0, endTime.Milliseconds, "000");
+                TextBoxValidator.ClampInteger(txtStartTimeH, 0, endTime.Hours, "00");
+                TextBoxValidator.ClampInteger(txtStartTimeM, 0, endTime.Minutes, "00");
+                TextBoxValidator.ClampInteger(txtStartTimeS, 0, endTime.Seconds, "00");
+                TextBoxValidator.ClampInteger(txtStartTimeMS, 0, endTime.Milliseconds, "000");
             }
         }
 
@@ -200,44 +212,28 @@ namespace unload
                 return;
             }
 
-            ClampTextboxValue(txtEndTimeM, 0, 59);
-            ClampTextboxValue(txtEndTimeS, 0, 59);
-            ClampTextboxValue(txtEndTimeMS, 0, 999, "000");
+            TextBoxValidator.ClampInteger(txtEndTimeM, 0, 59);
+            TextBoxValidator.ClampInteger(txtEndTimeS, 0, 59);
+            TextBoxValidator.ClampInteger(txtEndTimeMS, 0, 999, "000");
 
             TimeSpan startTime = GetStartTime();
             TimeSpan endTime = GetEndTime();
 
             if (endTime > fileDuration)
             {
-                ClampTextboxValue(txtEndTimeH, 0, fileDuration.Hours);
-                ClampTextboxValue(txtEndTimeM, 0, fileDuration.Minutes);
-                ClampTextboxValue(txtEndTimeS, 0, fileDuration.Seconds);
-                ClampTextboxValue(txtEndTimeMS, 0, fileDuration.Milliseconds, "000");
+                TextBoxValidator.ClampInteger(txtEndTimeH, 0, fileDuration.Hours, "00");
+                TextBoxValidator.ClampInteger(txtEndTimeM, 0, fileDuration.Minutes, "00");
+                TextBoxValidator.ClampInteger(txtEndTimeS, 0, fileDuration.Seconds, "00");
+                TextBoxValidator.ClampInteger(txtEndTimeMS, 0, fileDuration.Milliseconds, "000");
             }
 
             if (endTime < startTime)
             {
-                ClampTextboxValue(txtEndTimeH, startTime.Hours, fileDuration.Hours);
-                ClampTextboxValue(txtEndTimeM, startTime.Minutes, fileDuration.Minutes);
-                ClampTextboxValue(txtEndTimeS, startTime.Seconds, fileDuration.Seconds);
-                ClampTextboxValue(txtEndTimeMS, startTime.Milliseconds, fileDuration.Milliseconds, "000");
+                TextBoxValidator.ClampInteger(txtEndTimeH, startTime.Hours, fileDuration.Hours, "00");
+                TextBoxValidator.ClampInteger(txtEndTimeM, startTime.Minutes, fileDuration.Minutes, "00");
+                TextBoxValidator.ClampInteger(txtEndTimeS, startTime.Seconds, fileDuration.Seconds, "00");
+                TextBoxValidator.ClampInteger(txtEndTimeMS, startTime.Milliseconds, fileDuration.Milliseconds, "000");
             }
-        }
-
-        private static void ClampTextboxValue(TextBox textBox, int minValue, int maxValue, string formatting = "00")
-        {
-            if (!string.IsNullOrEmpty(textBox.Text))
-            {
-                int value = Math.Clamp(int.Parse(textBox.Text), minValue, maxValue);
-                textBox.Text = value.ToString(formatting);
-            }
-        }
-
-        // When applied to a text box this prevents anything other than a round number to be entered
-        private void IntegerValidationTextBox(object sender, TextCompositionEventArgs e)
-        {
-            Regex regex = new Regex("[^0-9]+");
-            e.Handled = regex.IsMatch(e.Text);
         }
 
         private void txtEndTimeH_LostFocus(object sender, RoutedEventArgs e)
@@ -310,6 +306,14 @@ namespace unload
                 txtStartTimeMS.Text = "000";
             }
             ClampStartTimeValues();
+        }
+
+        private void txtFramesPerSecond_LostFocus(object sender, RoutedEventArgs e)
+        {
+            if (double.Parse(txtFramesPerSecond.Text) > fileFramerate)
+            {
+                txtFramesPerSecond.Text = fileFramerate.ToString();
+            }
         }
     }
 }

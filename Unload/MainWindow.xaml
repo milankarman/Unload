@@ -49,7 +49,7 @@
                         <Button x:Name="btnBack" Content="◄" Margin="5,0,5,0" Grid.Column="1" Click="btnBack_Click" VerticalAlignment="Stretch" FontFamily="Arial"/>
                         <Button x:Name="btnForward" Content="►" Margin="5,0,5,0" Grid.Column="2" Click="btnForwardFar_Click" Height="Auto" FontFamily="Arial"/>
                         <Button x:Name="btnForwardFar" Content="►►" Margin="5,0,0,0" Grid.Column="3" Click="btnForward_Click" Height="Auto" FontFamily="Arial"/>
-                        <TextBox x:Name="txtFrame" Grid.Column="7" HorizontalAlignment="Left" Margin="45,0,0,0" Text="1" TextWrapping="Wrap" Width="70" TextAlignment="Left" VerticalContentAlignment="Center" PreviewTextInput="IntegerValidationTextBox" TextChanged="txtFrame_TextChanged"/>
+                        <TextBox x:Name="txtFrame" Grid.Column="7" HorizontalAlignment="Left" Margin="45,0,0,0" Text="1" TextWrapping="Wrap" Width="70" TextAlignment="Left" VerticalContentAlignment="Center" TextChanged="txtFrame_TextChanged"/>
                         <Label x:Name="lblFrame" Content="Frame:" Grid.Column="7" HorizontalAlignment="Left" Padding="0,0,0,0" Width="40" VerticalContentAlignment="Center"/>
                         <Button x:Name="btnSetStart" Content="Set Start" Margin="0,0,10,0" Grid.Column="5" Click="btnSetStart_Click" Height="Auto"/>
                         <Button x:Name="btnSetEnd" Content="Set End" Margin="0,0,10,0" Grid.Column="6" Height="Auto" Click="btnSetEnd_Click"/>
@@ -113,13 +113,13 @@
                         <ColumnDefinition Width="5*"/>
                         <ColumnDefinition Width="5*"/>
                     </Grid.ColumnDefinitions>
-                    <TextBox x:Name="txtStartFrame" Text="1" TextWrapping="Wrap" VerticalAlignment="Top" Height="22" PreviewTextInput="IntegerValidationTextBox" Grid.Column="1" VerticalContentAlignment="Center" Padding="0,0,5,0" HorizontalContentAlignment="Right"/>
+                    <TextBox x:Name="txtStartFrame" Text="1" TextWrapping="Wrap" VerticalAlignment="Top" Height="22" Grid.Column="1" VerticalContentAlignment="Center" Padding="0,0,5,0" HorizontalContentAlignment="Right"/>
                     <Label x:Name="lblStartFrame" Content="Start Frame:" VerticalAlignment="Top" Padding="0,0,0,0" Height="22" VerticalContentAlignment="Center"/>
-                    <TextBox x:Name="txtEndFrame" Margin="0,27,0,0" Text="1" TextWrapping="Wrap" VerticalAlignment="Top" Height="22" PreviewTextInput="IntegerValidationTextBox" Grid.Column="1" VerticalContentAlignment="Center" Padding="0,0,5,0" HorizontalContentAlignment="Right"/>
+                    <TextBox x:Name="txtEndFrame" Margin="0,27,0,0" Text="1" TextWrapping="Wrap" VerticalAlignment="Top" Height="22" Grid.Column="1" VerticalContentAlignment="Center" Padding="0,0,5,0" HorizontalContentAlignment="Right"/>
                     <Label x:Name="lblEndFrame" Content="End Frame:" Margin="0,27,0,0" VerticalAlignment="Top" Padding="0,0,0,0" Height="22" VerticalContentAlignment="Center"/>
-                    <TextBox x:Name="txtFPS" Margin="0,54,0,0" Text="30" TextWrapping="Wrap" VerticalAlignment="Top" Height="22" PreviewTextInput="DoubleValidationTextBox" Grid.Column="1" VerticalContentAlignment="Center" Padding="0,0,5,0" HorizontalContentAlignment="Right"/>
+                    <TextBox x:Name="txtFPS" Margin="0,54,0,0" Text="30" TextWrapping="Wrap" VerticalAlignment="Top" Height="22" Grid.Column="1" VerticalContentAlignment="Center" Padding="0,0,5,0" HorizontalContentAlignment="Right"/>
                     <Label x:Name="lblFPS" Content="FPS:" Margin="0,54,0,0" VerticalAlignment="Top" Padding="0,0,0,0" Height="22" VerticalContentAlignment="Center"/>
-                    <TextBox x:Name="txtLoadFrames" Margin="0,81,0,0" Text="0" TextWrapping="Wrap" VerticalAlignment="Top" Height="22" PreviewTextInput="IntegerValidationTextBox" Grid.Column="1" VerticalContentAlignment="Center" IsReadOnly="True" Padding="0,0,5,0" HorizontalContentAlignment="Right"/>
+                    <TextBox x:Name="txtLoadFrames" Margin="0,81,0,0" Text="0" TextWrapping="Wrap" VerticalAlignment="Top" Height="22" Grid.Column="1" VerticalContentAlignment="Center" IsReadOnly="True" Padding="0,0,5,0" HorizontalContentAlignment="Right"/>
                     <Label x:Name="lblLoadFrames" Content="Load Frames:" Margin="0,81,0,0" VerticalAlignment="Top" Padding="0,0,0,0" Height="22" VerticalContentAlignment="Center"/>
                     <Button x:Name="btnCalcTimes" Content="Calculate Times" Margin="0,115,0,0" VerticalAlignment="Top" Click="btnCalcTimes_Click" Grid.ColumnSpan="2" Height="22"/>
                     <TextBox x:Name="txtTimeOutput" Margin="0,5,0,0" TextWrapping="Wrap" VerticalAlignment="Stretch" IsReadOnly="True" Grid.ColumnSpan="2" Grid.Row="1"/>
@@ -139,7 +139,7 @@
                         <ColumnDefinition Width="1*"/>
                     </Grid.ColumnDefinitions>
                     <Label x:Name="lblSimilarity" Content="Minimum Similarity:" Padding="0,0,0,0" VerticalContentAlignment="Center" Height="22" VerticalAlignment="Top" Margin="0,32,0,0"/>
-                    <TextBox x:Name="txtSimilarity" TextWrapping="Wrap" VerticalAlignment="Top" Text="0.98" Height="22" PreviewTextInput="DoubleValidationTextBox" Grid.Column="1" Margin="5,32,0,0" VerticalContentAlignment="Center" HorizontalContentAlignment="Right" Padding="0,0,5,0"/>
+                    <TextBox x:Name="txtSimilarity" TextWrapping="Wrap" VerticalAlignment="Top" Text="0.98" Height="22" Grid.Column="1" Margin="5,32,0,0" VerticalContentAlignment="Center" HorizontalContentAlignment="Right" Padding="0,0,5,0"/>
                     <Button x:Name="btnPrepareFrames" Content="Prepare Frames" VerticalAlignment="Top" Click="btnPrepareFrames_Click" Height="22" Margin="0,0,5,0"/>
                     <Button x:Name="btnDetectLoadFrames" Content="Detect Load Frames" VerticalAlignment="Bottom" Height="22" Grid.ColumnSpan="2" Margin="0,0,0,0" Click="btnDetectLoadFrames_Click"/>
                     <Button x:Name="btnResetFrames" Content="Reset Frames" VerticalAlignment="Top" Height="22" Click="btnResetFrames_Click" Grid.Column="1" Margin="5,0,0,0"/>
@@ -155,7 +155,7 @@
                         <ColumnDefinition/>
                     </Grid.ColumnDefinitions>
                     <Label x:Name="lblSimilarity_Copy" Content="Concurrent Tasks:" Padding="0,0,0,0" VerticalContentAlignment="Center" Height="20" VerticalAlignment="Top"/>
-                    <TextBox x:Name="txtConcurrentTasks" TextWrapping="Wrap" VerticalAlignment="Top" Text="20" Height="20" PreviewTextInput="IntegerValidationTextBox" VerticalContentAlignment="Center" Grid.Column="1" HorizontalContentAlignment="Right" Padding="0,0,5,0"/>
+                    <TextBox x:Name="txtConcurrentTasks" TextWrapping="Wrap" VerticalAlignment="Top" Text="20" Height="20" VerticalContentAlignment="Center" Grid.Column="1" HorizontalContentAlignment="Right" Padding="0,0,5,0"/>
                     <Button x:Name="btnExportTimes" Content="Export Times" VerticalAlignment="Bottom" Click="btnExportTimes_Click" Height="22" Grid.ColumnSpan="2" Margin="0,0,0,1"/>
                     <CheckBox x:Name="cbxSnapLoads" Content="Snap to Detected Loads" HorizontalAlignment="Left" Margin="0,25,0,0" Height="22" VerticalContentAlignment="Center" Grid.ColumnSpan="2" Width="238" VerticalAlignment="Top" Checked="cbxSnapLoads_Checked" Unchecked="cbxSnapLoads_Unchecked" IsChecked="True"/>
                 </Grid>

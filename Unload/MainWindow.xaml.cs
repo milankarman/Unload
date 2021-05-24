@@ -48,6 +48,15 @@ namespace unload
                 Application.Current.Shutdown();
             }
 
+            txtFrame.PreviewTextInput += TextBoxValidator.ForceInteger;
+            txtStartFrame.PreviewTextInput += TextBoxValidator.ForceInteger;
+            txtEndFrame.PreviewTextInput += TextBoxValidator.ForceInteger;
+            txtConcurrentTasks.PreviewTextInput += TextBoxValidator.ForceInteger;
+
+            txtFPS.PreviewTextInput += TextBoxValidator.ForceDouble;
+            txtSimilarity.PreviewTextInput += TextBoxValidator.ForceDouble;
+
+
             // Set initial interface state
             groupPickLoad.IsEnabled = false;
             groupVideo.IsEnabled = false;
@@ -671,20 +680,6 @@ namespace unload
                     sliderTimeline.Ticks.Add(tick);
                 }
             }
-        }
-
-        // When applied to a text box this prevents anything other than a round number to be entered
-        private void IntegerValidationTextBox(object sender, TextCompositionEventArgs e)
-        {
-            Regex regex = new Regex("[^0-9]+");
-            e.Handled = regex.IsMatch(e.Text);
-        }
-
-        // When applied to a text box this prevents anything other than any number to be entered
-        private void DoubleValidationTextBox(object sender, TextCompositionEventArgs e)
-        {
-            Regex regex = new Regex("[^0-9.]+");
-            e.Handled = regex.IsMatch(e.Text);
         }
 
         // Ensures every thread is shut down when the main window closes
