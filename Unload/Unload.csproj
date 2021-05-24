@@ -5,7 +5,7 @@
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <RootNamespace>unload</RootNamespace>
     <UseWPF>true</UseWPF>
-    <ApplicationIcon>icon/icon.ico</ApplicationIcon>
+    <ApplicationIcon>./icon/icon.ico</ApplicationIcon>
     <EnableNETAnalyzers>true</EnableNETAnalyzers>
     <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
   </PropertyGroup>
@@ -37,6 +37,14 @@
     <Page Update="ConvertWindow.xaml">
       <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
     </Page>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Page Include="App.xaml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="src\processors\NewFolder\" />
   </ItemGroup>
   
 </Project>
