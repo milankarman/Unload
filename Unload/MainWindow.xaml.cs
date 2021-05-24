@@ -146,7 +146,7 @@ namespace unload
 
                 IsEnabled = false;
                 ConvertWindow convertWindow = new ConvertWindow(this, dialog.FileName, targetDirectory) { Owner = this };
-                convertWindow.Show();
+                convertWindow.GetVideoInfoAndShow();
             }
         }
 

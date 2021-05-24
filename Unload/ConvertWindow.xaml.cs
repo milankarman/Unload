@@ -1,7 +1,9 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using System.Windows;
 using System.Threading;
+using Xabe.FFmpeg;
 
 namespace unload
 {
@@ -11,6 +13,9 @@ namespace unload
         private string filePath;
         private string targetDirectory;
 
+        private TimeSpan fileDuration;
+        private double fileFramerate;
+
         public ConvertWindow(MainWindow _mainWindow, string _filePath, string _targetDirectory)
         {
             mainWindow = _mainWindow;
@@ -18,6 +23,25 @@ namespace unload
             targetDirectory = _targetDirectory;
 
             InitializeComponent();
+        }
+
+        public async void GetVideoInfoAndShow()
+        {
+            lblFilePath.Content = filePath;
+
+            IMediaInfo info = await FFmpeg.GetMediaInfo(filePath);
+
+            fileFramerate = info.VideoStreams.First().Framerate;
+            txtFramesPerSecond.Text = fileFramerate.ToString();
+
+            fileDuration = info.VideoStreams.First().Duration;
+
+            txtEndTimeH.Text = $"{fileDuration.Hours:00}";
+            txtEndTimeM.Text = $"{fileDuration.Minutes:00}";
+            txtEndTimeS.Text = $"{fileDuration.Seconds:00}";
+            txtEndTimeMS.Text = $"{fileDuration.Milliseconds:000}";
+
+            Show();
         }
 
         private void btnConvert_Click(object sender, RoutedEventArgs e)
