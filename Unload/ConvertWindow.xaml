@@ -22,8 +22,8 @@
         </Grid.ColumnDefinitions>
         <Rectangle Stroke="{DynamicResource highlight}" d:IsLocked="True" Grid.ColumnSpan="4" Grid.RowSpan="2"/>
         <Label x:Name="lblFile" Content="File:" Margin="10,10,10,0" VerticalAlignment="Top" Padding="0,0,0,0" VerticalContentAlignment="Center" Height="19"/>
-        <Button x:Name="btnConvert" Content="Convert" HorizontalAlignment="Stretch" VerticalAlignment="Center" Grid.Column="2" Grid.Row="1" Margin="5,0,5,0" Height="22"/>
-        <Button x:Name="btnCancel" Content="Cancel" HorizontalAlignment="Stretch" VerticalAlignment="Center" Grid.Column="3" Grid.Row="1" Margin="5,0,10,0" Height="22"/>
+        <Button x:Name="btnConvert" Content="Convert" HorizontalAlignment="Stretch" VerticalAlignment="Center" Grid.Column="2" Grid.Row="1" Margin="5,0,5,0" Height="22" Click="btnConvert_Click"/>
+        <Button x:Name="btnCancel" Content="Cancel" HorizontalAlignment="Stretch" VerticalAlignment="Center" Grid.Column="3" Grid.Row="1" Margin="5,0,10,0" Height="22" Click="btnCancel_Click"/>
         <Label x:Name="lblStartTime" Content="Start Time:" Margin="10,41,10,0" VerticalAlignment="Top" Padding="0,0,0,0" VerticalContentAlignment="Center" Height="20"/>
         <Label x:Name="lblEndTime" Content="End Time" Margin="10,66,10,0" VerticalAlignment="Top" Padding="0,0,0,0" VerticalContentAlignment="Center" Height="20"/>
         <TextBox x:Name="txtStartTime" Margin="5,40,10,0" Text="00:00:00.000" TextWrapping="Wrap" VerticalAlignment="Top" Grid.Column="1" HorizontalContentAlignment="Right" Height="20" VerticalContentAlignment="Center" Padding="0,0,3,0"/>

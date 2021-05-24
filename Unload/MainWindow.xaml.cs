@@ -60,91 +60,8 @@ namespace unload
             lblPickedLoadCount.Visibility = Visibility.Hidden;
         }
 
-        // Prompts the user for a file to convert and attempts to convert it
-        private void btnConvert_Click(object sender, RoutedEventArgs e)
-        {
-            OpenFileDialog dialog = new OpenFileDialog();
-
-            if (dialog.ShowDialog() == true)
-            {
-                // Create _frames folder to store the image sequence, ommiting illegal symbols
-                string targetDirectory = RemoveSymbols(dialog.FileName) + "_frames";
-
-                if (!Directory.Exists(targetDirectory))
-                {
-                    Directory.CreateDirectory(targetDirectory);
-                }
-
-                // Show a progress window and disable the main window
-                ProgressWindow progress = new ProgressWindow("Converting video to images", this)
-                {
-                    Owner = this
-                };
-                progress.Show();
-
-                IsEnabled = false;
-
-                // Attempt to run the conversion in a new background thread
-                Thread thread = new Thread(async () =>
-                {
-                    try
-                    {
-                        await VideoProcessor.ConvertToImageSequence(dialog.FileName, targetDirectory, progress.cts, (percent) =>
-                        {
-                            // Update the progress windows
-                            progress.percentage = percent;
-                        });
-
-                        // When done load in the files
-                        Dispatcher.Invoke(() =>
-                        {
-                            LoadFolder(dialog.FileName, targetDirectory);
-                        });
-
-                    }
-                    catch (OperationCanceledException) { }
-                    finally
-                    {
-                        // Dispose our now unneeded cancellation token and re-enable the main window
-                        progress.cts.Dispose();
-                        Dispatcher.Invoke(() =>
-                        {
-                            IsEnabled = true;
-                            progress.Close();
-                        });
-
-                    }
-                })
-                {
-                    IsBackground = true
-                };
-
-                thread.Start();
-            }
-        }
-
-        // Checks if the video file has been converted, if so it loads it
-        private void btnLoad_Click(object sender, RoutedEventArgs e)
-        {
-            OpenFileDialog dialog = new OpenFileDialog();
-
-            if (dialog.ShowDialog() == true)
-            {
-                // Remove symbols from path and append _frames
-                string targetDirectory = RemoveSymbols(dialog.FileName) + "_frames";
-
-                if (!Directory.Exists(targetDirectory))
-                {
-                    MessageBox.Show("No _frames folder accompanying this video found. Convert the video first.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                    return;
-                }
-
-                LoadFolder(dialog.FileName, targetDirectory);
-            }
-        }
-
         // Prepares an image sequence and resets the application state
-        private async void LoadFolder(string file, string dir)
+        public async void LoadFolder(string file, string dir)
         {
             workingDirectory = dir;
 
@@ -210,6 +127,47 @@ namespace unload
             sliderTicks.Clear();
             SetTimelineTicks();
             SetVideoFrame(1);
+        }
+
+        // Prompts the user for a file to convert and attempts to convert it
+        private void btnConvert_Click(object sender, RoutedEventArgs e)
+        {
+            OpenFileDialog dialog = new OpenFileDialog();
+
+            if (dialog.ShowDialog() == true)
+            {
+                // Create _frames folder to store the image sequence, ommiting illegal symbols
+                string targetDirectory = RemoveSymbols(dialog.FileName) + "_frames";
+
+                if (!Directory.Exists(targetDirectory))
+                {
+                    Directory.CreateDirectory(targetDirectory);
+                }
+
+                IsEnabled = false;
+                ConvertWindow convertWindow = new ConvertWindow(this, dialog.FileName, targetDirectory) { Owner = this };
+                convertWindow.Show();
+            }
+        }
+
+        // Checks if the video file has been converted, if so it loads it
+        private void btnLoad_Click(object sender, RoutedEventArgs e)
+        {
+            OpenFileDialog dialog = new OpenFileDialog();
+
+            if (dialog.ShowDialog() == true)
+            {
+                // Remove symbols from path and append _frames
+                string targetDirectory = RemoveSymbols(dialog.FileName) + "_frames";
+
+                if (!Directory.Exists(targetDirectory))
+                {
+                    MessageBox.Show("No _frames folder accompanying this video found. Convert the video first.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    return;
+                }
+
+                LoadFolder(dialog.FileName, targetDirectory);
+            }
         }
 
         // Removes symbols that conflict with FFmpeg arguments
