@@ -95,17 +95,17 @@ Here I'll answer some things you might be wondering in a questions-and-answers f
 
 **How does Unload work behind the scenes?**  
 
-*Unload calculates something callled a Perceptual Hash (PHash) for every video frame as well as the picked loading frames. Using this PHash it can compare how similar the video frames are to the picked loading frames, and if they are similar enough they can be confidently counted as load frames. From there it's simple math to subtract the load frames from real time.*
+*Unload calculates something callled a Perceptual Hash (PHash) for every video frame as well as the picked loading frames. Using this PHash it can compare how similar the video frames are to the picked loading frames and if they are similar enough they can be confidently counted as load frames. From there it's simple math to subtract the load frames from real time.*
 
 
 **Why does every loading screen need the same cropping?**  
 
-*This is because Unload applies the same loading frame cropping to every video frame before PHashing it. If there are multiple different croppings that would mean ***all*** video frames would have to be PHashes multiple times, dramatically increasing processing time.*
+*This is because Unload applies the same loading frame cropping to every video frame before PHashing it. If there are multiple different croppings that would mean ***all*** video frames would have to be PHashed multiple times, multiplying processing time for every new load frame.*
 
 
 **How can I speed up conversion?**  
 
-*Working with video will always be performance heavy, so the best way to go about speeding it up would be to work with less video. You can set the start and end time to be closer to the start and end of the run where applicable to avoid converting as many frames.  
+*The best way to go about speeding up conversion is to work with less video data. You can set the start and end time to be closer to the start and end of the run where applicable to avoid converting as many frames.  
 You might also be able to lower the framerate if, for example, the game has a locked framerate at 30 FPS but the video is recorded at 60.  
 Last but not least you can lower the export width and height, but know that this won't speed up conversion a lot and if the quality gets too low then loading frames might be harder to recognize.*
 
@@ -115,9 +115,9 @@ Last but not least you can lower the export width and height, but know that this
 *Frame preparation is very dependent on the size of your loading screen cropping. If you hardly crop at all, then the process will likely take a long time. Thus try to find something smaller yet distinct on your loading screens to be recognized and crop to that when possible.
 Finally you can try upping the "Cocurrent Tasks" option in the bottom right. This will allow more frames to be prepared at the same time, but note that putting this value too high might backfire instead.*
 
-**Can Unload support alpha masks for loading frames?**  
+**Does Unload support alpha masks for loading frames?**  
 
-*No, this is not support yet. But adding the option to add alpha masks would be something I would like to add eventually, however it might be tricky to implement neatly.*
+*No, this is not supported yet. But it's something I would like to add eventually.*
 
 
 **Can unload work on live runs together with my timer?**  
