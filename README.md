@@ -10,6 +10,8 @@
     <a href="../../issues">Report Issue</a>
     -
     <a href="../../issues">Request Feature</a>
+      -
+    <a href="https://www.youtube.com/watch?v=tgFAWxCUGZY">In Depth Video Guide</a>
   </p>
 </p>
 
@@ -49,6 +51,8 @@ If the game you verify has consistent recognizable loading screens then Unload s
 # Usage
 
 *I designed Unload to feel similar to other programs used for verifying like VirtualDub, if you're familiar with something like that then a lot of things should make sense right away.*
+
+**If you would rather watch an in depth video guide then go [here](https://www.youtube.com/watch?v=tgFAWxCUGZY).**
 
 First hit the "Convert and Load" button and select the video to review. You'll see some options for converting. The default values are fine but an advanced user might choose to tweak these. Hitting convert here will convert the video to images so Unload can use them, depending on your hardware and the length of the video this could take a while.
 
