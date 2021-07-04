@@ -167,7 +167,8 @@ namespace unload
             if (dialog.ShowDialog() == true)
             {
                 // Create _frames folder to store the image sequence, ommiting illegal symbols
-                string targetDirectory = RemoveSymbols(dialog.FileName) + "_frames";
+                string fileDirectory = Path.GetDirectoryName(dialog.FileName);
+                string targetDirectory = Path.Join(fileDirectory, RemoveSymbols(dialog.SafeFileName) + "_frames");
 
                 if (!Directory.Exists(targetDirectory))
                 {
@@ -188,7 +189,8 @@ namespace unload
             if (dialog.ShowDialog() == true)
             {
                 // Remove symbols from path and append _frames
-                string targetDirectory = RemoveSymbols(dialog.FileName) + "_frames";
+                string fileDirectory =  Path.GetDirectoryName(dialog.FileName);
+                string targetDirectory = Path.Join(fileDirectory, RemoveSymbols(dialog.SafeFileName) + "_frames");
 
                 if (!Directory.Exists(targetDirectory))
                 {
@@ -203,7 +205,7 @@ namespace unload
         // Removes symbols that conflict with FFmpeg arguments
         private static string RemoveSymbols(string path)
         {
-            return Regex.Replace(path, @"[^0-9a-zA-Z\/\\:]+", ""); ;
+            return Regex.Replace(path, @"[^0-9a-zA-Z\/\\:]+", "");
         }
 
         // Update our video preview when moving the slider
