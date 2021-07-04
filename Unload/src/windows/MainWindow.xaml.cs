@@ -491,9 +491,9 @@ namespace unload
             }
 
             double totalSecondsDouble = totalFrames / framesPerSecond;
-            TimeSpan timeWithoutLoads = TimeSpan.FromSeconds(totalSecondsDouble);
+            TimeSpan timeWithoutLoads = TimeSpan.FromSeconds(Math.Round(totalSecondsDouble, 3));
 
-            return $"{timeWithoutLoads:hh\\:mm\\:ss\\:fff}";
+            return $"{timeWithoutLoads:hh\\:mm\\:ss\\.fff}";
         }
 
         // Verifies user input is correct and returns the loadless time formatted as a string
@@ -519,9 +519,9 @@ namespace unload
 
             int loadlessFrames = totalFrames - int.Parse(txtLoadFrames.Text);
             double loadlessSecondsDouble = loadlessFrames / framesPerSecond;
-            TimeSpan timeWithoutLoads = TimeSpan.FromSeconds(loadlessSecondsDouble);
+            TimeSpan timeWithoutLoads = TimeSpan.FromSeconds(Math.Round(loadlessSecondsDouble, 3));
 
-            return $"{timeWithoutLoads:hh\\:mm\\:ss\\:fff}";
+            return $"{timeWithoutLoads:hh\\:mm\\:ss\\.fff}";
         }
 
         // Checks if all required fields for frame counting are filled in
