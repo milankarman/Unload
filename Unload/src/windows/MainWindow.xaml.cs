@@ -560,14 +560,6 @@ namespace unload
             }
         }
 
-        // Move the timeline back 0.25 seconds
-        private void btnBackFar_Click(object sender, RoutedEventArgs e)
-        {
-            sliderTimeline.Value -= (int)Math.Round(int.Parse(txtFPS.Text) / 4d);
-
-            SetVideoFrame((int)sliderTimeline.Value);
-        }
-
         // Move the timeline back 1 frame
         private void btnBack_Click(object sender, RoutedEventArgs e)
         {
@@ -576,7 +568,15 @@ namespace unload
             SetVideoFrame((int)sliderTimeline.Value);
         }
 
-        // Move the timeline forward 0.25 seconds
+        // Move the timeline back 0.25 seconds
+        private void btnBackFar_Click(object sender, RoutedEventArgs e)
+        {
+            sliderTimeline.Value -= (int)Math.Round(double.Parse(txtFPS.Text) / 4d);
+
+            SetVideoFrame((int)sliderTimeline.Value);
+        }
+
+        // Move the timeline forward 1 frame seconds
         private void btnForwardFar_Click(object sender, RoutedEventArgs e)
         {
             sliderTimeline.Value += 1;
@@ -584,10 +584,10 @@ namespace unload
             SetVideoFrame((int)sliderTimeline.Value);
         }
 
-        // Move the timeline forward 1 frame
+        // Move the timeline forward 0.25 seconds
         private void btnForward_Click(object sender, RoutedEventArgs e)
         {
-            sliderTimeline.Value += (int)Math.Round(int.Parse(txtFPS.Text) / 4d);
+            sliderTimeline.Value += (int)Math.Round(double.Parse(txtFPS.Text) / 4d);
 
             SetVideoFrame((int)sliderTimeline.Value);
         }
