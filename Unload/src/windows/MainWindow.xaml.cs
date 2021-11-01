@@ -5,7 +5,7 @@ using System.Drawing;
 using System.Windows;
 using System.Threading;
 using System.Windows.Controls;
-using System.Globalization;
+using System.Collections.ObjectModel;
 using System.Collections.Generic;
 using System.Windows.Media.Imaging;
 using System.Text.Json;
@@ -24,6 +24,7 @@ namespace unload
         private int totalVideoFrames = 0;
 
         private readonly List<int> pickedLoadingFrames = new List<int>();
+        private ObservableCollection<DetectedLoad> detectedLoads = new ObservableCollection<DetectedLoad>();
         private int pickedLoadingFrameIndex = -1;
 
         private const double defaultSimilarity = 0.95;
@@ -37,6 +38,9 @@ namespace unload
         public MainWindow()
         {
             InitializeComponent();
+
+            detectedLoads.Add(new DetectedLoad() { Name = "1.", StartFrame = 1, EndFrame = 100 });
+            lbxLoads.ItemsSource = detectedLoads;
 
             // Confirm FFmpeg is available
             try
@@ -387,7 +391,6 @@ namespace unload
         {
             // Reset the listbox and add headers
             lbxLoads.Items.Clear();
-            lbxLoads.Items.Add($"#\tFirst\tLast\tTotal");
 
             // Read user arguments
             int startFrame = int.Parse(txtStartFrame.Text);
@@ -436,8 +439,10 @@ namespace unload
                     }
                     else if (j >= frameSimilarities[i].Length - 1 && subsequentLoadFrame)
                     {
+                        detectedLoads.Add(new DetectedLoad() { StartFrame = currentLoadStartFrame, EndFrame = i - 1 });
+                        lbxLoads.DataContext = detectedLoads;
                         // Print out loading screen number, start and end frame - and total frames
-                        lbxLoads.Items.Add($"{loadScreenCounter}\t{currentLoadStartFrame}\t{i - 1}\t{i - currentLoadStartFrame}");
+                        // lbxLoads.Items.Add($"{loadScreenCounter}\t{currentLoadStartFrame}\t{i - 1}\t{i - currentLoadStartFrame}");
 
                         // Save screen start and end to snap the timeline slider to later
                         sliderTicks.Add(currentLoadStartFrame);
@@ -554,13 +559,13 @@ namespace unload
         // Move the video preview to the selected loading screen
         private void lbxLoads_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (lbxLoads.SelectedItem != null && lbxLoads.SelectedIndex > 0)
-            {
-                int frame = int.Parse(lbxLoads.SelectedItem.ToString().Split("\t")[1]);
+            //if (lbxLoads.SelectedItem != null && lbxLoads.SelectedIndex > 0)
+            //{
+            //    int frame = int.Parse(lbxLoads.SelectedItem.ToString().Split("\t")[1]);
 
-                sliderTimeline.Value = frame;
-                SetVideoFrame(frame);
-            }
+            //    sliderTimeline.Value = frame;
+            //    SetVideoFrame(frame);
+            //}
         }
 
         // Move the timeline back 1 frame

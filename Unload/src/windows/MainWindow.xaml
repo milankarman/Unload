@@ -9,6 +9,29 @@
     <Window.TaskbarItemInfo>
         <TaskbarItemInfo/>
     </Window.TaskbarItemInfo>
+    <Window.Resources>
+        <DataTemplate x:Key="DetectedLoadTemplate">
+            <Grid Width="228">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="1*"/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="auto"/>
+                    <ColumnDefinition Width="1*"/>
+                    <ColumnDefinition Width="1*"/>
+                    <ColumnDefinition Width="auto"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock Text="{Binding Path=Name}" Grid.Column="0" Margin="5,0,0,0" VerticalAlignment="Center" />
+                <TextBlock Text="{Binding Path=StartFrame}" Grid.Column="1" VerticalAlignment="Center" />
+                <TextBlock Text="{Binding Path=EndFrame}" Grid.Column="2" VerticalAlignment="Center" />
+                <StackPanel Orientation="Horizontal" Grid.Column="3">
+                    <Button Content="◄" Width="30" />
+                    <Button Content="►" Width="30" Margin="5,0,5,0" />
+                    <Button Content="✎" Width="30" />
+                </StackPanel>
+            </Grid>
+        </DataTemplate>
+    </Window.Resources>
     <Grid x:Name="gridMain">
         <Grid.RowDefinitions>
             <RowDefinition Height="1*"/>
@@ -146,7 +169,7 @@
                 </Grid>
             </GroupBox>
             <GroupBox x:Name="groupDetectedLoads" Header="Detected Loads" Margin="10,5,10,5" Grid.Row="1">
-                <ListBox x:Name="lbxLoads" Margin="5,5,5,5" SelectionChanged="lbxLoads_SelectionChanged"/>
+                <ListBox x:Name="lbxLoads" Margin="5,5,5,5" SelectionChanged="lbxLoads_SelectionChanged" ItemsSource="{Binding}" ItemTemplate="{StaticResource DetectedLoadTemplate}" />
             </GroupBox>
             <GroupBox x:Name="groupSettings" Header="Settings" Grid.Row="2" Margin="10,5,10,10">
                 <Grid Margin="5,5,5,5">
