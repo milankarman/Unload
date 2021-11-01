@@ -139,7 +139,7 @@
                         <ColumnDefinition Width="1*"/>
                     </Grid.ColumnDefinitions>
                     <Label x:Name="lblSimilarity" Content="Minimum Similarity:" Padding="0,0,0,0" VerticalContentAlignment="Center" Height="22" VerticalAlignment="Top" Margin="0,32,0,0"/>
-                    <TextBox x:Name="txtSimilarity" TextWrapping="Wrap" VerticalAlignment="Top" Text="0.98" Height="22" Grid.Column="1" Margin="5,32,0,0" VerticalContentAlignment="Center" HorizontalContentAlignment="Right" Padding="0,0,5,0"/>
+                    <TextBox x:Name="txtSimilarity" TextWrapping="Wrap" VerticalAlignment="Top" Text="1" Height="22" Grid.Column="1" Margin="5,32,0,0" VerticalContentAlignment="Center" HorizontalContentAlignment="Right" Padding="0,0,5,0"/>
                     <Button x:Name="btnPrepareFrames" Content="Prepare Frames" VerticalAlignment="Top" Click="btnPrepareFrames_Click" Height="22" Margin="0,0,5,0"/>
                     <Button x:Name="btnDetectLoadFrames" Content="Detect Load Frames" VerticalAlignment="Bottom" Height="22" Grid.ColumnSpan="2" Margin="0,0,0,0" Click="btnDetectLoadFrames_Click"/>
                     <Button x:Name="btnResetFrames" Content="Reset Frames" VerticalAlignment="Top" Height="22" Click="btnResetFrames_Click" Grid.Column="1" Margin="5,0,0,0"/>

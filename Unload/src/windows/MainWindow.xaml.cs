@@ -26,6 +26,8 @@ namespace unload
         private readonly List<int> pickedLoadingFrames = new List<int>();
         private int pickedLoadingFrameIndex = -1;
 
+        private const double defaultSimilarity = 0.95;
+
         // Dictionary to keep hashed frames for quick comparison against multiple similarities
         Dictionary<int, Digest> hashedFrames = null;
 
@@ -55,7 +57,7 @@ namespace unload
 
             txtFPS.PreviewTextInput += TextBoxValidator.ForceDouble;
             txtSimilarity.PreviewTextInput += TextBoxValidator.ForceDouble;
-
+            txtSimilarity.Text = defaultSimilarity.ToString();
 
             // Set initial interface state
             groupPickLoad.IsEnabled = false;
@@ -391,7 +393,7 @@ namespace unload
             int endFrame = int.Parse(txtEndFrame.Text);
             int concurrentTasks = int.Parse(txtConcurrentTasks.Text);
 
-            double minSimilarity = double.Parse(txtSimilarity.Text, CultureInfo.InvariantCulture);
+            double minSimilarity = double.Parse(txtSimilarity.Text);
 
             // Crop and store the user's picked loading frames
             Bitmap[] loadFrames = new Bitmap[pickedLoadingFrames.Count];
@@ -477,7 +479,7 @@ namespace unload
                 return "Error. Make sure start/end frame and FPS are filled in properly.";
             }
 
-            double framesPerSecond = double.Parse(txtFPS.Text, CultureInfo.InvariantCulture);
+            double framesPerSecond = double.Parse(txtFPS.Text);
             int totalFrames = int.Parse(txtEndFrame.Text) - int.Parse(txtStartFrame.Text) + 1;
 
             if (totalFrames <= 0)
@@ -504,7 +506,7 @@ namespace unload
                 return "Error. Make sure start/end frame and FPS are filled in properly.";
             }
 
-            double framesPerSecond = double.Parse(txtFPS.Text, CultureInfo.InvariantCulture);
+            double framesPerSecond = double.Parse(txtFPS.Text);
             int totalFrames = int.Parse(txtEndFrame.Text) - int.Parse(txtStartFrame.Text) + 1;
 
             if (totalFrames <= 0)

@@ -37,7 +37,7 @@ namespace unload
         // When applied to a text box this prevents anything other than any number to be entered
         public static void ForceDouble(object sender, TextCompositionEventArgs e)
         {
-            Regex regex = new Regex("[^0-9.]+");
+            Regex regex = new Regex("[^0-9.,]+");
             e.Handled = regex.IsMatch(e.Text);
         }
     }
