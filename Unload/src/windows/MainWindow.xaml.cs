@@ -54,6 +54,7 @@ namespace unload
             txtStartFrame.PreviewTextInput += TextBoxValidator.ForceInteger;
             txtEndFrame.PreviewTextInput += TextBoxValidator.ForceInteger;
             txtConcurrentTasks.PreviewTextInput += TextBoxValidator.ForceInteger;
+            txtStepSize.PreviewTextInput += TextBoxValidator.ForceInteger;
 
             txtFPS.PreviewTextInput += TextBoxValidator.ForceDouble;
             txtSimilarity.PreviewTextInput += TextBoxValidator.ForceDouble;
@@ -573,7 +574,8 @@ namespace unload
         // Move the timeline back 0.25 seconds
         private void btnBackFar_Click(object sender, RoutedEventArgs e)
         {
-            sliderTimeline.Value -= (int)Math.Round(double.Parse(txtFPS.Text) / 4d);
+            double framesToSubtract = double.Parse(txtFPS.Text) / (1000 / double.Parse(txtStepSize.Text));
+            sliderTimeline.Value -= (int)Math.Round(framesToSubtract);
 
             SetVideoFrame((int)sliderTimeline.Value);
         }
@@ -586,10 +588,11 @@ namespace unload
             SetVideoFrame((int)sliderTimeline.Value);
         }
 
-        // Move the timeline forward 0.25 seconds
+        // Move the timeline forward by the entered step size
         private void btnForward_Click(object sender, RoutedEventArgs e)
         {
-            sliderTimeline.Value += (int)Math.Round(double.Parse(txtFPS.Text) / 4d);
+            double framesToAdvance = double.Parse(txtFPS.Text) / (1000 / double.Parse(txtStepSize.Text));
+            sliderTimeline.Value += (int)Math.Round(framesToAdvance);
 
             SetVideoFrame((int)sliderTimeline.Value);
         }

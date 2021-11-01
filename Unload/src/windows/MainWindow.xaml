@@ -130,7 +130,7 @@
             <Grid.RowDefinitions>
                 <RowDefinition Height="144"/>
                 <RowDefinition/>
-                <RowDefinition Height="134.04"/>
+                <RowDefinition Height="163.04"/>
             </Grid.RowDefinitions>
             <GroupBox x:Name="groupLoadDetection" Header="Load Detection" Margin="10,10,10,5">
                 <Grid HorizontalAlignment="Stretch" Margin="5,5,5,5" VerticalAlignment="Stretch">
@@ -151,16 +151,17 @@
             <GroupBox x:Name="groupSettings" Header="Settings" Grid.Row="2" Margin="10,5,10,10">
                 <Grid Margin="5,5,5,5">
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition/>
-                        <ColumnDefinition/>
+                        <ColumnDefinition Width="12*"/>
+                        <ColumnDefinition Width="5*"/>
                     </Grid.ColumnDefinitions>
-                    <Label x:Name="lblSimilarity_Copy" Content="Concurrent Tasks:" Padding="0,0,0,0" VerticalContentAlignment="Center" Height="20" VerticalAlignment="Top"/>
+                    <Label x:Name="lblConcurrentTasks" Content="Concurrent tasks:" Padding="0,0,0,0" VerticalContentAlignment="Center" Height="20" VerticalAlignment="Top"/>
                     <TextBox x:Name="txtConcurrentTasks" TextWrapping="Wrap" VerticalAlignment="Top" Text="20" Height="20" VerticalContentAlignment="Center" Grid.Column="1" HorizontalContentAlignment="Right" Padding="0,0,5,0"/>
                     <Button x:Name="btnExportTimes" Content="Export Times" VerticalAlignment="Bottom" Click="btnExportTimes_Click" Height="22" Grid.ColumnSpan="2" Margin="0,0,0,1"/>
-                    <CheckBox x:Name="cbxSnapLoads" Content="Snap to Detected Loads" HorizontalAlignment="Left" Margin="0,25,0,0" Height="22" VerticalContentAlignment="Center" Grid.ColumnSpan="2" Width="238" VerticalAlignment="Top" Checked="cbxSnapLoads_Checked" Unchecked="cbxSnapLoads_Unchecked" IsChecked="True"/>
+                    <CheckBox x:Name="cbxSnapLoads" Content="Snap to detected loads" HorizontalAlignment="Left" Margin="0,50,0,0" Height="22" VerticalContentAlignment="Center" Grid.ColumnSpan="2" Width="238" VerticalAlignment="Top" Checked="cbxSnapLoads_Checked" Unchecked="cbxSnapLoads_Unchecked" IsChecked="True"/>
+                    <Label x:Name="lblStepSize" Content="Fast forward step size (ms):" Padding="0,0,0,0" VerticalContentAlignment="Center" Height="20" VerticalAlignment="Top" Margin="0,25,0,0"/>
+                    <TextBox x:Name="txtStepSize" TextWrapping="Wrap" VerticalAlignment="Top" Text="250" Height="20" VerticalContentAlignment="Center" Grid.Column="1" HorizontalContentAlignment="Right" Padding="0,0,5,0" Margin="0,25,0,0"/>
                 </Grid>
             </GroupBox>
         </Grid>
-
     </Grid>
 </Window>
