@@ -39,9 +39,11 @@ namespace unload
         {
             InitializeComponent();
 
-            detectedLoads.Add(new DetectedLoad(1, 1, 100));
-            detectedLoads.Add(new DetectedLoad(2, 101, 200));
-            detectedLoads.Add(new DetectedLoad(3, 201, 300));
+            for (int i = 0; i < 30; i++)
+            {
+                detectedLoads.Add(new DetectedLoad(i, i + 101, i + 200));
+            }
+
             lbxLoads.ItemsSource = detectedLoads;
 
             // Confirm FFmpeg is available
