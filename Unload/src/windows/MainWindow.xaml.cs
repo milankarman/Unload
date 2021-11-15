@@ -39,7 +39,9 @@ namespace unload
         {
             InitializeComponent();
 
-            detectedLoads.Add(new DetectedLoad() { Name = "1.", StartFrame = 1, EndFrame = 100 });
+            detectedLoads.Add(new DetectedLoad(1, 1, 100));
+            detectedLoads.Add(new DetectedLoad(2, 101, 200));
+            detectedLoads.Add(new DetectedLoad(3, 201, 300));
             lbxLoads.ItemsSource = detectedLoads;
 
             // Confirm FFmpeg is available
@@ -70,7 +72,7 @@ namespace unload
             groupVideoControls.IsEnabled = false;
             groupFrameCount.IsEnabled = false;
             groupLoadDetection.IsEnabled = false;
-            groupDetectedLoads.IsEnabled = false;
+            //groupDetectedLoads.IsEnabled = false;
             btnExportTimes.IsEnabled = false;
             cbxSnapLoads.IsEnabled = false;
             lblPickedLoadCount.Visibility = Visibility.Hidden;
@@ -439,7 +441,7 @@ namespace unload
                     }
                     else if (j >= frameSimilarities[i].Length - 1 && subsequentLoadFrame)
                     {
-                        detectedLoads.Add(new DetectedLoad() { StartFrame = currentLoadStartFrame, EndFrame = i - 1 });
+                        detectedLoads.Add(new DetectedLoad(j, currentLoadStartFrame, i - 1));
                         lbxLoads.DataContext = detectedLoads;
                         // Print out loading screen number, start and end frame - and total frames
                         // lbxLoads.Items.Add($"{loadScreenCounter}\t{currentLoadStartFrame}\t{i - 1}\t{i - currentLoadStartFrame}");
@@ -694,6 +696,39 @@ namespace unload
 
                 // Write all lines to file
                 File.WriteAllLinesAsync(path, lines);
+            }
+        }
+
+        private void btnDeleteDetectedLoad_Clicked(object sender, RoutedEventArgs e)
+        {
+            Button cmd = (Button)sender;
+
+            if (cmd.DataContext is DetectedLoad)
+            {
+                DetectedLoad load = (DetectedLoad)cmd.DataContext;
+                detectedLoads.Remove(load);
+            }
+        }
+
+        private void txtStartFrameDetectedLoad_TextChanged(object sender, RoutedEventArgs e)
+        {
+            TextBox cmd = (TextBox)sender;
+
+            if (cmd.DataContext is DetectedLoad)
+            {
+                DetectedLoad load = (DetectedLoad)cmd.DataContext;
+                detectedLoads[detectedLoads.IndexOf(load)].StartFrame = int.Parse(cmd.Text);
+            }
+        }
+
+        private void txtEndFrameDetectedLoad_TextChanged(object sender, RoutedEventArgs e)
+        {
+            TextBox cmd = (TextBox)sender;
+
+            if (cmd.DataContext is DetectedLoad)
+            {
+                DetectedLoad load = (DetectedLoad)cmd.DataContext;
+                detectedLoads[detectedLoads.IndexOf(load)].EndFrame = int.Parse(cmd.Text);
             }
         }
 

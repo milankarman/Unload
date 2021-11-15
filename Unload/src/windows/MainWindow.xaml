@@ -17,18 +17,20 @@
                 </Grid.RowDefinitions>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="auto"/>
+                    <ColumnDefinition Width="auto"/>
                     <ColumnDefinition Width="1*"/>
+                    <ColumnDefinition Width="30"/>
                     <ColumnDefinition Width="1*"/>
+                    <ColumnDefinition Width="30"/>
                     <ColumnDefinition Width="auto"/>
                 </Grid.ColumnDefinitions>
-                <TextBlock Text="{Binding Path=Name}" Grid.Column="0" Margin="5,0,0,0" VerticalAlignment="Center" />
-                <TextBlock Text="{Binding Path=StartFrame}" Grid.Column="1" VerticalAlignment="Center" />
-                <TextBlock Text="{Binding Path=EndFrame}" Grid.Column="2" VerticalAlignment="Center" />
-                <StackPanel Orientation="Horizontal" Grid.Column="3">
-                    <Button Content="◄" Width="30" />
-                    <Button Content="►" Width="30" Margin="5,0,5,0" />
-                    <Button Content="✎" Width="30" />
-                </StackPanel>
+                <TextBlock Text="{Binding Path=Index}" Grid.Column="0" VerticalAlignment="Center"/>
+                <TextBlock Text="." Grid.Column="1" Margin="0,0,5,0" VerticalAlignment="Center"/>
+                <TextBox Text="{Binding Path=StartFrame}" Grid.Column="2" VerticalAlignment="Center" VerticalContentAlignment="Center" Height="22" TextChanged="txtStartFrameDetectedLoad_TextChanged"/>
+                <Button Content="Go" Width="30" Grid.Column="3"/>
+                <TextBox Text="{Binding Path=EndFrame}" Grid.Column="4" Margin="5,0,0,0" VerticalContentAlignment="Center" Height="22" VerticalAlignment="Center" TextChanged="txtEndFrameDetectedLoad_TextChanged" />
+                <Button Content="Go" Width="30" Grid.Column="5" />
+                <Button Content="Del" Width="30" Grid.Column="6" Margin="5,0,0,0" Click="btnDeleteDetectedLoad_Clicked"/>
             </Grid>
         </DataTemplate>
     </Window.Resources>
