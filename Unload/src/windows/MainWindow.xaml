@@ -11,27 +11,37 @@
     </Window.TaskbarItemInfo>
     <Window.Resources>
         <DataTemplate x:Key="DetectedLoadTemplate">
-            <Grid Width="228" Margin="0,0,0,5">
+            <Grid Width="auto" Margin="0,0,0,5">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="1*"/>
                 </Grid.RowDefinitions>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="30"/>
                     <ColumnDefinition Width="1*"/>
-                    <ColumnDefinition Width="30"/>
                     <ColumnDefinition Width="1*"/>
-                    <ColumnDefinition Width="30"/>
                     <ColumnDefinition Width="auto"/>
                 </Grid.ColumnDefinitions>
                 <StackPanel Grid.Column="0" Orientation="Horizontal">
                     <TextBlock Text="{Binding Path=Index}" VerticalAlignment="Center"/>
                     <TextBlock Text="." Margin="0,0,5,0" VerticalAlignment="Center"/>
                 </StackPanel>
-                <TextBox Text="{Binding Path=StartFrame}" Grid.Column="1" VerticalAlignment="Center" VerticalContentAlignment="Center" Height="22" TextChanged="txtStartFrameDetectedLoad_TextChanged"/>
-                <Button Content="Go" Width="30" Grid.Column="2"/>
-                <TextBox Text="{Binding Path=EndFrame}" Grid.Column="3" Margin="5,0,0,0" VerticalContentAlignment="Center" Height="22" VerticalAlignment="Center" TextChanged="txtEndFrameDetectedLoad_TextChanged" />
-                <Button Content="Go" Width="30" Grid.Column="4" />
-                <Button Content="Del" Width="30" Grid.Column="5" Margin="5,0,0,0" Click="btnDeleteDetectedLoad_Clicked"/>
+                <Grid Grid.Column="1">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="1*"/>
+                        <ColumnDefinition Width="auto"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBox Text="{Binding Path=StartFrame}" Grid.Column="0" VerticalAlignment="Center" VerticalContentAlignment="Center" Height="22" LostFocus="txtStartFrameDetectedLoad_TextChanged" KeyDown="txtStartFrameDetectedLoad_KeyDown"/>
+                    <Button Content="Go" Width="30" Grid.Column="1" Click="btnGotoStartFrameDetectLoad_Click"/>
+                </Grid>
+                <Grid Grid.Column="2">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="1*"/>
+                        <ColumnDefinition Width="auto"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBox Text="{Binding Path=EndFrame}" Grid.Column="0" Margin="10,0,0,0" VerticalContentAlignment="Center" Height="22" VerticalAlignment="Center"  LostFocus="txtEndFrameDetectedLoad_TextChanged" KeyDown="txtEndFrameDetectedLoad_KeyDown" />
+                    <Button Content="Go" Width="30" Grid.Column="1" Click="btnGotoEndFrameDetectLoad_Click"/>
+                </Grid>
+                <Button Content="-" Width="30" Grid.Column="3" Margin="10,0,0,0" Click="btnDeleteDetectedLoad_Click"/>
             </Grid>
         </DataTemplate>
     </Window.Resources>
@@ -40,9 +50,9 @@
             <RowDefinition Height="1*"/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="280"/>
+            <ColumnDefinition Width="320"/>
             <ColumnDefinition/>
-            <ColumnDefinition Width="280"/>
+            <ColumnDefinition Width="320"/>
         </Grid.ColumnDefinitions>
         <Grid x:Name="gridCenter" Grid.Column="1" FlowDirection="LeftToRight">
             <Grid.RowDefinitions>
@@ -174,20 +184,19 @@
             <GroupBox x:Name="groupDetectedLoads" Header="Detected Loads" Margin="10,5,10,5" Grid.Row="1">
                 <ScrollViewer VerticalScrollBarVisibility="Hidden">
                     <StackPanel>
-                        <Grid HorizontalAlignment="Stretch" Margin="5,0,10,0">
+                        <Grid HorizontalAlignment="Stretch" Margin="0,0,5,0">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="30"/>
                                 <ColumnDefinition Width="1*"/>
                                 <ColumnDefinition Width="1*"/>
                                 <ColumnDefinition Width="30"/>
-
                             </Grid.ColumnDefinitions>
-                            <Label Content="#" Grid.Column="0"/>
+                            <Label Content="#" Grid.Column="0" HorizontalAlignment="Left" HorizontalContentAlignment="Left"/>
                             <Label Content="Start" Grid.Column="1" HorizontalAlignment="Left" HorizontalContentAlignment="Left"/>
                             <Label Content="End" Grid.Column="2" HorizontalAlignment="Left" HorizontalContentAlignment="Left"/>
-                            <Button Content="+" Grid.Column="3" Height="20"/>
+                            <Button Content="+" x:Name="btnAddLoad" Grid.Column="3" Height="20" Click="btnAddLoad_Click"/>
                         </Grid>
-                        <ItemsControl x:Name="lbxLoads" Margin="5,5,5,5" ItemsSource="{Binding}" ItemTemplate="{StaticResource DetectedLoadTemplate}" />
+                        <ItemsControl Width="auto" HorizontalAlignment="Stretch" x:Name="lbxLoads" Margin="5,5,5,5" ItemsSource="{Binding}" ItemTemplate="{StaticResource DetectedLoadTemplate}" />
                     </StackPanel>
                 </ScrollViewer>
             </GroupBox>

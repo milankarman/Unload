@@ -1,9 +1,4 @@
-﻿using System;
-using System.Windows.Input;
-using System.Windows.Controls;
-using System.Text.RegularExpressions;
-
-namespace unload
+﻿namespace unload
 {
     public class DetectedLoad
     {

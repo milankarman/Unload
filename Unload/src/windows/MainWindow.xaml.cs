@@ -3,6 +3,7 @@ using System.IO;
 using System.Linq;
 using System.Drawing;
 using System.Windows;
+using System.Windows.Input;
 using System.Threading;
 using System.Windows.Controls;
 using System.Collections.ObjectModel;
@@ -38,12 +39,6 @@ namespace unload
         public MainWindow()
         {
             InitializeComponent();
-
-            for (int i = 0; i < 30; i++)
-            {
-                detectedLoads.Add(new DetectedLoad(i, i + 101, i + 200));
-            }
-
             lbxLoads.ItemsSource = detectedLoads;
 
             // Confirm FFmpeg is available
@@ -74,7 +69,7 @@ namespace unload
             groupVideoControls.IsEnabled = false;
             groupFrameCount.IsEnabled = false;
             groupLoadDetection.IsEnabled = false;
-            //groupDetectedLoads.IsEnabled = false;
+            groupDetectedLoads.IsEnabled = false;
             btnExportTimes.IsEnabled = false;
             cbxSnapLoads.IsEnabled = false;
             lblPickedLoadCount.Visibility = Visibility.Hidden;
@@ -137,7 +132,7 @@ namespace unload
             hashedFrames = null;
             pickedLoadingFrames.Clear();
             pickedLoadingFrameIndex = -1;
-            lbxLoads.Items.Clear();
+            detectedLoads.Clear();
 
             sliderTimeline.Maximum = totalVideoFrames;
             sliderTimeline.Value = 1;
@@ -200,7 +195,7 @@ namespace unload
             if (dialog.ShowDialog() == true)
             {
                 // Remove symbols from path and append _frames
-                string fileDirectory =  Path.GetDirectoryName(dialog.FileName);
+                string fileDirectory = Path.GetDirectoryName(dialog.FileName);
                 string targetDirectory = Path.Join(fileDirectory, RemoveSymbols(dialog.SafeFileName) + "_frames");
 
                 if (!Directory.Exists(targetDirectory))
@@ -394,7 +389,7 @@ namespace unload
         private void btnDetectLoadFrames_Click(object sender, RoutedEventArgs e)
         {
             // Reset the listbox and add headers
-            lbxLoads.Items.Clear();
+            detectedLoads.Clear();
 
             // Read user arguments
             int startFrame = int.Parse(txtStartFrame.Text);
@@ -443,10 +438,8 @@ namespace unload
                     }
                     else if (j >= frameSimilarities[i].Length - 1 && subsequentLoadFrame)
                     {
-                        detectedLoads.Add(new DetectedLoad(j, currentLoadStartFrame, i - 1));
-                        lbxLoads.DataContext = detectedLoads;
                         // Print out loading screen number, start and end frame - and total frames
-                        // lbxLoads.Items.Add($"{loadScreenCounter}\t{currentLoadStartFrame}\t{i - 1}\t{i - currentLoadStartFrame}");
+                        detectedLoads.Add(new DetectedLoad(loadScreenCounter, currentLoadStartFrame, i - 1));
 
                         // Save screen start and end to snap the timeline slider to later
                         sliderTicks.Add(currentLoadStartFrame);
@@ -456,7 +449,11 @@ namespace unload
                         currentLoadStartFrame = 0;
                     }
                 }
+
             }
+
+            SetDetectedLoads();
+            CountLoadFrames();
 
             // Save start frame, end frame, first frame and last frame to snap the timeline slider to later
             sliderTicks.Add(startFrame);
@@ -465,7 +462,7 @@ namespace unload
             sliderTicks.Add(totalVideoFrames);
 
             // Update the interface
-            txtLoadFrames.Text = loadFrameCounter.ToString();
+
             btnDetectLoadFrames.IsEnabled = true;
             cbxSnapLoads.IsEnabled = true;
             groupDetectedLoads.IsEnabled = true;
@@ -475,7 +472,36 @@ namespace unload
             CalculateTimes();
         }
 
-        // Calculates the final times
+        private void SetDetectedLoads()
+        {
+            detectedLoads = new ObservableCollection<DetectedLoad>(detectedLoads.OrderBy(i => i.StartFrame));
+
+            for (int i = 0; i < detectedLoads.Count; i++)
+            {
+                detectedLoads[i].Index = i + 1;
+            }
+
+            lbxLoads.ItemsSource = detectedLoads;
+        }
+
+        private void CountLoadFrames()
+        {
+            int frames = 0;
+
+            foreach (DetectedLoad load in detectedLoads)
+            {
+                frames += load.EndFrame - load.StartFrame;
+            }
+
+            txtLoadFrames.Text = frames.ToString();
+        }
+
+        private void btnAddLoad_Click(object sender, RoutedEventArgs e)
+        {
+            detectedLoads.Add(new DetectedLoad(0, 0, 0));
+            SetDetectedLoads();
+        }
+
         private void btnCalcTimes_Click(object sender, RoutedEventArgs e)
         {
             CalculateTimes();
@@ -558,18 +584,6 @@ namespace unload
 
             // Enable the export button when times are calculated
             btnExportTimes.IsEnabled = true;
-        }
-
-        // Move the video preview to the selected loading screen
-        private void lbxLoads_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            //if (lbxLoads.SelectedItem != null && lbxLoads.SelectedIndex > 0)
-            //{
-            //    int frame = int.Parse(lbxLoads.SelectedItem.ToString().Split("\t")[1]);
-
-            //    sliderTimeline.Value = frame;
-            //    SetVideoFrame(frame);
-            //}
         }
 
         // Move the timeline back 1 frame
@@ -686,9 +700,11 @@ namespace unload
                 // Read all load screens into to write to file
                 List<string> lines = new List<string>();
 
-                foreach (string loadString in lbxLoads.Items)
+                lines.Add("#,First,Last,Total");
+
+                foreach (DetectedLoad load in detectedLoads)
                 {
-                    lines.Add(loadString.Replace('\t', ','));
+                    lines.Add($"{load.Index + 1},{load.StartFrame},{load.EndFrame},{load.EndFrame - load.StartFrame}");
                 }
 
                 // Add final times into list to write to file
@@ -701,7 +717,7 @@ namespace unload
             }
         }
 
-        private void btnDeleteDetectedLoad_Clicked(object sender, RoutedEventArgs e)
+        private void btnDeleteDetectedLoad_Click(object sender, RoutedEventArgs e)
         {
             Button cmd = (Button)sender;
 
@@ -710,27 +726,97 @@ namespace unload
                 DetectedLoad load = (DetectedLoad)cmd.DataContext;
                 detectedLoads.Remove(load);
             }
+
+            SetDetectedLoads();
+            CountLoadFrames();
+            CalculateTimes();
+        }
+
+        private void UpdateDetectedLoadStartFrame(object sender)
+        {
+            TextBox cmd = (TextBox)sender;
+
+            if (cmd.DataContext is DetectedLoad)
+            {
+                try
+                {
+                    DetectedLoad load = (DetectedLoad)cmd.DataContext;
+                    detectedLoads[detectedLoads.IndexOf(load)].StartFrame = int.Parse(cmd.Text);
+                }
+                catch { }
+            }
+
+            SetDetectedLoads();
+            CountLoadFrames();
+            CalculateTimes();
         }
 
         private void txtStartFrameDetectedLoad_TextChanged(object sender, RoutedEventArgs e)
         {
-            TextBox cmd = (TextBox)sender;
+            UpdateDetectedLoadStartFrame(sender);
+        }
 
-            if (cmd.DataContext is DetectedLoad)
+        private void txtStartFrameDetectedLoad_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Return)
             {
-                DetectedLoad load = (DetectedLoad)cmd.DataContext;
-                detectedLoads[detectedLoads.IndexOf(load)].StartFrame = int.Parse(cmd.Text);
+                UpdateDetectedLoadStartFrame(sender);
             }
         }
 
-        private void txtEndFrameDetectedLoad_TextChanged(object sender, RoutedEventArgs e)
+        private void UpdateDetectedLoadEndFrame(object sender)
         {
             TextBox cmd = (TextBox)sender;
 
             if (cmd.DataContext is DetectedLoad)
             {
+                try
+                {
+                    DetectedLoad load = (DetectedLoad)cmd.DataContext;
+                    detectedLoads[detectedLoads.IndexOf(load)].EndFrame = int.Parse(cmd.Text);
+                }
+                catch { }
+            }
+
+            SetDetectedLoads();
+            CountLoadFrames();
+            CalculateTimes();
+        }
+
+        private void txtEndFrameDetectedLoad_TextChanged(object sender, RoutedEventArgs e)
+        {
+            UpdateDetectedLoadEndFrame(sender);
+        }
+
+        private void txtEndFrameDetectedLoad_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Return)
+            {
+                UpdateDetectedLoadEndFrame(sender);
+            }
+        }
+
+        private void btnGotoStartFrameDetectLoad_Click(object sender, RoutedEventArgs e)
+        {
+            Button cmd = (Button)sender;
+
+            if (cmd.DataContext is DetectedLoad)
+            {
                 DetectedLoad load = (DetectedLoad)cmd.DataContext;
-                detectedLoads[detectedLoads.IndexOf(load)].EndFrame = int.Parse(cmd.Text);
+                sliderTimeline.Value = load.StartFrame;
+                txtFrame.Text = load.StartFrame.ToString();
+            }
+        }
+
+        private void btnGotoEndFrameDetectLoad_Click(object sender, RoutedEventArgs e)
+        {
+            Button cmd = (Button)sender;
+
+            if (cmd.DataContext is DetectedLoad)
+            {
+                DetectedLoad load = (DetectedLoad)cmd.DataContext;
+                sliderTimeline.Value = load.EndFrame;
+                txtFrame.Text = load.EndFrame.ToString();
             }
         }
 
