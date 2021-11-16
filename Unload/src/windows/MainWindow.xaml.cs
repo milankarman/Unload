@@ -316,6 +316,9 @@ namespace unload
                     // Enable new options when frame hashing succeeds
                     Dispatcher.Invoke(() =>
                     {
+                        btnAddLoadFrame.IsEnabled = false;
+                        btnRemoveLoadFrame.IsEnabled = false;
+
                         sliderCropHeight.IsEnabled = false;
                         sliderCropWidth.IsEnabled = false;
                         sliderCropX.IsEnabled = false;
@@ -362,7 +365,7 @@ namespace unload
             {
                 // Clear dictionairy and update interface states
                 hashedFrames = null;
-                lbxLoads.Items.Clear();
+                detectedLoads.Clear();
                 sliderTimeline.Ticks.Clear();
 
                 txtLoadFrames.Text = "0";
@@ -374,6 +377,9 @@ namespace unload
                 sliderCropWidth.IsEnabled = true;
                 sliderCropX.IsEnabled = true;
                 sliderCropY.IsEnabled = true;
+
+                btnAddLoadFrame.IsEnabled = true;
+                ToggleLoadPickerButtons();
 
                 groupDetectedLoads.IsEnabled = false;
                 txtStartFrame.IsEnabled = true;
@@ -926,7 +932,11 @@ namespace unload
         {
             btnNextLoadFrame.IsEnabled = pickedLoadingFrameIndex < pickedLoadingFrames.Count - 1;
             btnPreviousLoadFrame.IsEnabled = pickedLoadingFrameIndex > 0;
-            btnRemoveLoadFrame.IsEnabled = pickedLoadingFrameIndex >= 0;
+
+            if (hashedFrames == null)
+            {
+                btnRemoveLoadFrame.IsEnabled = pickedLoadingFrameIndex >= 0;
+            }
 
             if (pickedLoadingFrames.Count > 1)
             {
