@@ -736,13 +736,13 @@ namespace unload
                 // Add final times into list to write to file
                 lines.Add("");
                 lines.Add("Final Times");
-                lines.Add($"Time without loads,{GetLoadlessTimeString()}");
-                lines.Add($"Time with loads,{GetTotalTimeString()}");
+                lines.Add($"Time without loads,\"{GetLoadlessTimeString()}\"");
+                lines.Add($"Time with loads,\"{GetTotalTimeString()}\"");
 
                 // Add unload settings into the list to write to the file
                 lines.Add("");
                 lines.Add("Unload Settings");
-                lines.Add($"Minimum similarity,{usedMinSimilarity}");
+                lines.Add($"Minimum similarity,\"{usedMinSimilarity}\"");
                 lines.Add($"Minimum frames,{usedMinFrames}");
 
                 // Write all lines to file
