@@ -1,6 +1,6 @@
 <br />
 <p align="center">
-  <img src="Unload/icon/icon_256.png" alt="Logo" width="60" height="60">
+  <img src="Unload/icon/icon.png" alt="Logo" width="60" height="60">
 
   <h2 align="center">Unload</h2>
 
@@ -11,7 +11,7 @@
     -
     <a href="../../issues">Request Feature</a>
       -
-    <a href="https://www.youtube.com/watch?v=tgFAWxCUGZY">In Depth Video Guide</a>
+    <a href="https://www.youtube.com/watch?v=tgFAWxCUGZY">Video Guide</a>
   </p>
 </p>
 
@@ -28,7 +28,7 @@
 
 # About
 
-Speedrun timing is a tricky subject. A community doesn't want to give anyone an unfair advantage, but you also don't want the timing and verification process of new runs to take too long. Unload is made to help with those speedruns that choose loadless timing, yet suffer from having a lot of loads. I ran into this problem with speedruns of the game "The Hobbit" which I verify - and thus Unload was born.
+Speedrun timing is a tricky subject. A community doesn't want to give anyone an unfair advantage, but you also don't want the timing and verification process of new runs to take too long. Unload is made to help with those speedruns that choose loadless timing yet suffer from having a lot of loads. I ran into this problem with speedruns of the game "The Hobbit" which I verify - and thus Unload was born.
 
 If the game you verify has consistent recognizable loading screens then Unload should be able to detect them all and give accurate loadless timing.
 
@@ -40,19 +40,19 @@ If the game you verify has consistent recognizable loading screens then Unload s
 <br />
 
 # Features
-* Choose one or more images of loading screens and Unload will detect them throughout the VOD.
-* There's a clear list of every load screen that you can interact with to double check your work.
+* Choose one or more images of loading screens and Unload will detect them throughout the video.
+* Quickly edit detected loads to suit your needs
 * Just select a start and ending frame for a perfect framecount.
 * You choose the loading frame from the same video you verify, so even bad video quality load screens can be recognized.
-* Unload uses FFMpeg, meaning it can work with many video formats.
-* You can export to a CSV sheet to keep a clean log of verifications.
+* Unload can work with most video formats.
+* Option to export to a CSV sheet to keep a clean log of verifications.
 * Options to crop and change VODs for fast processing
 
 # Usage
 
 *I designed Unload to feel similar to other programs used for verifying like VirtualDub, if you're familiar with something like that then a lot of things should make sense right away.*
 
-**If you would rather watch an in depth video guide then go [here](https://www.youtube.com/watch?v=tgFAWxCUGZY).**
+**If you would rather watch a video guide then go [here](https://www.youtube.com/watch?v=tgFAWxCUGZY).** Note that this is slightly outdated by now but the workflow remains the same.
 
 First hit the "Convert and Load" button and select the video to review. You'll see some options for converting. The default values are fine but an advanced user might choose to tweak these. Hitting convert here will convert the video to images so Unload can use them, depending on your hardware and the length of the video this could take a while.
 
@@ -61,10 +61,11 @@ Next navigate through the timeline using the large slider and back/forward butto
 Next find a frame of a loading screen and hit "+" in the "Pick Load" panel. Now use the sliders below the button to crop to the recognizable part of the loading screen. The smaller you make this the faster hashing will finish. If you have multiple different looking loading screens you can hit "+" again to add another. Note that every picked loading frame will use the same cropping.
 
 Optionally you can fine tune the similarity for what Unload detects as a loading screen. You can navigate through various points in your video and hit "Check Similarity to Video Frame" and find a number lower than the similarity you see on loading screens, but higher than regular gameplay.
+You can also change the minimum amount of frames for a load frame if you get short false positives
 
 Finally hit "Prepare Frames". When that is done you can now hit "Detect Load Frames". The list on the right will now fill up with every loading screen found, and you'll see your final times in the bottom left.
 
-You can click the loading screens in the list to see the frames they start and you can also move around the timeline which will now snap to the start and end of loading screens. I recommend you double check the loading screens at this point. If anything is off you can easily tweak the similarity and detect load frames again. But if you want to make a larger change like changing the cropping of picked loading screen; you'll have to reset frames first.
+The detected loading screens are now listen on the right side of Unload. Here you can navigate through them, edit there timings and add more if need be. I recommend you double check the loading screens at this point. If anything is off you can easily tweak the similarity and detect load frames again. But if you want to make a larger change like changing the cropping of picked loading screen; you'll have to reset frames first.
 
 # Download
 
@@ -80,11 +81,11 @@ To answer this you'll have to look at how your game looks when it loads:
 
 - If you have a set of different looking loading screens and all are clearly different from gameplay then there's a great chance you can choose them all and Unload can detect them.
 
-- If your loading screens are pure black screens, Unload *might* work but you would have to be very careful that no non-loading black screens get picked up.
+- If your loading screens are pure black screens, Unload *might* work but you would have to be careful that no non-loading black screens get picked up.
 
 - If you have a distinct point but its animated, then you might be out of luck because Unload compares against static images.
 
-And if you're still not sure, there's never harm in trying.
+And if you're still not sure there's never harm in trying.
 
 
 <p align="center">
