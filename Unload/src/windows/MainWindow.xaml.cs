@@ -472,6 +472,7 @@ namespace unload
             CalculateTimes();
         }
 
+        // Sorts and gives proper indexes to the detected loads
         private void SetDetectedLoads()
         {
             detectedLoads = new ObservableCollection<DetectedLoad>(detectedLoads.OrderBy(i => i.StartFrame));
@@ -483,7 +484,8 @@ namespace unload
 
             lbxLoads.ItemsSource = detectedLoads;
         }
-
+        
+        // Adds up the loads entered in the detected loads
         private void CountLoadFrames()
         {
             int frames = 0;
@@ -717,6 +719,7 @@ namespace unload
             }
         }
 
+        // Deleted the detected load when the user clicks on the button next to it
         private void btnDeleteDetectedLoad_Click(object sender, RoutedEventArgs e)
         {
             Button cmd = (Button)sender;
@@ -732,6 +735,7 @@ namespace unload
             CalculateTimes();
         }
 
+        // Updates the detected load start frame to the textbox value
         private void UpdateDetectedLoadStartFrame(object sender)
         {
             TextBox cmd = (TextBox)sender;
@@ -751,11 +755,13 @@ namespace unload
             CalculateTimes();
         }
 
+        // Bind detected load update to text changing
         private void txtStartFrameDetectedLoad_TextChanged(object sender, RoutedEventArgs e)
         {
             UpdateDetectedLoadStartFrame(sender);
         }
 
+        // Bind detected load update to hitting enter
         private void txtStartFrameDetectedLoad_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.Key == Key.Return)
@@ -764,6 +770,7 @@ namespace unload
             }
         }
 
+        // Updates the detected load start frame to the textbox value
         private void UpdateDetectedLoadEndFrame(object sender)
         {
             TextBox cmd = (TextBox)sender;
@@ -783,11 +790,13 @@ namespace unload
             CalculateTimes();
         }
 
+        // Bind detected load update to text changing
         private void txtEndFrameDetectedLoad_TextChanged(object sender, RoutedEventArgs e)
         {
             UpdateDetectedLoadEndFrame(sender);
         }
 
+        // Bind detected load update to hitting enter
         private void txtEndFrameDetectedLoad_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.Key == Key.Return)
@@ -796,6 +805,7 @@ namespace unload
             }
         }
 
+        // Moves the timeline to the start frame of the detected load
         private void btnGotoStartFrameDetectLoad_Click(object sender, RoutedEventArgs e)
         {
             Button cmd = (Button)sender;
@@ -808,6 +818,7 @@ namespace unload
             }
         }
 
+        // Moves the timeline to the end frame of the detected load
         private void btnGotoEndFrameDetectLoad_Click(object sender, RoutedEventArgs e)
         {
             Button cmd = (Button)sender;

@@ -1,5 +1,6 @@
 ﻿namespace unload
 {
+    // Class holding data of a single detected loading screen
     public class DetectedLoad
     {
         public int Index { get; set; }
