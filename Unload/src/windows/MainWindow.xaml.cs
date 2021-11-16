@@ -486,7 +486,7 @@ namespace unload
             groupDetectedLoads.IsEnabled = true;
 
             // Save settings used for detecting loads
-            usedMinSimilarity = minFrames;
+            usedMinSimilarity = minSimilarity;
             usedMinFrames = minFrames;
 
             // Set the timeline ticks and calculate the final times
