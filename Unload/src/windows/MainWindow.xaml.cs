@@ -133,6 +133,7 @@ namespace unload
             txtTimeOutput.Clear();
             lblPickedLoadCount.Content = "0 / 0";
             lblPickedLoadCount.Visibility = Visibility.Hidden;
+            btnAddLoadFrame.IsEnabled = true;
 
             hashedFrames = null;
             pickedLoadingFrames.Clear();
@@ -148,6 +149,7 @@ namespace unload
             groupVideo.IsEnabled = true;
             groupVideoControls.IsEnabled = true;
             groupFrameCount.IsEnabled = true;
+            groupDetectedLoads.IsEnabled = false;
 
             btnResetFrames.IsEnabled = false;
             btnDetectLoadFrames.IsEnabled = false;
@@ -514,7 +516,7 @@ namespace unload
 
             foreach (DetectedLoad load in detectedLoads)
             {
-                frames += load.EndFrame - load.StartFrame;
+                frames += load.EndFrame - load.StartFrame + 1;
             }
 
             txtLoadFrames.Text = frames.ToString();
@@ -730,7 +732,7 @@ namespace unload
 
                 foreach (DetectedLoad load in detectedLoads)
                 {
-                    lines.Add($"{load.Index + 1},{load.StartFrame},{load.EndFrame},{load.EndFrame - load.StartFrame + 1}");
+                    lines.Add($"{load.Index},{load.StartFrame},{load.EndFrame},{load.EndFrame - load.StartFrame + 1}");
                 }
 
                 // Add final times into list to write to file
