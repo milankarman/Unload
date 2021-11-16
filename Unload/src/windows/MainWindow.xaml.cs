@@ -746,9 +746,18 @@ namespace unload
                 lines.Add("Unload Settings");
                 lines.Add($"Minimum similarity,\"{usedMinSimilarity}\"");
                 lines.Add($"Minimum frames,{usedMinFrames}");
+                lines.Add($"Start frame,{txtStartFrame.Text}");
+                lines.Add($"End frame,{txtEndFrame.Text}");
 
-                // Write all lines to file
-                File.WriteAllLinesAsync(path, lines);
+                // Try to write all lines to file
+                try
+                {
+                    File.WriteAllLinesAsync(path, lines);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Failed to export. {Environment.NewLine}{ex.Message}");
+                }
             }
         }
 
