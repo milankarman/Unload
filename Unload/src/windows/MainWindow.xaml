@@ -50,9 +50,9 @@
             <RowDefinition Height="1*"/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="320"/>
+            <ColumnDefinition Width="300"/>
             <ColumnDefinition/>
-            <ColumnDefinition Width="320"/>
+            <ColumnDefinition Width="300"/>
         </Grid.ColumnDefinitions>
         <Grid x:Name="gridCenter" Grid.Column="1" FlowDirection="LeftToRight">
             <Grid.RowDefinitions>
@@ -164,7 +164,7 @@
         </Grid>
         <Grid x:Name="gridRight" Grid.Column="2">
             <Grid.RowDefinitions>
-                <RowDefinition Height="144"/>
+                <RowDefinition Height="173"/>
                 <RowDefinition/>
                 <RowDefinition Height="163.04"/>
             </Grid.RowDefinitions>
@@ -174,11 +174,13 @@
                         <ColumnDefinition Width="1*"/>
                         <ColumnDefinition Width="1*"/>
                     </Grid.ColumnDefinitions>
+                    <Button x:Name="btnPrepareFrames" Content="Prepare Frames" VerticalAlignment="Top" Click="btnPrepareFrames_Click" Height="22" Margin="0,0,5,0"/>
+                    <Button x:Name="btnResetFrames" Content="Reset Frames" VerticalAlignment="Top" Height="22" Click="btnResetFrames_Click" Grid.Column="1" Margin="5,0,0,0"/>
                     <Label x:Name="lblSimilarity" Content="Minimum Similarity:" Padding="0,0,0,0" VerticalContentAlignment="Center" Height="22" VerticalAlignment="Top" Margin="0,32,0,0"/>
                     <TextBox x:Name="txtSimilarity" TextWrapping="Wrap" VerticalAlignment="Top" Text="1" Height="22" Grid.Column="1" Margin="5,32,0,0" VerticalContentAlignment="Center" HorizontalContentAlignment="Right" Padding="0,0,5,0"/>
-                    <Button x:Name="btnPrepareFrames" Content="Prepare Frames" VerticalAlignment="Top" Click="btnPrepareFrames_Click" Height="22" Margin="0,0,5,0"/>
+                    <Label x:Name="lblMinFrames" Content="Minimum Frames:" Padding="0,0,0,0" VerticalContentAlignment="Center" Height="22" VerticalAlignment="Top" Margin="0,59,0,0"/>
+                    <TextBox x:Name="txtMinFrames" TextWrapping="Wrap" VerticalAlignment="Top" Text="1" Height="22" Grid.Column="1" Margin="5,59,0,0" VerticalContentAlignment="Center" HorizontalContentAlignment="Right" Padding="0,0,5,0"/>
                     <Button x:Name="btnDetectLoadFrames" Content="Detect Load Frames" VerticalAlignment="Bottom" Height="22" Grid.ColumnSpan="2" Margin="0,0,0,0" Click="btnDetectLoadFrames_Click"/>
-                    <Button x:Name="btnResetFrames" Content="Reset Frames" VerticalAlignment="Top" Height="22" Click="btnResetFrames_Click" Grid.Column="1" Margin="5,0,0,0"/>
                 </Grid>
             </GroupBox>
             <GroupBox x:Name="groupDetectedLoads" Header="Detected Loads" Margin="10,5,10,5" Grid.Row="1">

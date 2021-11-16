@@ -30,6 +30,10 @@ namespace unload
 
         private const double defaultSimilarity = 0.95;
 
+        // Variables to track user actions to store in export
+        private double usedMinSimilarity = 0;
+        private int usedMinFrames = 0;
+
         // Dictionary to keep hashed frames for quick comparison against multiple similarities
         Dictionary<int, Digest> hashedFrames = null;
 
@@ -397,6 +401,7 @@ namespace unload
             int concurrentTasks = int.Parse(txtConcurrentTasks.Text);
 
             double minSimilarity = double.Parse(txtSimilarity.Text);
+            int minFrames = int.Parse(txtMinFrames.Text);
 
             // Crop and store the user's picked loading frames
             Bitmap[] loadFrames = new Bitmap[pickedLoadingFrames.Count];
@@ -438,20 +443,27 @@ namespace unload
                     }
                     else if (j >= frameSimilarities[i].Length - 1 && subsequentLoadFrame)
                     {
-                        // Print out loading screen number, start and end frame - and total frames
-                        detectedLoads.Add(new DetectedLoad(loadScreenCounter, currentLoadStartFrame, i - 1));
+                        int currentLoadEndFrame = i - 1;
+                        int currentLoadTotalFrames = currentLoadEndFrame - currentLoadStartFrame + 1;
 
-                        // Save screen start and end to snap the timeline slider to later
-                        sliderTicks.Add(currentLoadStartFrame);
-                        sliderTicks.Add(i - 1);
+                        // Check if the detected loading screen matches the minimum number of frames set by user
+                        if (currentLoadTotalFrames >= minFrames)
+                        {
+                            // Print out loading screen number, start and end frame - and total frames
+                            detectedLoads.Add(new DetectedLoad(loadScreenCounter, currentLoadStartFrame, currentLoadEndFrame));
+
+                            // Save screen start and end to snap the timeline slider to later
+                            sliderTicks.Add(currentLoadStartFrame);
+                            sliderTicks.Add(currentLoadEndFrame);
+                        }
 
                         subsequentLoadFrame = false;
                         currentLoadStartFrame = 0;
                     }
                 }
-
             }
 
+            // Update the detected loads box and count the total load frames
             SetDetectedLoads();
             CountLoadFrames();
 
@@ -462,10 +474,13 @@ namespace unload
             sliderTicks.Add(totalVideoFrames);
 
             // Update the interface
-
             btnDetectLoadFrames.IsEnabled = true;
             cbxSnapLoads.IsEnabled = true;
             groupDetectedLoads.IsEnabled = true;
+
+            // Save settings used for detecting loads
+            usedMinSimilarity = minFrames;
+            usedMinFrames = minFrames;
 
             // Set the timeline ticks and calculate the final times
             SetTimelineTicks();
@@ -702,17 +717,25 @@ namespace unload
                 // Read all load screens into to write to file
                 List<string> lines = new List<string>();
 
+                lines.Add("Loading Screens");
                 lines.Add("#,First,Last,Total");
 
                 foreach (DetectedLoad load in detectedLoads)
                 {
-                    lines.Add($"{load.Index + 1},{load.StartFrame},{load.EndFrame},{load.EndFrame - load.StartFrame}");
+                    lines.Add($"{load.Index + 1},{load.StartFrame},{load.EndFrame},{load.EndFrame - load.StartFrame + 1}");
                 }
 
                 // Add final times into list to write to file
                 lines.Add("");
+                lines.Add("Final Times");
                 lines.Add($"Time without loads,{GetLoadlessTimeString()}");
                 lines.Add($"Time with loads,{GetTotalTimeString()}");
+
+                // Add unload settings into the list to write to the file
+                lines.Add("");
+                lines.Add("Unload Settings");
+                lines.Add($"Minimum similarity,{usedMinSimilarity}");
+                lines.Add($"Minimum frames,{usedMinFrames}");
 
                 // Write all lines to file
                 File.WriteAllLinesAsync(path, lines);
