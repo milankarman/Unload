@@ -722,10 +722,11 @@ namespace unload
                 string path = dialog.FileName;
 
                 // Read all load screens into to write to file
-                List<string> lines = new List<string>();
-
-                lines.Add("Loading Screens");
-                lines.Add("#,First,Last,Total");
+                List<string> lines = new List<string>
+                {
+                    "Loading Screens",
+                    "#,First,Last,Total"
+                };
 
                 foreach (DetectedLoad load in detectedLoads)
                 {
@@ -754,9 +755,8 @@ namespace unload
         {
             Button cmd = (Button)sender;
 
-            if (cmd.DataContext is DetectedLoad)
+            if (cmd.DataContext is DetectedLoad load)
             {
-                DetectedLoad load = (DetectedLoad)cmd.DataContext;
                 detectedLoads.Remove(load);
             }
 
@@ -770,11 +770,10 @@ namespace unload
         {
             TextBox cmd = (TextBox)sender;
 
-            if (cmd.DataContext is DetectedLoad)
+            if (cmd.DataContext is DetectedLoad load)
             {
                 try
                 {
-                    DetectedLoad load = (DetectedLoad)cmd.DataContext;
                     detectedLoads[detectedLoads.IndexOf(load)].StartFrame = int.Parse(cmd.Text);
                 }
                 catch { }
@@ -805,11 +804,10 @@ namespace unload
         {
             TextBox cmd = (TextBox)sender;
 
-            if (cmd.DataContext is DetectedLoad)
+            if (cmd.DataContext is DetectedLoad load)
             {
                 try
                 {
-                    DetectedLoad load = (DetectedLoad)cmd.DataContext;
                     detectedLoads[detectedLoads.IndexOf(load)].EndFrame = int.Parse(cmd.Text);
                 }
                 catch { }
@@ -840,9 +838,8 @@ namespace unload
         {
             Button cmd = (Button)sender;
 
-            if (cmd.DataContext is DetectedLoad)
+            if (cmd.DataContext is DetectedLoad load)
             {
-                DetectedLoad load = (DetectedLoad)cmd.DataContext;
                 sliderTimeline.Value = load.StartFrame;
                 txtFrame.Text = load.StartFrame.ToString();
             }
@@ -853,9 +850,8 @@ namespace unload
         {
             Button cmd = (Button)sender;
 
-            if (cmd.DataContext is DetectedLoad)
+            if (cmd.DataContext is DetectedLoad load)
             {
-                DetectedLoad load = (DetectedLoad)cmd.DataContext;
                 sliderTimeline.Value = load.EndFrame;
                 txtFrame.Text = load.EndFrame.ToString();
             }
