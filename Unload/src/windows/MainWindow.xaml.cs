@@ -43,6 +43,7 @@ namespace unload
         public MainWindow()
         {
             InitializeComponent();
+            Title += $" {About.version}";
             lbxLoads.ItemsSource = detectedLoads;
 
             // Confirm FFmpeg is available
