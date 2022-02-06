@@ -1,16 +1,18 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Diagnostics;
+using System.Drawing;
 using System.IO;
 using System.Linq;
-using System.Drawing;
-using System.Windows;
-using System.Windows.Input;
-using System.Threading;
-using System.Windows.Controls;
-using System.Collections.ObjectModel;
-using System.Collections.Generic;
-using System.Windows.Media.Imaging;
+using System.Reflection;
 using System.Text.Json;
 using System.Text.RegularExpressions;
+using System.Threading;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Input;
+using System.Windows.Media.Imaging;
 using Microsoft.Win32;
 using Shipwreck.Phash;
 using Xabe.FFmpeg;
@@ -35,15 +37,15 @@ namespace unload
         private int usedMinFrames = 0;
 
         // Dictionary to keep hashed frames for quick comparison against multiple similarities
-        Dictionary<int, Digest> hashedFrames = null;
+        private Dictionary<int, Digest> hashedFrames = null;
 
         // List to keep every tick the timeline slider will snap to such as loading screens
-        readonly List<int> sliderTicks = new List<int>();
+        private readonly List<int> sliderTicks = new List<int>();
 
         public MainWindow()
         {
             InitializeComponent();
-            Title += $" {About.version}";
+            Title += $" {FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).ProductVersion}";
             lbxLoads.ItemsSource = detectedLoads;
 
             // Confirm FFmpeg is available
@@ -312,7 +314,7 @@ namespace unload
                     {
                         // Notify the progress window when a new frame is hashed
                         doneFrames += 1;
-                        double percentage = (double)doneFrames / (double)endFrame * 100d;
+                        double percentage = doneFrames / (double)endFrame * 100d;
                         progress.percentage = percentage;
                     });
 
@@ -508,7 +510,7 @@ namespace unload
 
             lbxLoads.ItemsSource = detectedLoads;
         }
-        
+
         // Adds up the loads entered in the detected loads
         private void CountLoadFrames()
         {
