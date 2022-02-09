@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text.Json;
 using System.Text.RegularExpressions;
 using System.Threading;
@@ -46,6 +48,7 @@ namespace unload
         private string? targetDirectory;
 
         private const string NO_PUBLIC_DIRECTORY = "(Same as converted video)";
+        
         private string? WorkingDirectory
         {
             get
@@ -77,7 +80,7 @@ namespace unload
         public MainWindow()
         {
             InitializeComponent();
-            Title += $" {About.version}";
+            Title += $" {FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).ProductVersion}";
             lbxLoads.ItemsSource = detectedLoads;
 
             // Confirm FFmpeg is available
