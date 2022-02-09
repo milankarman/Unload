@@ -15,6 +15,16 @@ namespace unload
             InitializeComponent();
         }
 
+        private void btnBrowse_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void btnClear_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
         private void btnApply_Click(object sender, RoutedEventArgs e)
         {
           
