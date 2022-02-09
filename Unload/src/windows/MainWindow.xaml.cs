@@ -1,18 +1,20 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Drawing;
 using System.IO;
 using System.Linq;
-using System.Drawing;
-using System.Windows;
-using System.Windows.Input;
-using System.Threading;
-using System.Windows.Controls;
-using System.Collections.ObjectModel;
-using System.Collections.Generic;
-using System.Windows.Media.Imaging;
 using System.Text.Json;
 using System.Text.RegularExpressions;
+using System.Threading;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Input;
+using System.Windows.Media.Imaging;
 using Microsoft.Win32;
+using Microsoft.WindowsAPICodePack.Dialogs;
 using Shipwreck.Phash;
+using unload.Properties;
 using Xabe.FFmpeg;
 
 namespace unload
@@ -35,10 +37,42 @@ namespace unload
         private int usedMinFrames = 0;
 
         // Dictionary to keep hashed frames for quick comparison against multiple similarities
-        Dictionary<int, Digest> hashedFrames = null;
+        private Dictionary<int, Digest> hashedFrames = null;
 
         // List to keep every tick the timeline slider will snap to such as loading screens
-        readonly List<int> sliderTicks = new List<int>();
+        private readonly List<int> sliderTicks = new List<int>();
+
+        private const string FRAMES_SUFFIX = "_frames";
+        private string? targetDirectory;
+
+        private const string NO_PUBLIC_DIRECTORY = "(Same as converted video)";
+        private string? WorkingDirectory
+        {
+            get
+            {
+                string workingDirectoryText = txtWorkingDirectory.Text;
+                return (workingDirectoryText == "" || workingDirectoryText == NO_PUBLIC_DIRECTORY)
+                    ? null
+                    : workingDirectoryText;
+            }
+            set
+            {
+                string newValue;
+                if (string.IsNullOrEmpty(value))
+                {
+                    newValue = NO_PUBLIC_DIRECTORY;
+                    btnClear.IsEnabled = false;
+                }
+                else
+                {
+                    newValue = value;
+                    btnClear.IsEnabled = true;
+                }
+                txtWorkingDirectory.Text = newValue;
+                Settings.Default.WorkingDirectory = newValue;
+                Settings.Default.Save();
+            }
+        }
 
         public MainWindow()
         {
@@ -78,6 +112,7 @@ namespace unload
             btnExportTimes.IsEnabled = false;
             cbxSnapLoads.IsEnabled = false;
             lblPickedLoadCount.Visibility = Visibility.Hidden;
+            WorkingDirectory = Settings.Default.WorkingDirectory;
         }
 
         // Prepares an image sequence and resets the application state
@@ -181,7 +216,9 @@ namespace unload
             {
                 // Create _frames folder to store the image sequence, ommiting illegal symbols
                 string fileDirectory = Path.GetDirectoryName(dialog.FileName);
-                string targetDirectory = Path.Join(fileDirectory, RemoveSymbols(dialog.SafeFileName) + "_frames");
+                targetDirectory = Path.Join(
+                    WorkingDirectory ?? fileDirectory,
+                    RemoveSymbols(dialog.SafeFileName) + FRAMES_SUFFIX);
 
                 if (!Directory.Exists(targetDirectory))
                 {
@@ -203,11 +240,17 @@ namespace unload
             {
                 // Remove symbols from path and append _frames
                 string fileDirectory = Path.GetDirectoryName(dialog.FileName);
-                string targetDirectory = Path.Join(fileDirectory, RemoveSymbols(dialog.SafeFileName) + "_frames");
+                targetDirectory = Path.Join(
+                    WorkingDirectory ?? fileDirectory,
+                    RemoveSymbols(dialog.SafeFileName) + FRAMES_SUFFIX);
 
                 if (!Directory.Exists(targetDirectory))
                 {
-                    MessageBox.Show("No _frames folder accompanying this video found. Convert the video first.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    MessageBox.Show(
+                        $"No {FRAMES_SUFFIX} folder accompanying this video found. Convert the video first.",
+                        "Error",
+                        MessageBoxButton.OK,
+                        MessageBoxImage.Error);
                     return;
                 }
 
@@ -312,7 +355,7 @@ namespace unload
                     {
                         // Notify the progress window when a new frame is hashed
                         doneFrames += 1;
-                        double percentage = (double)doneFrames / (double)endFrame * 100d;
+                        double percentage = doneFrames / (double)endFrame * 100d;
                         progress.percentage = percentage;
                     });
 
@@ -508,7 +551,7 @@ namespace unload
 
             lbxLoads.ItemsSource = detectedLoads;
         }
-        
+
         // Adds up the loads entered in the detected loads
         private void CountLoadFrames()
         {
@@ -716,7 +759,11 @@ namespace unload
         {
             SaveFileDialog dialog = new SaveFileDialog
             {
-                Filter = "Comma Seperated Values (*.csv)|*.csv|All files (*.*)|*.*"
+                Filter = "Comma Seperated Values (*.csv)|*.csv",
+                InitialDirectory = WorkingDirectory,
+                // Remove "_frames" from the name for the csv file
+                FileName = targetDirectory?.Substring(0, targetDirectory.Length - FRAMES_SUFFIX.Length),
+                DefaultExt = "csv",
             };
 
             if (dialog.ShowDialog() == true)
@@ -971,6 +1018,28 @@ namespace unload
             {
                 btnPrepareFrames.IsEnabled = false;
                 btnCheckSimilarity.IsEnabled = false;
+            }
+        }
+
+        private void btnClear_Click(object sender, RoutedEventArgs e)
+        {
+            WorkingDirectory = null;
+        }
+
+        private void btnBrowse_Click(object sender, RoutedEventArgs e)
+        {
+            CommonOpenFileDialog dialog = new CommonOpenFileDialog()
+            {
+                Title = "Select working directory for creating frames",
+                IsFolderPicker = true,
+                EnsureFileExists = true,
+                EnsurePathExists = true,
+                EnsureValidNames = true,
+                Multiselect = false,
+            };
+            if (dialog.ShowDialog() == CommonFileDialogResult.Ok)
+            {
+                WorkingDirectory = dialog.FileName;
             }
         }
     }
