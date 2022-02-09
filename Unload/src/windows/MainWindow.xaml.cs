@@ -51,30 +51,31 @@ namespace unload
         
         private string? WorkingDirectory
         {
-            get
-            {
-                string workingDirectoryText = txtWorkingDirectory.Text;
-                return (workingDirectoryText == "" || workingDirectoryText == NO_PUBLIC_DIRECTORY)
-                    ? null
-                    : workingDirectoryText;
-            }
-            set
-            {
-                string newValue;
-                if (string.IsNullOrEmpty(value))
-                {
-                    newValue = NO_PUBLIC_DIRECTORY;
-                    btnClear.IsEnabled = false;
-                }
-                else
-                {
-                    newValue = value;
-                    btnClear.IsEnabled = true;
-                }
-                txtWorkingDirectory.Text = newValue;
-                Settings.Default.WorkingDirectory = newValue;
-                Settings.Default.Save();
-            }
+            get; set;
+            //get
+            //{
+            //    string workingDirectoryText = txtWorkingDirectory.Text;
+            //    return (workingDirectoryText == "" || workingDirectoryText == NO_PUBLIC_DIRECTORY)
+            //        ? null
+            //        : workingDirectoryText;
+            //}
+            //set
+            //{
+            //    string newValue;
+            //    if (string.IsNullOrEmpty(value))
+            //    {
+            //        newValue = NO_PUBLIC_DIRECTORY;
+            //        btnClear.IsEnabled = false;
+            //    }
+            //    else
+            //    {
+            //        newValue = value;
+            //        btnClear.IsEnabled = true;
+            //    }
+            //    txtWorkingDirectory.Text = newValue;
+            //    Settings.Default.WorkingDirectory = newValue;
+            //    Settings.Default.Save();
+            //}
         }
 
         public MainWindow()
@@ -1044,6 +1045,13 @@ namespace unload
             {
                 WorkingDirectory = dialog.FileName;
             }
+        }
+
+        private void btnStartSettings_Click(object sender, RoutedEventArgs e)
+        {
+            StartSettingsWindow startSettingsWindow = new StartSettingsWindow(this) { Owner = this };
+            startSettingsWindow.Show();
+            IsEnabled = false;
         }
     }
 }
