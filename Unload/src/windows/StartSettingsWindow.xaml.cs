@@ -11,7 +11,7 @@ namespace unload
     {
         private readonly MainWindow mainWindow;
 
-        private string? workingDirectory;
+        private string? workingDirectory = null;
 
         private const string NO_WORKING_DIRECTORY = "Same as video";
 
@@ -19,10 +19,11 @@ namespace unload
         {
             Owner = _mainWindow;
             mainWindow = _mainWindow;
+            workingDirectory = _workingDirectory;
 
             InitializeComponent();
 
-            txtWorkingDirectory.Text = _workingDirectory ?? NO_WORKING_DIRECTORY;
+            txtWorkingDirectory.Text = string.IsNullOrEmpty(workingDirectory) ? NO_WORKING_DIRECTORY : workingDirectory;
 
             if (_workingDirectory != null) btnClear.IsEnabled = true;
         }
@@ -51,12 +52,11 @@ namespace unload
             txtWorkingDirectory.Text = NO_WORKING_DIRECTORY;
             workingDirectory = null;
             btnClear.IsEnabled = false;
-
         }
 
         private void btnApply_Click(object sender, RoutedEventArgs e)
         {
-            workingDirectory = txtWorkingDirectory.Text != NO_WORKING_DIRECTORY ? txtWorkingDirectory.Text : null;
+            // workingDirectory = string.IsNullOrEmpty(workingDirectory) ? null : workingDirectory;
 
             Settings.Default.WorkingDirectory = workingDirectory;
             Settings.Default.Save();

@@ -55,6 +55,9 @@ namespace unload
 
             // Get the specified working directory from settings
             workingDirectory = Settings.Default.WorkingDirectory;
+            
+            // Ensure the working directory is null when none is specified for later checks
+            if (string.IsNullOrEmpty(workingDirectory)) workingDirectory = null;
 
             lbxLoads.ItemsSource = detectedLoads;
 
@@ -90,7 +93,6 @@ namespace unload
             btnExportTimes.IsEnabled = false;
             cbxSnapLoads.IsEnabled = false;
             lblPickedLoadCount.Visibility = Visibility.Hidden;
-            workingDirectory = Settings.Default.WorkingDirectory;
         }
 
         // Prepares an image sequence and resets the application state
