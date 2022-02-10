@@ -25,6 +25,7 @@ namespace unload
     {
         // Keeps the directory of frames being used
         public string? workingDirectory = null;
+        private string? targetDirectory;
 
         private int totalVideoFrames = 0;
 
@@ -44,7 +45,6 @@ namespace unload
         // List to keep every tick the timeline slider will snap to such as loading screens
         private readonly List<int> sliderTicks = new List<int>();
 
-        private string? targetDirectory;
 
         private const string FRAMES_SUFFIX = "_frames";
 
@@ -108,7 +108,15 @@ namespace unload
             if (File.Exists(infoPath))
             {
                 string jsonString = File.ReadAllText(infoPath);
-                ConversionInfo info = JsonSerializer.Deserialize<ConversionInfo>(jsonString);
+                ConversionInfo? info = JsonSerializer.Deserialize<ConversionInfo>(jsonString);
+
+                if (info == null)
+                {
+                    string message = "Couldn't read \"conversion-info.json\" in frames folder. The file might be corrupted.";
+                    MessageBox.Show(message, "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+
+                    return;
+                }
 
                 fps = info.FPS;
                 expectedFrames = info.ExpectedFrames;
@@ -150,7 +158,7 @@ namespace unload
             lblPickedLoadCount.Visibility = Visibility.Hidden;
             btnAddLoadFrame.IsEnabled = true;
 
-            hashedFrames = null;
+            hashedFrames = new Dictionary<int, Digest>();
             pickedLoadingFrames.Clear();
             pickedLoadingFrameIndex = -1;
             detectedLoads.Clear();
@@ -195,7 +203,8 @@ namespace unload
             if (dialog.ShowDialog() == true)
             {
                 // Create _frames folder to store the image sequence, ommiting illegal symbols
-                string fileDirectory = Path.GetDirectoryName(dialog.FileName);
+                string? fileDirectory = Path.GetDirectoryName(dialog.FileName);
+
                 targetDirectory = Path.Join(
                     workingDirectory ?? fileDirectory,
                     RemoveSymbols(dialog.SafeFileName) + FRAMES_SUFFIX);
@@ -219,7 +228,8 @@ namespace unload
             if (dialog.ShowDialog() == true)
             {
                 // Remove symbols from path and append _frames
-                string fileDirectory = Path.GetDirectoryName(dialog.FileName);
+                string? fileDirectory = Path.GetDirectoryName(dialog.FileName);
+
                 targetDirectory = Path.Join(
                     workingDirectory ?? fileDirectory,
                     RemoveSymbols(dialog.SafeFileName) + FRAMES_SUFFIX);
@@ -390,7 +400,7 @@ namespace unload
             if (result == MessageBoxResult.Yes)
             {
                 // Clear dictionairy and update interface states
-                hashedFrames = null;
+                hashedFrames.Clear();
                 detectedLoads.Clear();
                 sliderTimeline.Ticks.Clear();
 
@@ -748,7 +758,7 @@ namespace unload
 
             if (dialog.ShowDialog() == true)
             {
-                string path = dialog.FileName;
+                string? path = dialog.FileName;
 
                 // Read all load screens into to write to file
                 List<string> lines = new List<string>
@@ -779,6 +789,11 @@ namespace unload
                 // Try to write all lines to file
                 try
                 {
+                    if (path == null)
+                    {
+                        throw new Exception("Path not found.");
+                    }
+
                     File.WriteAllLinesAsync(path, lines);
                 }
                 catch (Exception ex)

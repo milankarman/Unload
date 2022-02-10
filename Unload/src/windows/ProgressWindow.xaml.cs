@@ -14,7 +14,7 @@ namespace unload
         // Holds a cancellation token for the process this progress window is linked to
         public CancellationTokenSource cts = new CancellationTokenSource();
 
-        readonly private MainWindow mainWindow = null;
+        readonly private MainWindow mainWindow;
         readonly private string text = string.Empty;
 
         // Initalizes progress window and starts the timer to check for progress
@@ -31,12 +31,13 @@ namespace unload
             {
                 Interval = TimeSpan.FromSeconds(0.25)
             };
+
             timer.Tick += timer_Tick;
             timer.Start();
         }
 
         // Updates the progress every timer tick
-        public void timer_Tick(object sender, EventArgs e)
+        public void timer_Tick(object? sender, EventArgs e)
         {
             SetProgress();
         }
