@@ -20,6 +20,7 @@ namespace unload
         public ConvertWindow(MainWindow _mainWindow, string _filePath, string _targetDirectory)
         {
             // Remember file info
+            Owner = _mainWindow;
             mainWindow = _mainWindow;
             filePath = _filePath;
             targetDirectory = _targetDirectory;
@@ -45,7 +46,8 @@ namespace unload
         // Sets default values from video and shows the window
         public async void GetVideoInfoAndShow()
         {
-            lblFilePath.Content = filePath;
+            tblFilePath.Text = filePath;
+            tblOutputFolderPath.Text = targetDirectory;
 
             // Reads video file info
             IMediaInfo info = await FFmpeg.GetMediaInfo(filePath);

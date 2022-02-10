@@ -24,7 +24,7 @@ namespace unload
     public partial class MainWindow : Window
     {
         // Keeps the directory of frames being used
-        private string workingDirectory = string.Empty;
+        public string? workingDirectory = null;
 
         private int totalVideoFrames = 0;
 
@@ -39,49 +39,23 @@ namespace unload
         private int usedMinFrames = 0;
 
         // Dictionary to keep hashed frames for quick comparison against multiple similarities
-        private Dictionary<int, Digest> hashedFrames = null;
+        private Dictionary<int, Digest> hashedFrames = new Dictionary<int, Digest>();
 
         // List to keep every tick the timeline slider will snap to such as loading screens
         private readonly List<int> sliderTicks = new List<int>();
 
-        private const string FRAMES_SUFFIX = "_frames";
         private string? targetDirectory;
 
-        private const string NO_PUBLIC_DIRECTORY = "(Same as converted video)";
-        
-        private string? WorkingDirectory
-        {
-            get; set;
-            //get
-            //{
-            //    string workingDirectoryText = txtWorkingDirectory.Text;
-            //    return (workingDirectoryText == "" || workingDirectoryText == NO_PUBLIC_DIRECTORY)
-            //        ? null
-            //        : workingDirectoryText;
-            //}
-            //set
-            //{
-            //    string newValue;
-            //    if (string.IsNullOrEmpty(value))
-            //    {
-            //        newValue = NO_PUBLIC_DIRECTORY;
-            //        btnClear.IsEnabled = false;
-            //    }
-            //    else
-            //    {
-            //        newValue = value;
-            //        btnClear.IsEnabled = true;
-            //    }
-            //    txtWorkingDirectory.Text = newValue;
-            //    Settings.Default.WorkingDirectory = newValue;
-            //    Settings.Default.Save();
-            //}
-        }
+        private const string FRAMES_SUFFIX = "_frames";
 
         public MainWindow()
         {
             InitializeComponent();
             Title += $" {FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).ProductVersion}";
+
+            // Get the specified working directory from settings
+            workingDirectory = Settings.Default.WorkingDirectory;
+
             lbxLoads.ItemsSource = detectedLoads;
 
             // Confirm FFmpeg is available
@@ -116,7 +90,7 @@ namespace unload
             btnExportTimes.IsEnabled = false;
             cbxSnapLoads.IsEnabled = false;
             lblPickedLoadCount.Visibility = Visibility.Hidden;
-            WorkingDirectory = Settings.Default.WorkingDirectory;
+            workingDirectory = Settings.Default.WorkingDirectory;
         }
 
         // Prepares an image sequence and resets the application state
@@ -221,7 +195,7 @@ namespace unload
                 // Create _frames folder to store the image sequence, ommiting illegal symbols
                 string fileDirectory = Path.GetDirectoryName(dialog.FileName);
                 targetDirectory = Path.Join(
-                    WorkingDirectory ?? fileDirectory,
+                    workingDirectory ?? fileDirectory,
                     RemoveSymbols(dialog.SafeFileName) + FRAMES_SUFFIX);
 
                 if (!Directory.Exists(targetDirectory))
@@ -230,7 +204,7 @@ namespace unload
                 }
 
                 IsEnabled = false;
-                ConvertWindow convertWindow = new ConvertWindow(this, dialog.FileName, targetDirectory) { Owner = this };
+                ConvertWindow convertWindow = new ConvertWindow(this, dialog.FileName, targetDirectory);
                 convertWindow.GetVideoInfoAndShow();
             }
         }
@@ -245,7 +219,7 @@ namespace unload
                 // Remove symbols from path and append _frames
                 string fileDirectory = Path.GetDirectoryName(dialog.FileName);
                 targetDirectory = Path.Join(
-                    WorkingDirectory ?? fileDirectory,
+                    workingDirectory ?? fileDirectory,
                     RemoveSymbols(dialog.SafeFileName) + FRAMES_SUFFIX);
 
                 if (!Directory.Exists(targetDirectory))
@@ -764,7 +738,7 @@ namespace unload
             SaveFileDialog dialog = new SaveFileDialog
             {
                 Filter = "Comma Seperated Values (*.csv)|*.csv",
-                InitialDirectory = WorkingDirectory,
+                InitialDirectory = workingDirectory,
                 // Remove "_frames" from the name for the csv file
                 FileName = targetDirectory?.Substring(0, targetDirectory.Length - FRAMES_SUFFIX.Length),
                 DefaultExt = "csv",
@@ -1025,31 +999,9 @@ namespace unload
             }
         }
 
-        private void btnClear_Click(object sender, RoutedEventArgs e)
-        {
-            WorkingDirectory = null;
-        }
-
-        private void btnBrowse_Click(object sender, RoutedEventArgs e)
-        {
-            CommonOpenFileDialog dialog = new CommonOpenFileDialog()
-            {
-                Title = "Select working directory for creating frames",
-                IsFolderPicker = true,
-                EnsureFileExists = true,
-                EnsurePathExists = true,
-                EnsureValidNames = true,
-                Multiselect = false,
-            };
-            if (dialog.ShowDialog() == CommonFileDialogResult.Ok)
-            {
-                WorkingDirectory = dialog.FileName;
-            }
-        }
-
         private void btnStartSettings_Click(object sender, RoutedEventArgs e)
         {
-            StartSettingsWindow startSettingsWindow = new StartSettingsWindow(this) { Owner = this };
+            StartSettingsWindow startSettingsWindow = new StartSettingsWindow(this, workingDirectory);
             startSettingsWindow.Show();
             IsEnabled = false;
         }
