@@ -14,7 +14,6 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media.Imaging;
 using Microsoft.Win32;
-using Microsoft.WindowsAPICodePack.Dialogs;
 using Shipwreck.Phash;
 using unload.Properties;
 using Xabe.FFmpeg;
@@ -621,6 +620,28 @@ namespace unload
             return $"{timeWithoutLoads:hh\\:mm\\:ss\\.fff}";
         }
 
+        // Verifies user input is correct and returns the loadless time formatted as a string
+        private string GetTimeSpentLoadingString()
+        {
+            if (!IsValidFramedata())
+            {
+                return "Error. Make sure start/end frame and FPS are filled in properly.";
+            }
+
+            double framesPerSecond = double.Parse(txtFPS.Text);
+            int totalFrames = int.Parse(txtEndFrame.Text) - int.Parse(txtStartFrame.Text) + 1;
+
+            if (framesPerSecond <= 0)
+            {
+                return "Frames per second must be greater than 0.";
+            }
+
+            double loadlessSecondsDouble = int.Parse(txtLoadFrames.Text) / framesPerSecond;
+            TimeSpan timeSpentLoading = TimeSpan.FromSeconds(Math.Round(loadlessSecondsDouble, 3));
+
+            return $"{timeSpentLoading:hh\\:mm\\:ss\\.fff}";
+        }
+
         // Checks if all required fields for frame counting are filled in
         public bool IsValidFramedata()
         {
@@ -777,6 +798,7 @@ namespace unload
                 lines.Add("Final Times");
                 lines.Add($"Time without loads,\"{GetLoadlessTimeString()}\"");
                 lines.Add($"Time with loads,\"{GetTotalTimeString()}\"");
+                lines.Add($"Time spent loading,\"{GetTimeSpentLoadingString()}\"");
 
                 // Add unload settings into the list to write to the file
                 lines.Add("");
