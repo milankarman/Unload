@@ -1,7 +1,4 @@
-﻿using System;
-using System.IO;
-using System.Linq;
-using System.Windows;
+﻿using System.Windows;
 using Microsoft.WindowsAPICodePack.Dialogs;
 using unload.Properties;
 
@@ -56,8 +53,7 @@ namespace unload
 
         private void btnApply_Click(object sender, RoutedEventArgs e)
         {
-            // workingDirectory = string.IsNullOrEmpty(workingDirectory) ? null : workingDirectory;
-
+            mainWindow.workingDirectory = workingDirectory;
             Settings.Default.WorkingDirectory = workingDirectory;
             Settings.Default.Save();
 
