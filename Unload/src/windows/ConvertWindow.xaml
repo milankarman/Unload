@@ -5,9 +5,9 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:unload"
         mc:Ignorable="d"
-        Title="Unload" Height="auto" Width="470" SizeToContent="Height" ResizeMode="NoResize" ShowInTaskbar="False" WindowStyle="None" WindowStartupLocation="CenterOwner" Background="{DynamicResource bgDark}" AllowsTransparency="True">
+        Title="Unload" Height="auto" Width="470" SizeToContent="Height" ResizeMode="NoResize" ShowInTaskbar="False" WindowStyle="None" WindowStartupLocation="CenterOwner" Background="{DynamicResource bgDark}">
     <Grid Margin="0,0,0,0">
-        <Grid Margin="10,10,10,10" Background="{DynamicResource bgDark}" Grid.RowSpan="2">
+        <Grid Margin="10,10,10,10">
             <Grid.RowDefinitions>
                 <RowDefinition Height="auto"/>
                 <RowDefinition Height="auto"/>
@@ -23,68 +23,68 @@
                 <ColumnDefinition Width="60"/>
             </Grid.ColumnDefinitions>
 
-            <Label Grid.Row="0" Grid.Column="0" Name="lblFile" Content="File:" VerticalAlignment="Top" Margin="0,0,10,5" Padding="0,0,0,0" VerticalContentAlignment="Center" Height="19"/>
-            <Label Grid.Row="1" Grid.Column="0" Name="lblOutputFolder" Content="Output Folder:" Margin="0,0,10,10" VerticalAlignment="Top" Padding="0,0,0,0" VerticalContentAlignment="Center" Height="19"/>
-            <Label Grid.Row="2" Grid.Column="0" Name="lblStartTime" Content="Start Time:" Margin="0,0,10,5" VerticalAlignment="Top" Padding="0,0,0,0" VerticalContentAlignment="Center" Height="20"/>
-            <Label Grid.Row="3" Grid.Column="0" Name="lblEndTime" Content="End Time:" Margin="0,0,10,5" VerticalAlignment="Top" Padding="0,0,0,0" VerticalContentAlignment="Center" Height="20"/>
+            <Label Grid.Row="0" Grid.Column="0" Content="File:" Margin="0,0,10,5"/>
+            <Label Grid.Row="1" Grid.Column="0" Content="Output Folder:" Margin="0,0,10,10"/>
+            <Label Grid.Row="2" Grid.Column="0" Content="Start Time:" Margin="0,0,10,5"/>
+            <Label Grid.Row="3" Grid.Column="0" Content="End Time:" Margin="0,0,10,5"/>
 
-            <TextBlock Grid.Row="0" Grid.Column="1" x:Name="tblFilePath" Text="C:\Video\my-video.mp4" Margin="0,0,0,5" VerticalAlignment="Top" Padding="0,0,0,0" Height="19" Grid.ColumnSpan="4"/>
-            <TextBlock Grid.Row="1" Grid.Column="1" x:Name="tblOutputFolderPath" Text="C:\Video\my-video_frames" Margin="0,0,0,10" VerticalAlignment="Top" Padding="0,0,0,0" Height="19" Grid.ColumnSpan="4"/>
-            <Grid Grid.Row="2" Grid.Column="1" x:Name="gridStartTime" Margin="0,0,10,5"  VerticalAlignment="Top" Height="20">
+            <TextBlock Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="4" x:Name="tblFilePath" Text="C:\Video\my-video.mp4" Margin="0,0,0,5" VerticalAlignment="Top"/>
+            <TextBlock Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="4" x:Name="tblOutputFolderPath" Text="C:\Video\my-video_frames" Margin="0,0,0,10"/>
+            <Grid Grid.Row="2" Grid.Column="1" x:Name="gridStartTime" Margin="0,0,10,5">
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="25*"/>
+                    <ColumnDefinition Width="4*"/>
+                    <ColumnDefinition Width="1*"/>
+                    <ColumnDefinition Width="4*"/>
+                    <ColumnDefinition Width="1*"/>
+                    <ColumnDefinition Width="4*"/>
+                    <ColumnDefinition Width="1*"/>
                     <ColumnDefinition Width="5*"/>
-                    <ColumnDefinition Width="25*"/>
-                    <ColumnDefinition Width="5*"/>
-                    <ColumnDefinition Width="25*"/>
-                    <ColumnDefinition Width="5*"/>
-                    <ColumnDefinition Width="30*"/>
                 </Grid.ColumnDefinitions>
-                <TextBox x:Name="txtStartTimeH" Margin="0,0,0,0" Text="00" TextWrapping="Wrap" VerticalAlignment="Stretch" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Padding="0,0,0,0" HorizontalAlignment="Stretch" LostFocus="txtStartTimeH_LostFocus"/>
-                <TextBox x:Name="txtStartTimeM" Margin="0,0,0,0" Text="00" TextWrapping="Wrap" VerticalAlignment="Stretch" Grid.Column="2" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Padding="0,0,0,0" HorizontalAlignment="Stretch" LostFocus="txtStartTimeM_LostFocus"/>
-                <TextBox x:Name="txtStartTimeS" Margin="0,0,0,0" Text="00" TextWrapping="Wrap" VerticalAlignment="Stretch" Grid.Column="4" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Padding="0,0,0,0" HorizontalAlignment="Stretch" LostFocus="txtStartTimeS_LostFocus"/>
-                <TextBox x:Name="txtStartTimeMS" Text="000" TextWrapping="Wrap" VerticalAlignment="Stretch" Grid.Column="6" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Padding="0,0,0,0" LostFocus="txtStartTimeMS_LostFocus"/>
-                <Label x:Name="label1" Content=":" Grid.Column="1" HorizontalAlignment="Stretch" Margin="0,0,0,0" VerticalAlignment="Stretch" Padding="0,0,0,0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Height="Auto"/>
-                <Label x:Name="label1_Copy" Content=":" Grid.Column="3" Padding="0,0,0,0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Margin="0,0,0,0" VerticalAlignment="Stretch" Height="Auto"/>
-                <Label x:Name="label1_Copy1" Content="." Grid.Column="5" Padding="0,0,0,0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Margin="0,0,0,0" VerticalAlignment="Stretch" Height="Auto"/>
+                <TextBox Grid.Column="0" x:Name="txtStartTimeH" Text="00" HorizontalContentAlignment="Center" LostFocus="txtStartTimeH_LostFocus"/>
+                <Label Grid.Column="1" Content=":" HorizontalContentAlignment="Center"/>
+                <TextBox Grid.Column="2" x:Name="txtStartTimeM" Text="00" HorizontalContentAlignment="Center" LostFocus="txtStartTimeM_LostFocus"/>
+                <Label Grid.Column="3" Content=":" HorizontalContentAlignment="Center"/>
+                <TextBox Grid.Column="4" x:Name="txtStartTimeS" Text="00" HorizontalContentAlignment="Center" LostFocus="txtStartTimeS_LostFocus"/>
+                <Label Grid.Column="5" Content="." HorizontalContentAlignment="Center"/>
+                <TextBox Grid.Column="6" x:Name="txtStartTimeMS" Text="000" HorizontalContentAlignment="Center" LostFocus="txtStartTimeMS_LostFocus"/>
             </Grid>
-            <Grid Grid.Row="3" Grid.Column="1" x:Name="gridEndTime" Margin="0,0,10,5"  VerticalAlignment="Top" Height="20">
+            <Grid Grid.Row="3" Grid.Column="1" x:Name="gridEndTime" Margin="0,0,10,5">
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="25*"/>
+                    <ColumnDefinition Width="4*"/>
+                    <ColumnDefinition Width="1*"/>
+                    <ColumnDefinition Width="4*"/>
+                    <ColumnDefinition Width="1*"/>
+                    <ColumnDefinition Width="4*"/>
+                    <ColumnDefinition Width="1*"/>
                     <ColumnDefinition Width="5*"/>
-                    <ColumnDefinition Width="25*"/>
-                    <ColumnDefinition Width="5*"/>
-                    <ColumnDefinition Width="25*"/>
-                    <ColumnDefinition Width="5*"/>
-                    <ColumnDefinition Width="30*"/>
                 </Grid.ColumnDefinitions>
-                <TextBox x:Name="txtEndTimeH" Margin="0,0,0,0" Text="00" TextWrapping="Wrap" VerticalAlignment="Stretch" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Padding="0,0,0,0" HorizontalAlignment="Stretch" LostFocus="txtEndTimeH_LostFocus"/>
-                <TextBox x:Name="txtEndTimeM" Margin="0,0,0,0" Text="00" TextWrapping="Wrap" VerticalAlignment="Stretch" Grid.Column="2" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Padding="0,0,0,0" HorizontalAlignment="Stretch" LostFocus="txtEndTimeM_LostFocus"/>
-                <TextBox x:Name="txtEndTimeS" Margin="0,0,0,0" Text="00" TextWrapping="Wrap" VerticalAlignment="Stretch" Grid.Column="4" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Padding="0,0,0,0" HorizontalAlignment="Stretch" LostFocus="txtEndTimeS_LostFocus"/>
-                <TextBox x:Name="txtEndTimeMS" Text="000" TextWrapping="Wrap" VerticalAlignment="Stretch" Grid.Column="6" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Padding="0,0,0,0" LostFocus="txtEndTimeMS_LostFocus"/>
-                <Label x:Name="label2" Content=":" Grid.Column="1" HorizontalAlignment="Stretch" Margin="0,0,0,0" VerticalAlignment="Stretch" Padding="0,0,0,0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Height="Auto"/>
-                <Label x:Name="label1_Copy2" Content=":" Grid.Column="3" Padding="0,0,0,0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Margin="0,0,0,0" VerticalAlignment="Stretch" Height="Auto"/>
-                <Label x:Name="label1_Copy3" Content="." Grid.Column="5" Padding="0,0,0,0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Margin="0,0,0,0" VerticalAlignment="Stretch" Height="Auto"/>
+                <TextBox Grid.Column="0" x:Name="txtEndTimeH" Text="00" HorizontalContentAlignment="Center" LostFocus="txtEndTimeH_LostFocus"/>
+                <Label Grid.Column="1" Content=":" HorizontalContentAlignment="Center"/>
+                <TextBox Grid.Column="2" x:Name="txtEndTimeM" Text="00" HorizontalContentAlignment="Center" LostFocus="txtEndTimeM_LostFocus"/>
+                <Label Grid.Column="3" Content=":" HorizontalContentAlignment="Center"/>
+                <TextBox Grid.Column="4" x:Name="txtEndTimeS" Text="00" HorizontalContentAlignment="Center" LostFocus="txtEndTimeS_LostFocus"/>
+                <Label Grid.Column="5" Content="." HorizontalContentAlignment="Center"/>
+                <TextBox Grid.Column="6" x:Name="txtEndTimeMS" Text="000" HorizontalContentAlignment="Center" LostFocus="txtEndTimeMS_LostFocus"/>
             </Grid>
 
-            <Label Grid.Row="2" Grid.Column="2" x:Name="lblFrameWidth" Content="Frame Width:" Margin="0,0,10,5" VerticalAlignment="Top" Padding="0,0,0,0" VerticalContentAlignment="Center" Height="20"/>
-            <Label Grid.Row="3" Grid.Column="2" x:Name="lblFrameHeight" Content="Frame Height:" Margin="0,0,10,5" VerticalAlignment="Top" Padding="0,0,0,0" VerticalContentAlignment="Center" Height="20"/>
-            <Label Grid.Row="4" Grid.Column="2" x:Name="lblFramesPerSecond" Content="FPS:" Margin="0,0,10,5" VerticalAlignment="Top" Padding="0,0,0,0" VerticalContentAlignment="Center" Height="20"/>
-            <TextBox Grid.Row="2" Grid.Column="3" x:Name="txtFrameWidth" Margin="0,0,0,5" Text="640" TextWrapping="Wrap" VerticalAlignment="Top" HorizontalContentAlignment="Right" Height="20" VerticalContentAlignment="Center" Padding="0,0,3,0"/>
-            <TextBox Grid.Row="3" Grid.Column="3" x:Name="txtFrameHeight" Margin="0,0,0,5" Text="360" TextWrapping="Wrap" VerticalAlignment="Top" HorizontalContentAlignment="Right" Height="20" VerticalContentAlignment="Center" Padding="0,0,3,0"/>
-            <TextBox Grid.Row="4" Grid.Column="3" x:Name="txtFramesPerSecond" Margin="0,0,0,5" Text="30" TextWrapping="Wrap" VerticalAlignment="Top" HorizontalContentAlignment="Right" Height="20" VerticalContentAlignment="Center" Padding="0,0,3,0" LostFocus="txtFramesPerSecond_LostFocus"/>
+            <Label Grid.Row="2" Grid.Column="2" x:Name="lblFrameWidth" Margin="0,0,10,5" Content="Frame Width:"/>
+            <Label Grid.Row="3" Grid.Column="2" x:Name="lblFrameHeight" Margin="0,0,10,5" Content="Frame Height:"/>
+            <Label Grid.Row="4" Grid.Column="2" x:Name="lblFramesPerSecond" Margin="0,0,10,5" Content="FPS:"/>
+            <TextBox Grid.Row="2" Grid.Column="3" x:Name="txtFrameWidth" Margin="0,0,0,5" Text="640" HorizontalContentAlignment="Right"/>
+            <TextBox Grid.Row="3" Grid.Column="3" x:Name="txtFrameHeight" Margin="0,0,0,5" Text="360" HorizontalContentAlignment="Right"/>
+            <TextBox Grid.Row="4" Grid.Column="3" x:Name="txtFramesPerSecond" Margin="0,0,0,5" Text="30" HorizontalContentAlignment="Right" LostFocus="txtFramesPerSecond_LostFocus"/>
 
-            <Grid x:Name="gridButtons" Grid.Row="5" Margin="0,5,0,0" Grid.ColumnSpan="4">
+            <Grid Grid.Row="5" Grid.ColumnSpan="4" Margin="0,5,0,0">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="1*"/>
                     <ColumnDefinition Width="auto"/>
                     <ColumnDefinition Width="auto"/>
                 </Grid.ColumnDefinitions>
-                <Label Grid.Column="0" x:Name="lblInfo" Content="Default values are recommended" HorizontalAlignment="Left" Margin="0,0,0,0" VerticalAlignment="Center" Padding="0,0,0,0" Height="auto" Width="auto"/>
-                <Button Grid.Column="1" x:Name="btnConvert" Content="Convert" VerticalAlignment="Bottom" Margin="0,0,0,0" Height="22" Click="btnConvert_Click" HorizontalAlignment="Right" Width="60"/>
-                <Button Grid.Column="2" x:Name="btnCancel" Content="Cancel" VerticalAlignment="Bottom" Margin="10,0,0,0" Height="22" Click="btnCancel_Click" Width="60" HorizontalAlignment="Right"/>
+                <Label Grid.Column="0" x:Name="lblInfo" Content="Default values are recommended"/>
+                <Button Grid.Column="1" x:Name="btnConvert" Content="Convert" Click="btnConvert_Click" Width="60"/>
+                <Button Grid.Column="2" x:Name="btnCancel" Content="Cancel" Margin="5,0,0,0" Click="btnCancel_Click" Width="60"/>
             </Grid>
         </Grid>
-        <Rectangle Stroke="{DynamicResource highlight}" Margin="0,0,0,0" d:IsLocked="True" Grid.RowSpan="2"/>
+        <Rectangle Stroke="{DynamicResource highlight}" d:IsLocked="True"/>
     </Grid>
 </Window>
