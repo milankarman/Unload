@@ -560,32 +560,9 @@ namespace unload
             SetDetectedLoads();
         }
 
-        private void btnCalcTimes_Click(object sender, RoutedEventArgs e)
-        {
-            CalculateTimes();
-        }
-
         // Verifies user input is correct and returns the total (with loads) time formatted as a string
-        private string GetTotalTimeString()
+        private string GetTotalTimeString(double framesPerSecond, int totalFrames)
         {
-            if (!IsValidFramedata())
-            {
-                return "Error. Make sure start/end frame and FPS are filled in properly.";
-            }
-
-            double framesPerSecond = double.Parse(txtFPS.Text);
-            int totalFrames = int.Parse(txtEndFrame.Text) - int.Parse(txtStartFrame.Text) + 1;
-
-            if (totalFrames <= 0)
-            {
-                return "End frame must be after start frame.";
-            }
-
-            if (framesPerSecond <= 0)
-            {
-                return "Frames per second must be greater than 0.";
-            }
-
             double totalSecondsDouble = totalFrames / framesPerSecond;
             TimeSpan timeWithoutLoads = TimeSpan.FromSeconds(Math.Round(totalSecondsDouble, 3));
 
@@ -593,26 +570,8 @@ namespace unload
         }
 
         // Verifies user input is correct and returns the loadless time formatted as a string
-        private string GetLoadlessTimeString()
+        private string GetLoadlessTimeString(double framesPerSecond, int totalFrames)
         {
-            if (!IsValidFramedata())
-            {
-                return "Error. Make sure start/end frame and FPS are filled in properly.";
-            }
-
-            double framesPerSecond = double.Parse(txtFPS.Text);
-            int totalFrames = int.Parse(txtEndFrame.Text) - int.Parse(txtStartFrame.Text) + 1;
-
-            if (totalFrames <= 0)
-            {
-                return "End frame must be after start frame.";
-            }
-
-            if (framesPerSecond <= 0)
-            {
-                return "Frames per second must be greater than 0.";
-            }
-
             int loadlessFrames = totalFrames - int.Parse(txtLoadFrames.Text);
             double loadlessSecondsDouble = loadlessFrames / framesPerSecond;
             TimeSpan timeWithoutLoads = TimeSpan.FromSeconds(Math.Round(loadlessSecondsDouble, 3));
@@ -621,21 +580,8 @@ namespace unload
         }
 
         // Verifies user input is correct and returns the loadless time formatted as a string
-        private string GetTimeSpentLoadingString()
+        private string GetTimeSpentLoadingString(double framesPerSecond, int totalFrames)
         {
-            if (!IsValidFramedata())
-            {
-                return "Error. Make sure start/end frame and FPS are filled in properly.";
-            }
-
-            double framesPerSecond = double.Parse(txtFPS.Text);
-            int totalFrames = int.Parse(txtEndFrame.Text) - int.Parse(txtStartFrame.Text) + 1;
-
-            if (framesPerSecond <= 0)
-            {
-                return "Frames per second must be greater than 0.";
-            }
-
             double loadlessSecondsDouble = int.Parse(txtLoadFrames.Text) / framesPerSecond;
             TimeSpan timeSpentLoading = TimeSpan.FromSeconds(Math.Round(loadlessSecondsDouble, 3));
 
@@ -656,11 +602,19 @@ namespace unload
         // Calculates the final times and adds them to the interface
         private void CalculateTimes()
         {
-            txtTimeOutput.Text = "Time without loads:" + Environment.NewLine;
-            txtTimeOutput.Text += GetLoadlessTimeString() + Environment.NewLine;
+            double framesPerSecond = double.Parse(txtFPS.Text);
+            int totalFrames = int.Parse(txtEndFrame.Text) - int.Parse(txtStartFrame.Text) + 1;
 
-            txtTimeOutput.Text += "Time with loads:" + Environment.NewLine;
-            txtTimeOutput.Text += GetTotalTimeString();
+            if (!IsValidFramedata())
+            {
+                string message = "Error. Make sure start/end frame and FPS are filled in properly.";
+                MessageBox.Show(message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+
+            txtTimeOutput.Text = "Time without loads:" + Environment.NewLine + GetLoadlessTimeString(framesPerSecond, totalFrames) + Environment.NewLine;
+            txtTimeOutput.Text += "Time with loads:" + Environment.NewLine + GetTotalTimeString(framesPerSecond, totalFrames) + Environment.NewLine;
+            txtTimeOutput.Text += "Time spent loading:" + Environment.NewLine + GetTimeSpentLoadingString(framesPerSecond, totalFrames);
 
             // Enable the export button when times are calculated
             btnExportTimes.IsEnabled = true;
@@ -779,6 +733,16 @@ namespace unload
 
             if (dialog.ShowDialog() == true)
             {
+                double framesPerSecond = double.Parse(txtFPS.Text);
+                int totalFrames = int.Parse(txtEndFrame.Text) - int.Parse(txtStartFrame.Text) + 1;
+
+                if (!IsValidFramedata())
+                {
+                    string message = "Error. Make sure start/end frame and FPS are filled in properly.";
+                    MessageBox.Show(message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    return;
+                }
+
                 string? path = dialog.FileName;
 
                 // Read all load screens into to write to file
@@ -796,9 +760,9 @@ namespace unload
                 // Add final times into list to write to file
                 lines.Add("");
                 lines.Add("Final Times");
-                lines.Add($"Time without loads,\"{GetLoadlessTimeString()}\"");
-                lines.Add($"Time with loads,\"{GetTotalTimeString()}\"");
-                lines.Add($"Time spent loading,\"{GetTimeSpentLoadingString()}\"");
+                lines.Add($"Time without loads,\"{GetLoadlessTimeString(framesPerSecond, totalFrames)}\"");
+                lines.Add($"Time with loads,\"{GetTotalTimeString(framesPerSecond, totalFrames)}\"");
+                lines.Add($"Time spent loading,\"{GetTimeSpentLoadingString(framesPerSecond, totalFrames)}\"");
 
                 // Add unload settings into the list to write to the file
                 lines.Add("");

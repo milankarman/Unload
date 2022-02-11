@@ -7,9 +7,6 @@
         mc:Ignorable="d"
         Title="Unload" Height="auto" Width="470" SizeToContent="Height" ResizeMode="NoResize" ShowInTaskbar="False" WindowStyle="None" WindowStartupLocation="CenterOwner" Background="{DynamicResource bgDark}" AllowsTransparency="True">
     <Grid Margin="0,0,0,0">
-        <Grid.Effect>
-            <DropShadowEffect ShadowDepth="4" Direction="330" Opacity="0.5" BlurRadius="4"/>
-        </Grid.Effect>
         <Grid Margin="10,10,10,10" Background="{DynamicResource bgDark}" Grid.RowSpan="2">
             <Grid.RowDefinitions>
                 <RowDefinition Height="auto"/>

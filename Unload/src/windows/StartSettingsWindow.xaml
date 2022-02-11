@@ -11,9 +11,6 @@
             <RowDefinition Height="auto"/>
             <RowDefinition Height="auto"/>
         </Grid.RowDefinitions>
-        <Grid.Effect>
-            <DropShadowEffect ShadowDepth="4" Direction="330" Opacity="0.5" BlurRadius="4"/>
-        </Grid.Effect>
         <Grid Margin="20,10,20,0">
             <Grid.RowDefinitions>
                 <RowDefinition Height="auto"/>
