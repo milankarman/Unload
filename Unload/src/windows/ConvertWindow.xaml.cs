@@ -10,18 +10,18 @@ namespace unload
 {
     public partial class ConvertWindow : Window
     {
-        private readonly MainWindow mainWindow;
+        private readonly StartWindow startWindow;
         private readonly string filePath;
         private readonly string targetDirectory;
 
         private TimeSpan fileDuration;
         private double fileFramerate;
 
-        public ConvertWindow(MainWindow _mainWindow, string _filePath, string _targetDirectory)
+        public ConvertWindow(StartWindow _startWindow, string _filePath, string _targetDirectory)
         {
             // Remember file info
-            Owner = _mainWindow;
-            mainWindow = _mainWindow;
+            Owner = _startWindow;
+            startWindow = _startWindow;
             filePath = _filePath;
             targetDirectory = _targetDirectory;
 
@@ -93,10 +93,7 @@ namespace unload
             File.WriteAllText(Path.Join(targetDirectory, "conversion-info.json"), jsonString);
 
             // Show a progress window and hide this window
-            ProgressWindow progress = new ProgressWindow("Converting video to images", mainWindow)
-            {
-                Owner = this
-            };
+            ProgressWindow progress = new ProgressWindow("Converting video to images", startWindow);
 
             progress.Show();
             Visibility = Visibility.Hidden;
@@ -117,8 +114,7 @@ namespace unload
                     // When done load in the files and re-enable the main window
                     Dispatcher.Invoke(() =>
                     {
-                        mainWindow.LoadFolder(filePath, targetDirectory);
-                        mainWindow.IsEnabled = true;
+                        startWindow.StartMainWindow(filePath);
                         progress.Close();
                         Close();
                     });
@@ -148,7 +144,7 @@ namespace unload
         // Closes the conversion window and re-enables the main window
         private void btnCancel_Click(object sender, RoutedEventArgs e)
         {
-            mainWindow.IsEnabled = true;
+            startWindow.IsEnabled = true;
             Close();
         }
 

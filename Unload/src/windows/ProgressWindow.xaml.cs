@@ -14,16 +14,15 @@ namespace unload
         // Holds a cancellation token for the process this progress window is linked to
         public CancellationTokenSource cts = new CancellationTokenSource();
 
-        readonly private MainWindow mainWindow;
         readonly private string text = string.Empty;
 
         // Initalizes progress window and starts the timer to check for progress
-        public ProgressWindow(string _text, MainWindow _mainWindow)
+        public ProgressWindow(string _text, Window owner)
         {
             InitializeComponent();
             text = _text;
-            mainWindow = _mainWindow;
-            mainWindow.TaskbarItemInfo.ProgressState = TaskbarItemProgressState.Normal;
+            Owner = owner;
+            Owner.TaskbarItemInfo.ProgressState = TaskbarItemProgressState.Normal;
 
             SetProgress();
 
@@ -45,7 +44,7 @@ namespace unload
         // Shows the user the percentage of progress
         private void SetProgress()
         {
-            mainWindow.TaskbarItemInfo.ProgressValue = percentage / 100d;
+            Owner.TaskbarItemInfo.ProgressValue = percentage / 100d;
             lblProgress.Content = $"{text}: {percentage:N2}%";
             progressBar.Value = percentage;
         }
@@ -60,7 +59,7 @@ namespace unload
         // Clear the taskbar progres state when the progress window closes
         private void Window_Closed(object sender, EventArgs e)
         {
-            mainWindow.TaskbarItemInfo.ProgressState = TaskbarItemProgressState.None;
+            Owner.TaskbarItemInfo.ProgressState = TaskbarItemProgressState.None;
         }
     }
 }
