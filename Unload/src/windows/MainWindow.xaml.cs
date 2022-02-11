@@ -51,25 +51,7 @@ namespace unload
             InitializeComponent();
             Title += $" {FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).ProductVersion}";
 
-            // Get the specified working directory from settings
-            workingDirectory = Settings.Default.WorkingDirectory;
-
-            // Ensure the working directory is null when none is specified for later checks
-            if (string.IsNullOrEmpty(workingDirectory)) workingDirectory = null;
-
             lbxLoads.ItemsSource = detectedLoads;
-
-            // Confirm FFmpeg is available
-            try
-            {
-                VideoProcessor.SetFFMpegPath();
-            }
-            catch
-            {
-                string message = "Failed to initialize FFMpeg. Make sure ffmpeg.exe and ffprobe.exe are located in the ffmpeg folder of this application.";
-                MessageBox.Show(message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                Application.Current.Shutdown();
-            }
 
             txtFrame.PreviewTextInput += TextBoxValidator.ForceInteger;
             txtStartFrame.PreviewTextInput += TextBoxValidator.ForceInteger;
@@ -82,13 +64,15 @@ namespace unload
             txtSimilarity.Text = defaultSimilarity.ToString();
 
             // Set initial interface state
-            groupPickLoad.IsEnabled = false;
-            groupVideo.IsEnabled = false;
-            groupVideoControls.IsEnabled = false;
-            groupFrameCount.IsEnabled = false;
             groupLoadDetection.IsEnabled = false;
             groupDetectedLoads.IsEnabled = false;
+
             btnExportTimes.IsEnabled = false;
+            btnNextLoadFrame.IsEnabled = false;
+            btnPreviousLoadFrame.IsEnabled = false;
+            btnRemoveLoadFrame.IsEnabled = false;
+            btnCheckSimilarity.IsEnabled = false;
+
             cbxSnapLoads.IsEnabled = false;
             lblPickedLoadCount.Visibility = Visibility.Hidden;
         }
@@ -144,52 +128,12 @@ namespace unload
                 totalVideoFrames = Directory.GetFiles(dir, "*.jpg").Length;
             }
 
-            // Set/reset default values
-            txtFPS.Text = fps.ToString();
-            txtStartFrame.Text = "1";
-            txtStartFrame.IsEnabled = true;
             txtEndFrame.Text = totalVideoFrames.ToString();
-            txtEndFrame.IsEnabled = true;
-            txtLoadFrames.Text = "0";
-            txtTimeOutput.Clear();
-            lblPickedLoadCount.Content = "0 / 0";
-            lblPickedLoadCount.Visibility = Visibility.Hidden;
-            btnAddLoadFrame.IsEnabled = true;
-
-            hashedFrames = new Dictionary<int, Digest>();
-            pickedLoadingFrames.Clear();
-            pickedLoadingFrameIndex = -1;
-            detectedLoads.Clear();
+            txtFPS.Text = fps.ToString();
 
             sliderTimeline.Maximum = totalVideoFrames;
             sliderTimeline.Value = 1;
 
-            imageLoadFrame.Source = null;
-
-            groupPickLoad.IsEnabled = true;
-            groupVideo.IsEnabled = true;
-            groupVideoControls.IsEnabled = true;
-            groupFrameCount.IsEnabled = true;
-            groupDetectedLoads.IsEnabled = false;
-
-            btnResetFrames.IsEnabled = false;
-            btnDetectLoadFrames.IsEnabled = false;
-            btnCheckSimilarity.IsEnabled = false;
-            btnNextLoadFrame.IsEnabled = false;
-            btnPreviousLoadFrame.IsEnabled = false;
-            btnRemoveLoadFrame.IsEnabled = false;
-            cbxSnapLoads.IsEnabled = false;
-
-            sliderCropHeight.IsEnabled = true;
-            sliderCropWidth.IsEnabled = true;
-            sliderCropX.IsEnabled = true;
-            sliderCropY.IsEnabled = true;
-
-            btnSetStart.IsEnabled = true;
-            btnSetEnd.IsEnabled = true;
-
-            sliderTicks.Clear();
-            SetTimelineTicks();
             SetVideoFrame(1);
         }
 
