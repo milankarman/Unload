@@ -1,11 +1,11 @@
 ﻿using System;
-using System.IO;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
+using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Collections.Generic;
-using System.Collections.Concurrent;
 using System.Windows.Media.Imaging;
 using Shipwreck.Phash;
 using Shipwreck.Phash.Bitmaps;
@@ -70,7 +70,7 @@ namespace unload
                 // Calculated hashes of reference images
                 for (int i = 0; i < referenceHashes.Length; i++)
                 {
-                    float score = ImagePhash.GetCrossCorrelation(hash.Value, referenceHashes[i]);    
+                    float score = ImagePhash.GetCrossCorrelation(hash.Value, referenceHashes[i]);
                     frameSimilarities[hash.Key][i] = score;
                 }
             });
