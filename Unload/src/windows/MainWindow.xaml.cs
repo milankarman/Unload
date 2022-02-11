@@ -24,7 +24,7 @@ namespace unload
     {
         // Keeps the directory of frames being used
         public string? workingDirectory = null;
-        private string? targetDirectory;
+        private string? targetDirectory = null;
 
         private int totalVideoFrames = 0;
 
@@ -122,7 +122,7 @@ namespace unload
             }
             else
             {
-                string message = "Warning, fewer converted frames are found than expected. If you run into issues try converting the video again.";
+                string message = "Warning, fewer converted frames are found than expected. This could mean that the video has dropped frames.";
                 MessageBox.Show(message, "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
 
                 totalVideoFrames = Directory.GetFiles(dir, "*.jpg").Length;
@@ -137,21 +137,15 @@ namespace unload
             SetVideoFrame(1);
         }
 
-       
+
         // Update our video preview when moving the slider
-        private void sliderTimeline_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
-        {
-            SetVideoFrame((int)sliderTimeline.Value);
-        }
+        private void sliderTimeline_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e) => SetVideoFrame((int)sliderTimeline.Value);
 
         // Loads in a given frame in the video preview
         private void SetVideoFrame(int frame)
         {
-            // Ensure the requested frame should exist
-            if (frame <= 0 || frame > totalVideoFrames)
-            {
-                return;
-            }
+            // Ensure the requested frame exists
+            if (frame <= 0 || frame > totalVideoFrames) return;
 
             // Set the video frame and update the interface
             Uri image = new Uri(Path.Join(workingDirectory, $"{frame}.jpg"));
@@ -165,18 +159,16 @@ namespace unload
         private void slidersCropping_OnValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
             // Ensure a load frame is picked beforehand
-            if (pickedLoadingFrames.Count == 0)
-            {
-                return;
+            if (pickedLoadingFrames.Count > 0)
+            { 
+                UpdateLoadPreview();
             }
-
-            UpdateLoadPreview();
         }
 
         // Notifies the user of the similarity between the selected load frame and the current previewed frame
         private void btnCheckSimilarity_Click(object sender, RoutedEventArgs e)
         {
-            // Load snd crop the loading screen and current frame
+            // Load and crop the loading screen and current frame
             Rectangle crop = CropSlidersToRectangle();
 
             Bitmap loadFrame = new Bitmap(Path.Join(workingDirectory, $"{pickedLoadingFrames[pickedLoadingFrameIndex]}.jpg"));
@@ -445,34 +437,6 @@ namespace unload
             SetDetectedLoads();
         }
 
-        // Verifies user input is correct and returns the total (with loads) time formatted as a string
-        private string GetTotalTimeString(double framesPerSecond, int totalFrames)
-        {
-            double totalSecondsDouble = totalFrames / framesPerSecond;
-            TimeSpan timeWithoutLoads = TimeSpan.FromSeconds(Math.Round(totalSecondsDouble, 3));
-
-            return $"{timeWithoutLoads:hh\\:mm\\:ss\\.fff}";
-        }
-
-        // Verifies user input is correct and returns the loadless time formatted as a string
-        private string GetLoadlessTimeString(double framesPerSecond, int totalFrames)
-        {
-            int loadlessFrames = totalFrames - int.Parse(txtLoadFrames.Text);
-            double loadlessSecondsDouble = loadlessFrames / framesPerSecond;
-            TimeSpan timeWithoutLoads = TimeSpan.FromSeconds(Math.Round(loadlessSecondsDouble, 3));
-
-            return $"{timeWithoutLoads:hh\\:mm\\:ss\\.fff}";
-        }
-
-        // Verifies user input is correct and returns the loadless time formatted as a string
-        private string GetTimeSpentLoadingString(double framesPerSecond, int totalFrames)
-        {
-            double loadlessSecondsDouble = int.Parse(txtLoadFrames.Text) / framesPerSecond;
-            TimeSpan timeSpentLoading = TimeSpan.FromSeconds(Math.Round(loadlessSecondsDouble, 3));
-
-            return $"{timeSpentLoading:hh\\:mm\\:ss\\.fff}";
-        }
-
         // Checks if all required fields for frame counting are filled in
         public bool IsValidFramedata()
         {
@@ -489,6 +453,7 @@ namespace unload
         {
             double framesPerSecond = double.Parse(txtFPS.Text);
             int totalFrames = int.Parse(txtEndFrame.Text) - int.Parse(txtStartFrame.Text) + 1;
+            int loadFrames = int.Parse(txtLoadFrames.Text);
 
             if (!IsValidFramedata())
             {
@@ -497,9 +462,9 @@ namespace unload
                 return;
             }
 
-            txtTimeOutput.Text = "Time without loads:" + Environment.NewLine + GetLoadlessTimeString(framesPerSecond, totalFrames) + Environment.NewLine;
-            txtTimeOutput.Text += "Time with loads:" + Environment.NewLine + GetTotalTimeString(framesPerSecond, totalFrames) + Environment.NewLine;
-            txtTimeOutput.Text += "Time spent loading:" + Environment.NewLine + GetTimeSpentLoadingString(framesPerSecond, totalFrames);
+            txtTimeOutput.Text = "Time without loads:" + Environment.NewLine + TimeCalculator.GetLoadlessTimeString(framesPerSecond, totalFrames, loadFrames) + Environment.NewLine;
+            txtTimeOutput.Text += "Time with loads:" + Environment.NewLine + TimeCalculator.GetTotalTimeString(framesPerSecond, totalFrames) + Environment.NewLine;
+            txtTimeOutput.Text += "Time spent loading:" + Environment.NewLine + TimeCalculator.GetTimeSpentLoadingString(framesPerSecond, totalFrames, loadFrames);
 
             // Enable the export button when times are calculated
             btnExportTimes.IsEnabled = true;
@@ -620,6 +585,7 @@ namespace unload
             {
                 double framesPerSecond = double.Parse(txtFPS.Text);
                 int totalFrames = int.Parse(txtEndFrame.Text) - int.Parse(txtStartFrame.Text) + 1;
+                int loadFrames = int.Parse(txtLoadFrames.Text);
 
                 if (!IsValidFramedata())
                 {
@@ -645,9 +611,9 @@ namespace unload
                 // Add final times into list to write to file
                 lines.Add("");
                 lines.Add("Final Times");
-                lines.Add($"Time without loads,\"{GetLoadlessTimeString(framesPerSecond, totalFrames)}\"");
-                lines.Add($"Time with loads,\"{GetTotalTimeString(framesPerSecond, totalFrames)}\"");
-                lines.Add($"Time spent loading,\"{GetTimeSpentLoadingString(framesPerSecond, totalFrames)}\"");
+                lines.Add($"Time without loads,\"{TimeCalculator.GetLoadlessTimeString(framesPerSecond, totalFrames, loadFrames)}\"");
+                lines.Add($"Time with loads,\"{TimeCalculator.GetTotalTimeString(framesPerSecond, totalFrames)}\"");
+                lines.Add($"Time spent loading,\"{TimeCalculator.GetTimeSpentLoadingString(framesPerSecond, totalFrames, loadFrames)}\"");
 
                 // Add unload settings into the list to write to the file
                 lines.Add("");
@@ -796,22 +762,10 @@ namespace unload
         }
 
         // Ensures every thread is shut down when the main window closes
-        private void Window_Closed(object sender, EventArgs e)
-        {
-            Application.Current.Shutdown();
-        }
+        private void window_Closed(object sender, EventArgs e) => Application.Current.Shutdown();
 
         // Toggles snapping the timeline to load frames
-        private void cbxSnapLoads_Checked(object sender, RoutedEventArgs e)
-        {
-            SetTimelineTicks();
-        }
-
-        // Toggles snapping the timeline to load frames
-        private void cbxSnapLoads_Unchecked(object sender, RoutedEventArgs e)
-        {
-            SetTimelineTicks();
-        }
+        private void cbxSnapLoads_CheckedChanged(object sender, RoutedEventArgs e) => SetTimelineTicks();
 
         // Switch to the previous picked loading frames
         private void btnPreviousLoadFrame_Click(object sender, RoutedEventArgs e)
@@ -885,13 +839,6 @@ namespace unload
                 btnPrepareFrames.IsEnabled = false;
                 btnCheckSimilarity.IsEnabled = false;
             }
-        }
-
-        private void btnStartSettings_Click(object sender, RoutedEventArgs e)
-        {
-            StartSettingsWindow startSettingsWindow = new StartSettingsWindow(this, workingDirectory);
-            startSettingsWindow.Show();
-            IsEnabled = false;
         }
     }
 }
