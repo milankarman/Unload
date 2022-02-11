@@ -5,14 +5,16 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:unload"
         mc:Ignorable="d"
-        Title="Unload" Height="174" Width="470" ResizeMode="NoResize" ShowInTaskbar="False" WindowStyle="None" WindowStartupLocation="CenterOwner" Background="Transparent" AllowsTransparency="True">
-    <Grid Margin="0,0,0,0">
+        Title="Unload" Height="auto" Width="470" ResizeMode="NoResize" ShowInTaskbar="False" WindowStyle="None" WindowStartupLocation="CenterOwner" Background="{DynamicResource bgDark}">
+    <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="auto"/>
             <RowDefinition Height="auto"/>
         </Grid.RowDefinitions>
-        <Grid Margin="20,10,20,0">
+        <Grid Margin="10,10,10,10">
             <Grid.RowDefinitions>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="auto"/>
                 <RowDefinition Height="auto"/>
                 <RowDefinition Height="auto"/>
             </Grid.RowDefinitions>
@@ -21,21 +23,16 @@
                 <ColumnDefinition Width="auto"/>
                 <ColumnDefinition Width="auto"/>
             </Grid.ColumnDefinitions>
-            <Label Content="Working Directory:" Grid.Row="0" Grid.ColumnSpan="3" Padding="0,10,5,5" Margin="0,0,0,5"/>
-            <TextBox x:Name="txtWorkingDirectory" Grid.Row="1" Height="22" IsEnabled="False" Text="Same as video" VerticalContentAlignment="Center"  Margin="0,0,10,0"/>
-            <Button x:Name="btnBrowse" Grid.Column="1" Grid.Row="2" Height="22" Content="Browse" Margin="0,0,5,0" Width="70" Click="btnBrowse_Click"/>
-            <Button x:Name="btnClear" Grid.Column="2" Grid.Row="2" Height="22" Click="btnClear_Click" Content="Clear" Width="70" IsEnabled="False" />
+            <Label Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="3" Margin="0,0,0,10" Content="Working Directory:" />
+            
+            <TextBox Grid.Column="0" Grid.Row="1" x:Name="txtWorkingDirectory" Margin="0,0,5,10" Text="Same as video" IsEnabled="False"/>
+            <Button Grid.Column="1" Grid.Row="1" x:Name="btnBrowse" Margin="0,0,5,10" Content="Browse" Width="70" Click="btnBrowse_Click"/>
+            <Button Grid.Column="2"  Grid.Row="1" x:Name="btnClear" Margin="0,0,0,10" Content="Clear" Width="70" IsEnabled="False" Click="btnClear_Click"/>
+            
+            <Label Grid.Column="0" Grid.Row="2" Content="Changes will apply on new conversions"/>
+            <Button Grid.Column="1" Grid.Row="2" Margin="0,0,5,0" x:Name="btnApply" Content="Apply" Width="70" Click="btnApply_Click"/>
+            <Button Grid.Column="2" Grid.Row="2" x:Name="btnCancel" Content="Cancel" Width="70" Click="btnCancel_Click"/>
         </Grid>
-        <Grid x:Name="gridButtons" Margin="20,20,20,20" Grid.Row="1">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="1*"/>
-                <ColumnDefinition Width="auto"/>
-                <ColumnDefinition Width="auto"/>
-            </Grid.ColumnDefinitions>
-            <Label x:Name="lblInfo" Grid.Column="0" Content="Changes will apply on new conversions" HorizontalAlignment="Left" Margin="0,0,0,0" Padding="0,0,0,0" Height="22" Width="215" VerticalContentAlignment="Center"/>
-            <Button x:Name="btnApply" Grid.Column="1" Content="Apply" VerticalAlignment="Bottom" Margin="0,0,0,0" Height="22" Click="btnApply_Click" Width="70"/>
-            <Button x:Name="btnCancel" Grid.Column="2" Content="Cancel" VerticalAlignment="Bottom" Margin="5,0,0,0" Height="22" Click="btnCancel_Click" Width="70"/>
-        </Grid>
-        <Rectangle Stroke="{DynamicResource highlight}" Margin="10,10,10,10" d:IsLocked="True" Grid.RowSpan="2"/>
+        <Rectangle Stroke="{DynamicResource highlight}"/>
     </Grid>
 </Window>
