@@ -44,7 +44,6 @@ namespace unload
         // List to keep every tick the timeline slider will snap to such as loading screens
         private readonly List<int> sliderTicks = new List<int>();
 
-
         private const string FRAMES_SUFFIX = "_frames";
 
         public MainWindow()
@@ -194,65 +193,7 @@ namespace unload
             SetVideoFrame(1);
         }
 
-        // Prompts the user for a file to convert and attempts to convert it
-        private void btnConvert_Click(object sender, RoutedEventArgs e)
-        {
-            OpenFileDialog dialog = new OpenFileDialog();
-
-            if (dialog.ShowDialog() == true)
-            {
-                // Create _frames folder to store the image sequence, ommiting illegal symbols
-                string? fileDirectory = Path.GetDirectoryName(dialog.FileName);
-
-                targetDirectory = Path.Join(
-                    workingDirectory ?? fileDirectory,
-                    RemoveSymbols(dialog.SafeFileName) + FRAMES_SUFFIX);
-
-                if (!Directory.Exists(targetDirectory))
-                {
-                    Directory.CreateDirectory(targetDirectory);
-                }
-
-                IsEnabled = false;
-                ConvertWindow convertWindow = new ConvertWindow(this, dialog.FileName, targetDirectory);
-                convertWindow.GetVideoInfoAndShow();
-            }
-        }
-
-        // Checks if the video file has been converted, if so it loads it
-        private void btnLoad_Click(object sender, RoutedEventArgs e)
-        {
-            OpenFileDialog dialog = new OpenFileDialog();
-
-            if (dialog.ShowDialog() == true)
-            {
-                // Remove symbols from path and append _frames
-                string? fileDirectory = Path.GetDirectoryName(dialog.FileName);
-
-                targetDirectory = Path.Join(
-                    workingDirectory ?? fileDirectory,
-                    RemoveSymbols(dialog.SafeFileName) + FRAMES_SUFFIX);
-
-                if (!Directory.Exists(targetDirectory))
-                {
-                    MessageBox.Show(
-                        $"No {FRAMES_SUFFIX} folder accompanying this video found. Convert the video first.",
-                        "Error",
-                        MessageBoxButton.OK,
-                        MessageBoxImage.Error);
-                    return;
-                }
-
-                LoadFolder(dialog.FileName, targetDirectory);
-            }
-        }
-
-        // Removes symbols that conflict with FFmpeg arguments
-        private static string RemoveSymbols(string path)
-        {
-            return Regex.Replace(path, @"[^0-9a-zA-Z\/\\:]+", "");
-        }
-
+       
         // Update our video preview when moving the slider
         private void sliderTimeline_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {

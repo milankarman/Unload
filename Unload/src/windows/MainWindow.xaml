@@ -102,19 +102,7 @@
             <Grid.ColumnDefinitions>
                 <ColumnDefinition/>
             </Grid.ColumnDefinitions>
-            <GroupBox x:Name="groupStart" Grid.Row="0" Header="Start">
-                <Grid Margin="5,5,5,5">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="1*"/>
-                        <ColumnDefinition Width="1*"/>
-                        <ColumnDefinition Width="auto"/>
-                    </Grid.ColumnDefinitions>
-                    <Button Grid.Column="0" x:Name="btnConvert" Margin="0,0,5,0" Content="Convert &amp; Load" Click="btnConvert_Click"/>
-                    <Button Grid.Column="1" x:Name="btnLoad" Margin="5,0,5,0" Content="Load" Click="btnLoad_Click"/>
-                    <Button Grid.Column="2" x:Name="btnStartSettings" Margin="5,0,0,0" Content="⚙" Click="btnStartSettings_Click"/>
-                </Grid>
-            </GroupBox>
-            <GroupBox Grid.Row="1" x:Name="groupPickLoad" Header="Pick Load" Margin="0,10,0,0" VerticalAlignment="Top">
+            <GroupBox Grid.Row="1" x:Name="groupPickLoad" Header="Pick Load" Margin="0,0,0,0" VerticalAlignment="Top">
                 <Grid x:Name="gridPickLoad" Margin="5,5,5,5">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="152"/>
