@@ -57,7 +57,7 @@
         <Grid x:Name="gridCenter" Grid.Column="1" FlowDirection="LeftToRight">
             <Grid.RowDefinitions>
                 <RowDefinition/>
-                <RowDefinition Height="117.04"/>
+                <RowDefinition Height="auto"/>
             </Grid.RowDefinitions>
             <GroupBox x:Name="groupVideo" Header="Video" Margin="0,10,0,0">
                 <Grid>
@@ -65,32 +65,31 @@
                 </Grid>
             </GroupBox>
             <GroupBox x:Name="groupVideoControls" Header="Video Controls" Margin="0,10,0,10" Grid.Row="1">
-                <Grid Margin="0,0,0,0">
-                    <Slider x:Name="sliderTimeline" Margin="5,5,5,0" VerticalAlignment="Top" Height="18" ValueChanged="sliderTimeline_ValueChanged" TickPlacement="None" SmallChange="1" Minimum="1" IsSnapToTickEnabled="True"/>
-                    <Grid x:Name="gridVideoControls" VerticalAlignment="Bottom" Height="22" Margin="5,0,5,5">
-                        <Grid.RowDefinitions>
-                            <RowDefinition/>
-                        </Grid.RowDefinitions>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="40"/>
-                            <ColumnDefinition Width="45"/>
-                            <ColumnDefinition Width="45"/>
-                            <ColumnDefinition Width="40"/>
-                            <ColumnDefinition/>
-                            <ColumnDefinition Width="65"/>
-                            <ColumnDefinition Width="65"/>
-                            <ColumnDefinition Width="115"/>
-                        </Grid.ColumnDefinitions>
-                        <Button x:Name="btnBackFar" Content="◄◄" Margin="0,0,5,0" Click="btnBackFar_Click" Height="Auto" FontFamily="Arial"/>
-                        <Button x:Name="btnBack" Content="◄" Margin="5,0,5,0" Grid.Column="1" Click="btnBack_Click" VerticalAlignment="Stretch" FontFamily="Arial"/>
-                        <Button x:Name="btnForward" Content="►" Margin="5,0,5,0" Grid.Column="2" Click="btnForwardFar_Click" Height="Auto" FontFamily="Arial"/>
-                        <Button x:Name="btnForwardFar" Content="►►" Margin="5,0,0,0" Grid.Column="3" Click="btnForward_Click" Height="Auto" FontFamily="Arial"/>
-                        <TextBox x:Name="txtFrame" Grid.Column="7" HorizontalAlignment="Left" Margin="45,0,0,0" Text="1" TextWrapping="Wrap" Width="70" TextAlignment="Left" VerticalContentAlignment="Center" TextChanged="txtFrame_TextChanged"/>
-                        <Label x:Name="lblFrame" Content="Frame:" Grid.Column="7" HorizontalAlignment="Left" Padding="0,0,0,0" Width="40" VerticalContentAlignment="Center"/>
-                        <Button x:Name="btnSetStart" Content="Set Start" Margin="0,0,10,0" Grid.Column="5" Click="btnSetStart_Click" Height="Auto"/>
-                        <Button x:Name="btnSetEnd" Content="Set End" Margin="0,0,10,0" Grid.Column="6" Height="Auto" Click="btnSetEnd_Click"/>
-                    </Grid>
-                    <Canvas Height="3" VerticalAlignment="Top" Margin="0,28,0,0"/>
+                <Grid Grid.Row="1" x:Name="gridVideoControls" VerticalAlignment="Bottom" Margin="5,0,5,5">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="auto"/>
+                        <RowDefinition Height="auto"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="auto"/>
+                        <ColumnDefinition Width="auto"/>
+                        <ColumnDefinition Width="auto"/>
+                        <ColumnDefinition Width="auto"/>
+                        <ColumnDefinition/>
+                        <ColumnDefinition Width="auto"/>
+                        <ColumnDefinition Width="auto"/>
+                        <ColumnDefinition Width="auto"/>
+                        <ColumnDefinition Width="auto"/>
+                    </Grid.ColumnDefinitions>
+                    <Slider Grid.Row="0" Grid.ColumnSpan="9" x:Name="sliderTimeline" Margin="0,5,0,10" VerticalAlignment="Top" Height="18" ValueChanged="sliderTimeline_ValueChanged" TickPlacement="None" SmallChange="1" Minimum="1" IsSnapToTickEnabled="True"/>
+                    <Button Grid.Row="1" Grid.Column="0" x:Name="btnBackFar" Margin="0,0,5,0" Width="40" Content="◄◄" Click="btnBackFar_Click" Height="Auto" FontFamily="Arial"/>
+                    <Button Grid.Row="1" Grid.Column="1" x:Name="btnBack" Margin="0,0,5,0" Width="40" Content="◄" Click="btnBack_Click" VerticalAlignment="Stretch" FontFamily="Arial"/>
+                    <Button Grid.Row="1" Grid.Column="2" x:Name="btnForward" Margin="0,0,5,0" Width="40" Content="►" Click="btnForwardFar_Click" Height="Auto" FontFamily="Arial"/>
+                    <Button Grid.Row="1" Grid.Column="3" x:Name="btnForwardFar" Margin="0,0,5,0" Width="40" Content="►►"  Click="btnForward_Click" Height="Auto" FontFamily="Arial"/>
+                    <Button Grid.Row="1" Grid.Column="5" x:Name="btnSetStart" Margin="0,0,5,0" Width="60" Content="Set Start" Click="btnSetStart_Click"/>
+                    <Button Grid.Row="1" Grid.Column="6" x:Name="btnSetEnd" Margin="0,0,10,0" Width="60"  Content="Set End" Height="Auto" Click="btnSetEnd_Click"/>
+                    <Label Grid.Row="1" Grid.Column="7" x:Name="lblFrame" Margin="0,0,5,0" Content="Frame:" HorizontalAlignment="Left" Padding="0,0,0,0" Width="40" VerticalContentAlignment="Center"/>
+                    <TextBox Grid.Row="1" Grid.Column="8" x:Name="txtFrame" Width="70" HorizontalAlignment="Left" Text="1" TextWrapping="Wrap" TextAlignment="Left" VerticalContentAlignment="Center" TextChanged="txtFrame_TextChanged"/>
                 </Grid>
             </GroupBox>
         </Grid>
