@@ -583,9 +583,9 @@ namespace unload
 
             if (dialog.ShowDialog() == true)
             {
-                double framesPerSecond = double.Parse(txtFPS.Text);
-                int totalFrames = int.Parse(txtEndFrame.Text) - int.Parse(txtStartFrame.Text) + 1;
-                int loadFrames = int.Parse(txtLoadFrames.Text);
+                int startFrame = int.Parse(txtStartFrame.Text);
+                int endFrame = int.Parse(txtEndFrame.Text);
+                int totalFrames = startFrame - endFrame + 1;
 
                 if (!IsValidFramedata())
                 {
@@ -593,49 +593,18 @@ namespace unload
                     MessageBox.Show(message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                     return;
                 }
-
-                string? path = dialog.FileName;
-
-                // Read all load screens into to write to file
-                List<string> lines = new List<string>
+                
+                if (dialog.FileName != null)
                 {
-                    "Loading Screens",
-                    "#,First,Last,Total"
-                };
-
-                foreach (DetectedLoad load in detectedLoads)
-                {
-                    lines.Add($"{load.Index},{load.StartFrame},{load.EndFrame},{load.EndFrame - load.StartFrame + 1}");
-                }
-
-                // Add final times into list to write to file
-                lines.Add("");
-                lines.Add("Final Times");
-                lines.Add($"Time without loads,\"{TimeCalculator.GetLoadlessTimeString(framesPerSecond, totalFrames, loadFrames)}\"");
-                lines.Add($"Time with loads,\"{TimeCalculator.GetTotalTimeString(framesPerSecond, totalFrames)}\"");
-                lines.Add($"Time spent loading,\"{TimeCalculator.GetTimeSpentLoadingString(framesPerSecond, totalFrames, loadFrames)}\"");
-
-                // Add unload settings into the list to write to the file
-                lines.Add("");
-                lines.Add("Unload Settings");
-                lines.Add($"Minimum similarity,\"{usedMinSimilarity}\"");
-                lines.Add($"Minimum frames,{usedMinFrames}");
-                lines.Add($"Start frame,{txtStartFrame.Text}");
-                lines.Add($"End frame,{txtEndFrame.Text}");
-
-                // Try to write all lines to file
-                try
-                {
-                    if (path == null)
+                    try
                     {
-                        throw new Exception("Path not found.");
+                        ExportGenerator.ExportAndSave(dialog.FileName, double.Parse(txtFPS.Text), totalFrames, int.Parse(txtLoadFrames.Text), detectedLoads, usedMinSimilarity, usedMinFrames,
+                            startFrame, endFrame);
                     }
-
-                    File.WriteAllLinesAsync(path, lines);
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show($"Failed to export. {Environment.NewLine}{ex.Message}");
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK,MessageBoxImage.Error);
+                    }
                 }
             }
         }
