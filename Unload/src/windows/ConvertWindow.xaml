@@ -23,10 +23,10 @@
                 <ColumnDefinition Width="60"/>
             </Grid.ColumnDefinitions>
 
-            <Label Grid.Row="0" Grid.Column="0" x:Name="lblFile" Content="File:" VerticalAlignment="Top" Margin="0,0,10,5" Padding="0,0,0,0" VerticalContentAlignment="Center" Height="19"/>
-            <Label Grid.Row="1" Grid.Column="0" x:Name="lblOutputFolder" Content="Output Folder:" Margin="0,0,10,10" VerticalAlignment="Top" Padding="0,0,0,0" VerticalContentAlignment="Center" Height="19"/>
-            <Label Grid.Row="2" Grid.Column="0" x:Name="lblStartTime" Content="Start Time:" Margin="0,0,10,5" VerticalAlignment="Top" Padding="0,0,0,0" VerticalContentAlignment="Center" Height="20"/>
-            <Label Grid.Row="3" Grid.Column="0" x:Name="lblEndTime" Content="End Time:" Margin="0,0,10,5" VerticalAlignment="Top" Padding="0,0,0,0" VerticalContentAlignment="Center" Height="20"/>
+            <Label Grid.Row="0" Grid.Column="0" Name="lblFile" Content="File:" VerticalAlignment="Top" Margin="0,0,10,5" Padding="0,0,0,0" VerticalContentAlignment="Center" Height="19"/>
+            <Label Grid.Row="1" Grid.Column="0" Name="lblOutputFolder" Content="Output Folder:" Margin="0,0,10,10" VerticalAlignment="Top" Padding="0,0,0,0" VerticalContentAlignment="Center" Height="19"/>
+            <Label Grid.Row="2" Grid.Column="0" Name="lblStartTime" Content="Start Time:" Margin="0,0,10,5" VerticalAlignment="Top" Padding="0,0,0,0" VerticalContentAlignment="Center" Height="20"/>
+            <Label Grid.Row="3" Grid.Column="0" Name="lblEndTime" Content="End Time:" Margin="0,0,10,5" VerticalAlignment="Top" Padding="0,0,0,0" VerticalContentAlignment="Center" Height="20"/>
 
             <TextBlock Grid.Row="0" Grid.Column="1" x:Name="tblFilePath" Text="C:\Video\my-video.mp4" Margin="0,0,0,5" VerticalAlignment="Top" Padding="0,0,0,0" Height="19" Grid.ColumnSpan="4"/>
             <TextBlock Grid.Row="1" Grid.Column="1" x:Name="tblOutputFolderPath" Text="C:\Video\my-video_frames" Margin="0,0,0,10" VerticalAlignment="Top" Padding="0,0,0,0" Height="19" Grid.ColumnSpan="4"/>

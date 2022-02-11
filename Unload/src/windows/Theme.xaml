@@ -3,7 +3,7 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
     <SolidColorBrush Color="#171717" x:Key="bgDark" />
     <SolidColorBrush Color="#2C2C2C" x:Key="primaryDark" />
-    <SolidColorBrush Color="#2C2C2C" x:Key="secondaryDark" />
+    <SolidColorBrush Color="#1f1f1f" x:Key="secondaryDark" />
     <SolidColorBrush Color="#434343" x:Key="borderDarkPrimary" />
     <SolidColorBrush Color="#393939" x:Key="borderDarkSecondary" />
     <SolidColorBrush Color="#E5E5E5" x:Key="primaryLight" />
@@ -176,12 +176,28 @@
         <Setter Property="Background" Value="{DynamicResource primaryDark}" />
         <Setter Property="BorderBrush" Value="{DynamicResource borderDarkPrimary}" />
         <Setter Property="Foreground" Value="{DynamicResource primaryLight}" />
+        <Style.Triggers>
+            <Trigger Property="IsEnabled" Value="False">
+                <Setter Property="Foreground" Value="{DynamicResource secondaryLight}"/>
+                <Setter Property="Background" Value="{DynamicResource secondaryDark}"/>
+            </Trigger>
+        </Style.Triggers>
     </Style>
     <Style TargetType="Label">
         <Setter Property="Foreground" Value="{DynamicResource primaryLight}" />
+        <Style.Triggers>
+            <Trigger Property="IsEnabled" Value="False">
+                <Setter Property="Foreground" Value="{DynamicResource secondaryLight}"/>
+            </Trigger>
+        </Style.Triggers>
     </Style>
     <Style TargetType="TextBlock">
         <Setter Property="Foreground" Value="{DynamicResource primaryLight}" />
+        <Style.Triggers>
+            <Trigger Property="IsEnabled" Value="False">
+                <Setter Property="Foreground" Value="{DynamicResource secondaryLight}"/>
+            </Trigger>
+        </Style.Triggers>
     </Style>
     <Style TargetType="CheckBox">
         <Setter Property="Foreground" Value="{DynamicResource primaryLight}"/>
@@ -219,12 +235,6 @@
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
-        <Style.Triggers>
-            <Trigger Property="IsEnabled" Value="False">
-                <Setter Property="Background" Value="{DynamicResource secondaryDark}"/>
-                <Setter Property="Foreground" Value="{DynamicResource secondaryLight}"/>
-            </Trigger>
-        </Style.Triggers>
     </Style>
     <Style TargetType="Button">
         <Setter Property="Background" Value="{DynamicResource primaryDark}" />
@@ -247,8 +257,9 @@
 
         <Style.Triggers>
             <Trigger Property="IsEnabled" Value="False">
-                <Setter Property="Background" Value="{DynamicResource secondaryDark}"/>
                 <Setter Property="Foreground" Value="{DynamicResource secondaryLight}"/>
+                <Setter Property="Background" Value="{DynamicResource secondaryDark}"/>
+                <Setter Property="Opacity" Value="0.6"/>
             </Trigger>
             <Trigger Property="IsMouseOver" Value="True">
                 <Setter Property="Background" Value="{DynamicResource highlight}"/>
@@ -266,7 +277,7 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="RepeatButton">
-                    <Border Background="{DynamicResource secondaryDark}" Height="3"/>
+                    <Border Background="{DynamicResource primaryDark}" Height="3"/>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
