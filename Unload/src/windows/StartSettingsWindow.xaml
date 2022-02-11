@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:unload"
         mc:Ignorable="d"
-        Title="Unload" Height="auto" Width="470" ResizeMode="NoResize" ShowInTaskbar="False" WindowStyle="None" WindowStartupLocation="CenterOwner" Background="{DynamicResource bgDark}">
+        Title="Unload" Height="auto" Width="470" SizeToContent="Height" ResizeMode="NoResize" ShowInTaskbar="False" WindowStyle="None" WindowStartupLocation="CenterOwner" Background="{DynamicResource bgDark}">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="auto"/>

@@ -46,7 +46,7 @@ namespace unload
         private void SetProgress()
         {
             mainWindow.TaskbarItemInfo.ProgressValue = percentage / 100d;
-            label.Content = $"{text}: {percentage:N2}%";
+            lblProgress.Content = $"{text}: {percentage:N2}%";
             progressBar.Value = percentage;
         }
 

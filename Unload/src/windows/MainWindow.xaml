@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:unload"
         mc:Ignorable="d"
-        Title="Unload" Height="750" Width="1330" Closed="Window_Closed" Style="{DynamicResource CustomWindowStyle}" Icon="../../icon/icon_32.png">
+        Title="Unload" Height="750" Width="1330" MinHeight="670" MinWidth="1100" Closed="Window_Closed" Style="{DynamicResource CustomWindowStyle}" Icon="../../icon/icon_32.png">
     <Window.TaskbarItemInfo>
         <TaskbarItemInfo/>
     </Window.TaskbarItemInfo>
@@ -88,8 +88,8 @@
                     <Button Grid.Row="1" Grid.Column="3" x:Name="btnForwardFar" Margin="0,0,5,0" Width="40" Content="►►" Click="btnForward_Click" FontFamily="Arial"/>
                     <Button Grid.Row="1" Grid.Column="5" x:Name="btnSetStart" Margin="0,0,5,0" Width="60" Content="Set Start" Click="btnSetStart_Click"/>
                     <Button Grid.Row="1" Grid.Column="6" x:Name="btnSetEnd" Margin="0,0,10,0" Width="60"  Content="Set End" Click="btnSetEnd_Click"/>
-                    <Label Grid.Row="1" Grid.Column="7" Margin="0,0,5,0" Width="40" Content="Frame:" Padding="0,0,0,0" VerticalContentAlignment="Center"/>
-                    <TextBox Grid.Row="1" Grid.Column="8" x:Name="txtFrame" Width="70" Text="1" TextAlignment="Left" VerticalContentAlignment="Center" TextChanged="txtFrame_TextChanged"/>
+                    <Label Grid.Row="1" Grid.Column="7" Margin="0,0,5,0" Width="40" Content="Frame:"/>
+                    <TextBox Grid.Row="1" Grid.Column="8" x:Name="txtFrame" Width="70" Text="1" TextAlignment="Right" TextChanged="txtFrame_TextChanged"/>
                 </Grid>
             </GroupBox>
         </Grid>
@@ -129,13 +129,13 @@
                         <ColumnDefinition/>
                         <ColumnDefinition/>
                     </Grid.ColumnDefinitions>
-                    <Image Grid.ColumnSpan="4" x:Name="imageLoadFrame" Margin="1,1,1,1"/>
-                    <Rectangle Grid.ColumnSpan="4" Stroke="{DynamicResource borderDarkSecondary}"/>
-                    <Label Grid.Column="3" x:Name="lblPickedLoadCount" Content="0 / 0" HorizontalAlignment="Right" Margin="0,1,1,0" VerticalAlignment="Top" Padding="10,2,10,2" Background="#FF5844FE" BorderBrush="{DynamicResource highlightDark}"/>
+                    <Image  Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="4" x:Name="imageLoadFrame" Margin="1,1,1,1"/>
+                    <Rectangle Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="4" Stroke="{DynamicResource borderDarkSecondary}"/>
+                    <Label Grid.Row="0" Grid.Column="3" x:Name="lblPickedLoadCount" Content="0 / 0" HorizontalAlignment="Right" Margin="0,1,1,0" VerticalAlignment="Top" Padding="10,2,10,2" Background="#FF5844FE" BorderBrush="{DynamicResource highlightDark}"/>
                     <Button Grid.Row="1" Grid.Column="0" x:Name="btnPreviousLoadFrame" Margin="0,10,10,0" Content="◄" FontFamily="Arial" Click="btnPreviousLoadFrame_Click"/>
                     <Button Grid.Row="1" Grid.Column="1" x:Name="btnNextLoadFrame" Margin="0,10,5,0" Content="►" FontFamily="Arial" Click="btnNextLoadFrame_Click"/>
                     <Button Grid.Row="1" Grid.Column="2" x:Name="btnAddLoadFrame" Margin="5,10,0,0" Content="+" FontFamily="Arial" FontSize="14" Click="btnAddLoadFrame_Click"/>
-                    <Button Grid.Row="1" Grid.Column="3" x:Name="btnRemoveLoadFrame" Margin="10,10,0,0" Content="-" FontFamily="Arial" FontWeight="Normal" FontSize="14" Height="22" Click="btnRemoveLoadFrame_Click"/>
+                    <Button Grid.Row="1" Grid.Column="3" x:Name="btnRemoveLoadFrame" Margin="10,10,0,0" Content="-" FontFamily="Arial" FontSize="14" Click="btnRemoveLoadFrame_Click"/>
                     <Slider Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" x:Name="sliderCropX" Margin="5,5,5,0" ValueChanged="slidersCropping_OnValueChanged" Maximum="100"/>
                     <Slider Grid.Row="2" Grid.Column="2" Grid.ColumnSpan="2" x:Name="sliderCropWidth" Margin="5,5,5,0" ValueChanged="slidersCropping_OnValueChanged" Maximum="100" Minimum="1" Value="100"/>
                     <Slider Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" x:Name="sliderCropY" Margin="5,0,5,0" ValueChanged="slidersCropping_OnValueChanged" Maximum="100"/>
@@ -157,15 +157,15 @@
                         <ColumnDefinition Width="2*"/>
                         <ColumnDefinition Width="1*"/>
                     </Grid.ColumnDefinitions>
-                    <Label Grid.Row="0" Grid.Column="0" x:Name="lblStartFrame" Margin="0,0,0,5" Content="Start Frame:"/>
+                    <Label Grid.Row="0" Grid.Column="0" Margin="0,0,0,5" Content="Start Frame:"/>
                     <TextBox Grid.Row="0" Grid.Column="1" x:Name="txtStartFrame" Margin="0,0,0,5" Text="1" HorizontalContentAlignment="Right"/>
-                    <Label Grid.Row="1" Grid.Column="0" x:Name="lblEndFrame" Margin="0,0,0,5" Content="End Frame:"/>
+                    <Label Grid.Row="1" Grid.Column="0" Margin="0,0,0,5" Content="End Frame:"/>
                     <TextBox Grid.Row="1" Grid.Column="1" x:Name="txtEndFrame" Margin="0,0,0,5" Text="1" HorizontalContentAlignment="Right"/>
-                    <Label Grid.Row="2" Grid.Column="0" x:Name="lblFPS" Margin="0,0,0,5" Content="FPS:"/>
+                    <Label Grid.Row="2" Grid.Column="0" Margin="0,0,0,5" Content="FPS:"/>
                     <TextBox Grid.Row="2" Grid.Column="1" x:Name="txtFPS" Margin="0,0,0,5" Text="30" HorizontalContentAlignment="Right"/>
-                    <Label Grid.Row="3" Grid.Column="0" x:Name="lblLoadFrames" Margin="0,0,0,10" Content="Load Frames:"/>
+                    <Label Grid.Row="3" Grid.Column="0" Margin="0,0,0,10" Content="Load Frames:"/>
                     <TextBox Grid.Row="3" Grid.Column="1" x:Name="txtLoadFrames" Margin="0,0,0,10" Text="0" HorizontalContentAlignment="Right" IsReadOnly="True"/>
-                    <TextBox Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="2" Height="auto" x:Name="txtTimeOutput" Margin="0,0,0,10" TextWrapping="Wrap" IsReadOnly="True"/>
+                    <TextBox Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="2" Height="auto" VerticalContentAlignment="Top" Padding="5,5,5,5" x:Name="txtTimeOutput" Margin="0,0,0,10" TextWrapping="Wrap" IsReadOnly="True"/>
                     <Button Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="2" x:Name="btnExportTimes" Content="Export Times" Click="btnExportTimes_Click"/>
                 </Grid>
             </GroupBox>
@@ -188,11 +188,11 @@
                         <ColumnDefinition Width="1*"/>
                         <ColumnDefinition Width="1*"/>
                     </Grid.ColumnDefinitions>
-                    <Button Grid.Row="0" Grid.Column="0" x:Name="btnPrepareFrames" Margin="0,0,5,10" Content="Prepare Frames" Click="btnPrepareFrames_Click" Height="22"/>
+                    <Button Grid.Row="0" Grid.Column="0" x:Name="btnPrepareFrames" Margin="0,0,5,10" Content="Prepare Frames" Click="btnPrepareFrames_Click"/>
                     <Button Grid.Row="0" Grid.Column="1" x:Name="btnResetFrames" Margin="5,0,0,10" Content="Reset Frames" Click="btnResetFrames_Click"/>
-                    <Label Grid.Row="1" Grid.Column="0" x:Name="lblSimilarity" Margin="0,0,5,5" Content="Minimum Similarity:"/>
+                    <Label Grid.Row="1" Grid.Column="0" Margin="0,0,5,5" Content="Minimum Similarity:"/>
                     <TextBox Grid.Row="1" Grid.Column="1" x:Name="txtSimilarity" Margin="5,0,0,5" TextWrapping="Wrap" Text="1" HorizontalContentAlignment="Right"/>
-                    <Label Grid.Row="2" Grid.Column="0" x:Name="lblMinFrames" Margin="0,0,5,5" Content="Minimum Frames:"/>
+                    <Label Grid.Row="2" Grid.Column="0" Margin="0,0,5,5" Content="Minimum Frames:"/>
                     <TextBox Grid.Row="2" Grid.Column="1" x:Name="txtMinFrames" Margin="5,0,0,10" TextWrapping="Wrap" Text="1" HorizontalContentAlignment="Right"/>
                     <Button Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" x:Name="btnDetectLoadFrames" Content="Detect Load Frames" Click="btnDetectLoadFrames_Click"/>
                 </Grid>
@@ -212,11 +212,11 @@
                             <Label Grid.Column="2" Content="End"/>
                             <Button Grid.Column="3" Content="+" x:Name="btnAddLoad" Height="20" Click="btnAddLoad_Click"/>
                         </Grid>
-                        <ItemsControl Width="auto" HorizontalAlignment="Stretch" x:Name="lbxLoads" Margin="5,5,5,5" ItemsSource="{Binding}" ItemTemplate="{StaticResource DetectedLoadTemplate}"/>
+                        <ItemsControl HorizontalAlignment="Stretch" x:Name="lbxLoads" Margin="5,5,5,5" ItemsSource="{Binding}" ItemTemplate="{StaticResource DetectedLoadTemplate}"/>
                     </StackPanel>
                 </ScrollViewer>
             </GroupBox>
-            <GroupBox x:Name="groupSettings" Header="Settings" Grid.Row="2" Margin="0,10,0,0">
+            <GroupBox Grid.Row="2" x:Name="groupSettings" Margin="0,10,0,0" Header="Settings">
                 <Grid Margin="5,5,5,5">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="auto"/>
@@ -228,9 +228,9 @@
                         <ColumnDefinition Width="3*"/>
                         <ColumnDefinition Width="1*"/>
                     </Grid.ColumnDefinitions>
-                    <Label Grid.Row="0" Grid.Column="0" x:Name="lblConcurrentTasks" Margin="0,0,0,5" Content="Concurrent tasks:"/>
+                    <Label Grid.Row="0" Grid.Column="0" Margin="0,0,0,5" Content="Concurrent tasks:"/>
                     <TextBox Grid.Row="0" Grid.Column="1" x:Name="txtConcurrentTasks" Margin="0,0,0,5" Text="20" Height="20" HorizontalContentAlignment="Right"/>
-                    <Label Grid.Row="1" Grid.Column="0" x:Name="lblStepSize" Margin="0,0,0,5" Content="Fast forward step size (ms):"/>
+                    <Label Grid.Row="1" Grid.Column="0" Margin="0,0,0,5" Content="Fast forward step size (ms):"/>
                     <TextBox Grid.Row="1" Grid.Column="1" x:Name="txtStepSize" Margin="0,0,0,5" Text="250" HorizontalContentAlignment="Right"/>
                     <CheckBox Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" x:Name="cbxSnapLoads" Content="Snap to detected loads" HorizontalAlignment="Left" VerticalContentAlignment="Center" Checked="cbxSnapLoads_Checked" Unchecked="cbxSnapLoads_Unchecked" IsChecked="True"/>
                 </Grid>
