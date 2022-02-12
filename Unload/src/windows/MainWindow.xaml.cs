@@ -241,11 +241,6 @@ namespace unload
         {
             detectedLoads.Clear();
 
-            int concurrentTasks = int.Parse(txtConcurrentTasks.Text);
-
-            double minSimilarity = double.Parse(txtMinSimilarity.Text);
-            int minFrames = int.Parse(txtMinFrames.Text);
-
             // Crop and store the user's picked loading frames
             Bitmap[] loadFrames = new Bitmap[pickedLoadingFrames.Count];
 
