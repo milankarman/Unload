@@ -7,7 +7,6 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text.Json;
-using System.Text.RegularExpressions;
 using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
@@ -15,16 +14,30 @@ using System.Windows.Input;
 using System.Windows.Media.Imaging;
 using Microsoft.Win32;
 using Shipwreck.Phash;
-using unload.Properties;
 using Xabe.FFmpeg;
 
 namespace unload
 {
     public partial class MainWindow : Window
     {
+        private int startFrame;
+        private int endFrame;
+        private int loadFrames;
+        private double fps;
+
+        private int videoFrame;
+
+        private double minSimilarity;
+        private int minFrames;
+
+        private int concurrentTasks;
+        private int stepSize;
+
+        private int TotalFrames { get => endFrame - startFrame + 1; }
+
         // Keeps the directory of frames being used
         public string? workingDirectory = null;
-        private string? targetDirectory = null;
+        private readonly string? targetDirectory = null;
 
         private int totalVideoFrames = 0;
 
@@ -53,35 +66,24 @@ namespace unload
 
             lbxLoads.ItemsSource = detectedLoads;
 
-            txtFrame.PreviewTextInput += TextBoxValidator.ForceInteger;
+            txtVideoFrame.PreviewTextInput += TextBoxValidator.ForceInteger;
             txtStartFrame.PreviewTextInput += TextBoxValidator.ForceInteger;
             txtEndFrame.PreviewTextInput += TextBoxValidator.ForceInteger;
             txtConcurrentTasks.PreviewTextInput += TextBoxValidator.ForceInteger;
             txtStepSize.PreviewTextInput += TextBoxValidator.ForceInteger;
 
             txtFPS.PreviewTextInput += TextBoxValidator.ForceDouble;
-            txtSimilarity.PreviewTextInput += TextBoxValidator.ForceDouble;
-            txtSimilarity.Text = defaultSimilarity.ToString();
+            txtMinSimilarity.PreviewTextInput += TextBoxValidator.ForceDouble;
 
-            // Set initial interface state
-            groupLoadDetection.IsEnabled = false;
-            groupDetectedLoads.IsEnabled = false;
+            txtMinSimilarity.Text = defaultSimilarity.ToString();
 
-            btnExportTimes.IsEnabled = false;
-            btnNextLoadFrame.IsEnabled = false;
-            btnPreviousLoadFrame.IsEnabled = false;
-            btnRemoveLoadFrame.IsEnabled = false;
-            btnCheckSimilarity.IsEnabled = false;
-
-            cbxSnapLoads.IsEnabled = false;
-            lblPickedLoadCount.Visibility = Visibility.Hidden;
+            SetInitialUIState();
         }
 
         // Prepares an image sequence and resets the application state
         public async void LoadFolder(string file, string dir)
         {
             workingDirectory = dir;
-            double fps;
             int expectedFrames;
 
             string infoPath = Path.Join(dir, "conversion-info.json");
@@ -129,7 +131,6 @@ namespace unload
             }
 
             txtEndFrame.Text = totalVideoFrames.ToString();
-            txtFPS.Text = fps.ToString();
 
             sliderTimeline.Maximum = totalVideoFrames;
             sliderTimeline.Value = 1;
@@ -151,8 +152,8 @@ namespace unload
             Uri image = new Uri(Path.Join(workingDirectory, $"{frame}.jpg"));
             imageVideo.Source = new BitmapImage(image);
 
-            txtFrame.Text = frame.ToString();
-            txtSimilarity.IsEnabled = true;
+            txtVideoFrame.Text = frame.ToString();
+            txtMinSimilarity.IsEnabled = true;
         }
 
         // Update the cropping of the selected load screen when the cropping sliders change
@@ -160,7 +161,7 @@ namespace unload
         {
             // Ensure a load frame is picked beforehand
             if (pickedLoadingFrames.Count > 0)
-            { 
+            {
                 UpdateLoadPreview();
             }
         }
@@ -194,20 +195,13 @@ namespace unload
             }
 
             // Read user defined arguments
-            int startFrame = int.Parse(txtStartFrame.Text);
-            int endFrame = int.Parse(txtEndFrame.Text);
             int concurrentTasks = int.Parse(txtConcurrentTasks.Text);
 
             Rectangle crop = CropSlidersToRectangle();
 
             // Create a new progress window to track progress
-            ProgressWindow progress = new ProgressWindow("Preparing frames", this)
-            {
-                Owner = this
-            };
+            ProgressWindow progress = new ProgressWindow("Preparing frames", this);
             progress.Show();
-
-            // Disable the main window
             IsEnabled = false;
 
             // Attempt to hash every frame in a new thread
@@ -226,26 +220,7 @@ namespace unload
                     });
 
                     // Enable new options when frame hashing succeeds
-                    Dispatcher.Invoke(() =>
-                    {
-                        btnAddLoadFrame.IsEnabled = false;
-                        btnRemoveLoadFrame.IsEnabled = false;
-
-                        sliderCropHeight.IsEnabled = false;
-                        sliderCropWidth.IsEnabled = false;
-                        sliderCropX.IsEnabled = false;
-                        sliderCropY.IsEnabled = false;
-
-                        txtStartFrame.IsEnabled = false;
-                        txtEndFrame.IsEnabled = false;
-
-                        btnSetEnd.IsEnabled = false;
-                        btnSetStart.IsEnabled = false;
-                        btnPrepareFrames.IsEnabled = false;
-
-                        btnDetectLoadFrames.IsEnabled = true;
-                        btnResetFrames.IsEnabled = true;
-                    });
+                    Dispatcher.Invoke(() => SetFramesHashedState());
                 }
                 catch (OperationCanceledException) { }
                 finally
@@ -266,6 +241,74 @@ namespace unload
             thread.Start();
         }
 
+        private void SetFramesHashedState()
+        {
+            btnAddLoadFrame.IsEnabled = false;
+            btnRemoveLoadFrame.IsEnabled = false;
+
+            sliderCropHeight.IsEnabled = false;
+            sliderCropWidth.IsEnabled = false;
+            sliderCropX.IsEnabled = false;
+            sliderCropY.IsEnabled = false;
+
+            txtStartFrame.IsEnabled = false;
+            txtEndFrame.IsEnabled = false;
+
+            btnSetEnd.IsEnabled = false;
+            btnSetStart.IsEnabled = false;
+            btnPrepareFrames.IsEnabled = false;
+
+            btnDetectLoadFrames.IsEnabled = true;
+            btnResetFrames.IsEnabled = true;
+        }
+
+        private void SetInitialUIState()
+        {
+            groupLoadDetection.IsEnabled = false;
+            groupDetectedLoads.IsEnabled = false;
+
+            btnExportTimes.IsEnabled = false;
+            btnNextLoadFrame.IsEnabled = false;
+            btnPreviousLoadFrame.IsEnabled = false;
+            btnRemoveLoadFrame.IsEnabled = false;
+            btnCheckSimilarity.IsEnabled = false;
+
+            cbxSnapLoads.IsEnabled = false;
+            lblPickedLoadCount.Visibility = Visibility.Hidden;
+        }
+
+        private void SetResetFramesUIState()
+        {
+            hashedFrames.Clear();
+            detectedLoads.Clear();
+            sliderTimeline.Ticks.Clear();
+
+            loadFrames = 0;
+            txtTimeOutput.Text = string.Empty;
+            btnExportTimes.IsEnabled = false;
+            cbxSnapLoads.IsEnabled = true;
+
+            sliderCropHeight.IsEnabled = true;
+            sliderCropWidth.IsEnabled = true;
+            sliderCropX.IsEnabled = true;
+            sliderCropY.IsEnabled = true;
+
+            btnAddLoadFrame.IsEnabled = true;
+            ToggleLoadPickerButtons();
+
+            groupDetectedLoads.IsEnabled = false;
+            txtStartFrame.IsEnabled = true;
+            txtEndFrame.IsEnabled = true;
+            btnSetEnd.IsEnabled = true;
+            btnSetStart.IsEnabled = true;
+            btnPrepareFrames.IsEnabled = true;
+
+            btnDetectLoadFrames.IsEnabled = false;
+            btnResetFrames.IsEnabled = false;
+            sliderTicks.Clear();
+            SetTimelineTicks();
+        }
+
         // Clears the frame hash dictionairy and reenables load screen picking
         private void btnResetFrames_Click(object sender, RoutedEventArgs e)
         {
@@ -273,38 +316,7 @@ namespace unload
             string text = "Doing this will require the frames to be prepared again. Are you sure?";
             MessageBoxResult result = MessageBox.Show(text, "Info", MessageBoxButton.YesNo, MessageBoxImage.Information);
 
-            if (result == MessageBoxResult.Yes)
-            {
-                // Clear dictionairy and update interface states
-                hashedFrames.Clear();
-                detectedLoads.Clear();
-                sliderTimeline.Ticks.Clear();
-
-                txtLoadFrames.Text = "0";
-                txtTimeOutput.Text = string.Empty;
-                btnExportTimes.IsEnabled = false;
-                cbxSnapLoads.IsEnabled = true;
-
-                sliderCropHeight.IsEnabled = true;
-                sliderCropWidth.IsEnabled = true;
-                sliderCropX.IsEnabled = true;
-                sliderCropY.IsEnabled = true;
-
-                btnAddLoadFrame.IsEnabled = true;
-                ToggleLoadPickerButtons();
-
-                groupDetectedLoads.IsEnabled = false;
-                txtStartFrame.IsEnabled = true;
-                txtEndFrame.IsEnabled = true;
-                btnSetEnd.IsEnabled = true;
-                btnSetStart.IsEnabled = true;
-                btnPrepareFrames.IsEnabled = true;
-
-                btnDetectLoadFrames.IsEnabled = false;
-                btnResetFrames.IsEnabled = false;
-                sliderTicks.Clear();
-                SetTimelineTicks();
-            }
+            if (result == MessageBoxResult.Yes) SetResetFramesUIState();
         }
 
         // Compares the hashed frames against the picked loading screen and counts frames above the specified similarity as load frames
@@ -313,12 +325,9 @@ namespace unload
             // Reset the listbox and add headers
             detectedLoads.Clear();
 
-            // Read user arguments
-            int startFrame = int.Parse(txtStartFrame.Text);
-            int endFrame = int.Parse(txtEndFrame.Text);
             int concurrentTasks = int.Parse(txtConcurrentTasks.Text);
 
-            double minSimilarity = double.Parse(txtSimilarity.Text);
+            double minSimilarity = double.Parse(txtMinSimilarity.Text);
             int minFrames = int.Parse(txtMinFrames.Text);
 
             // Crop and store the user's picked loading frames
@@ -388,7 +397,7 @@ namespace unload
             // Save start frame, end frame, first frame and last frame to snap the timeline slider to later
             sliderTicks.Add(startFrame);
             sliderTicks.Add(1);
-            sliderTicks.Add(endFrame);
+            sliderTicks.Add(startFrame);
             sliderTicks.Add(totalVideoFrames);
 
             // Update the interface
@@ -428,7 +437,7 @@ namespace unload
                 frames += load.EndFrame - load.StartFrame + 1;
             }
 
-            txtLoadFrames.Text = frames.ToString();
+            loadFrames = frames;
         }
 
         private void btnAddLoad_Click(object sender, RoutedEventArgs e)
@@ -437,84 +446,28 @@ namespace unload
             SetDetectedLoads();
         }
 
-        // Checks if all required fields for frame counting are filled in
-        public bool IsValidFramedata()
-        {
-            if (string.IsNullOrEmpty(txtFPS.Text) || string.IsNullOrEmpty(txtEndFrame.Text) || string.IsNullOrEmpty(txtStartFrame.Text) || string.IsNullOrEmpty(txtLoadFrames.Text))
-            {
-                return false;
-            }
-
-            return true;
-        }
-
         // Calculates the final times and adds them to the interface
         private void CalculateTimes()
         {
-            double framesPerSecond = double.Parse(txtFPS.Text);
-            int totalFrames = int.Parse(txtEndFrame.Text) - int.Parse(txtStartFrame.Text) + 1;
-            int loadFrames = int.Parse(txtLoadFrames.Text);
-
-            if (!IsValidFramedata())
-            {
-                string message = "Error. Make sure start/end frame and FPS are filled in properly.";
-                MessageBox.Show(message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                return;
-            }
-
-            txtTimeOutput.Text = "Time without loads:" + Environment.NewLine + TimeCalculator.GetLoadlessTimeString(framesPerSecond, totalFrames, loadFrames) + Environment.NewLine;
-            txtTimeOutput.Text += "Time with loads:" + Environment.NewLine + TimeCalculator.GetTotalTimeString(framesPerSecond, totalFrames) + Environment.NewLine;
-            txtTimeOutput.Text += "Time spent loading:" + Environment.NewLine + TimeCalculator.GetTimeSpentLoadingString(framesPerSecond, totalFrames, loadFrames);
+            txtTimeOutput.Text = "Time without loads:" + Environment.NewLine + TimeCalculator.GetLoadlessTimeString(fps, TotalFrames, TotalFrames) + Environment.NewLine;
+            txtTimeOutput.Text += "Time with loads:" + Environment.NewLine + TimeCalculator.GetTotalTimeString(fps, TotalFrames) + Environment.NewLine;
+            txtTimeOutput.Text += "Time spent loading:" + Environment.NewLine + TimeCalculator.GetTimeSpentLoadingString(fps, TotalFrames, loadFrames);
 
             // Enable the export button when times are calculated
             btnExportTimes.IsEnabled = true;
         }
 
-        // Move the timeline back 1 frame
-        private void btnBack_Click(object sender, RoutedEventArgs e)
-        {
-            sliderTimeline.Value -= 1;
+        private void btnBack_Click(object sender, RoutedEventArgs e) => txtVideoFrame.Text = (videoFrame - 1).ToString();
 
-            SetVideoFrame((int)sliderTimeline.Value);
-        }
+        private void btnBackFar_Click(object sender, RoutedEventArgs e) => txtVideoFrame.Text = (videoFrame - fps / (1000 / stepSize)).ToString();
 
-        // Move the timeline back 0.25 seconds
-        private void btnBackFar_Click(object sender, RoutedEventArgs e)
-        {
-            double framesToSubtract = double.Parse(txtFPS.Text) / (1000 / double.Parse(txtStepSize.Text));
-            sliderTimeline.Value -= (int)Math.Round(framesToSubtract);
+        private void btnForwardFar_Click(object sender, RoutedEventArgs e) => txtVideoFrame.Text = (videoFrame + 1).ToString();
 
-            SetVideoFrame((int)sliderTimeline.Value);
-        }
+        private void btnForward_Click(object sender, RoutedEventArgs e) => txtVideoFrame.Text = (videoFrame + fps / (1000 / stepSize)).ToString();
 
-        // Move the timeline forward 1 frame seconds
-        private void btnForwardFar_Click(object sender, RoutedEventArgs e)
-        {
-            sliderTimeline.Value += 1;
+        private void btnSetStart_Click(object sender, RoutedEventArgs e) => txtStartFrame.Text = ((int)sliderTimeline.Value).ToString();
 
-            SetVideoFrame((int)sliderTimeline.Value);
-        }
-
-        // Move the timeline forward by the entered step size
-        private void btnForward_Click(object sender, RoutedEventArgs e)
-        {
-            double framesToAdvance = double.Parse(txtFPS.Text) / (1000 / double.Parse(txtStepSize.Text));
-            sliderTimeline.Value += (int)Math.Round(framesToAdvance);
-
-            SetVideoFrame((int)sliderTimeline.Value);
-        }
-
-        // Mark the current video preview frame as the start frame for timing
-        private void btnSetStart_Click(object sender, RoutedEventArgs e)
-        {
-            txtStartFrame.Text = sliderTimeline.Value.ToString();
-        }
-
-        // Mark the current video preivew frame as the end frame for timing
-        private void btnSetEnd_Click(object sender, RoutedEventArgs e)
-        {
-            txtEndFrame.Text = sliderTimeline.Value.ToString();
-        }
+        private void btnSetEnd_Click(object sender, RoutedEventArgs e) => txtEndFrame.Text = ((int)sliderTimeline.Value).ToString();
 
         // Applies cropping to the picked load screen and shows it on the interface
         private void UpdateLoadPreview()
@@ -546,27 +499,23 @@ namespace unload
         }
 
         // Moves the timeline and updates the video preview to the frame the user entered
-        private void txtFrame_TextChanged(object sender, EventArgs e)
+        private void txtVideoFrame_TextChanged(object sender, EventArgs e)
         {
-            // Ensure this action is not attempted when no frames are loaded
-            if (totalVideoFrames <= 0)
+            if (totalVideoFrames == 0)
             {
                 return;
             }
 
-            // Limit the selected frame to frames that exist
-            int frame = 1;
-
-            if (!string.IsNullOrEmpty(txtFrame.Text))
+            if (!string.IsNullOrEmpty(txtVideoFrame.Text))
             {
-                frame = Math.Clamp(int.Parse(txtFrame.Text), 1, totalVideoFrames);
+                videoFrame = Math.Clamp(int.Parse(txtVideoFrame.Text), 1, totalVideoFrames);
             }
 
             // Update the interface
-            sliderTimeline.Value = frame;
-            txtFrame.Text = frame.ToString();
+            sliderTimeline.Value = videoFrame;
+            txtVideoFrame.Text = videoFrame.ToString();
 
-            SetVideoFrame(frame);
+            SetVideoFrame(videoFrame);
         }
 
         // Exports the frame count and load times ranges to a CSV file
@@ -581,31 +530,18 @@ namespace unload
                 DefaultExt = "csv",
             };
 
-            if (dialog.ShowDialog() == true)
+            if (dialog.ShowDialog() == true && dialog.FileName != null)
             {
-                int startFrame = int.Parse(txtStartFrame.Text);
-                int endFrame = int.Parse(txtEndFrame.Text);
-                int totalFrames = startFrame - endFrame + 1;
+                try
+                {
+                    ExportGenerator.ExportAndSave(dialog.FileName, fps, TotalFrames, loadFrames, detectedLoads, usedMinSimilarity, usedMinFrames,
+                        startFrame, endFrame);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
 
-                if (!IsValidFramedata())
-                {
-                    string message = "Error. Make sure start/end frame and FPS are filled in properly.";
-                    MessageBox.Show(message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                    return;
-                }
-                
-                if (dialog.FileName != null)
-                {
-                    try
-                    {
-                        ExportGenerator.ExportAndSave(dialog.FileName, double.Parse(txtFPS.Text), totalFrames, int.Parse(txtLoadFrames.Text), detectedLoads, usedMinSimilarity, usedMinFrames,
-                            startFrame, endFrame);
-                    }
-                    catch (Exception ex)
-                    {
-                        MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK,MessageBoxImage.Error);
-                    }
-                }
             }
         }
 
@@ -700,7 +636,7 @@ namespace unload
             if (cmd.DataContext is DetectedLoad load)
             {
                 sliderTimeline.Value = load.StartFrame;
-                txtFrame.Text = load.StartFrame.ToString();
+                txtVideoFrame.Text = load.StartFrame.ToString();
             }
         }
 
@@ -712,7 +648,7 @@ namespace unload
             if (cmd.DataContext is DetectedLoad load)
             {
                 sliderTimeline.Value = load.EndFrame;
-                txtFrame.Text = load.EndFrame.ToString();
+                txtVideoFrame.Text = load.EndFrame.ToString();
             }
         }
 
@@ -809,5 +745,19 @@ namespace unload
                 btnCheckSimilarity.IsEnabled = false;
             }
         }
+
+        private void txtStartFrame_TextChanged(object sender, TextChangedEventArgs e) => startFrame = int.Parse(txtStartFrame.Text);
+
+        private void txtEndFrame_TextChanged(object sender, TextChangedEventArgs e) => endFrame = int.Parse(txtEndFrame.Text);
+
+        private void txtFPS_TextChanged(object sender, TextChangedEventArgs e) => fps = double.Parse(txtFPS.Text);
+
+        private void txtMinSimilarity_TextChanged(object sender, TextChangedEventArgs e) => minSimilarity = double.Parse(txtMinSimilarity.Text);
+
+        private void txtMinFrames_TextChanged(object sender, TextChangedEventArgs e) => minFrames = int.Parse(txtMinFrames.Text);
+
+        private void txtConcurrentTasks_TextChanged(object sender, TextChangedEventArgs e) => concurrentTasks = int.Parse(txtConcurrentTasks.Text);
+
+        private void txtStepSize_TextChanged(object sender, TextChangedEventArgs e) => stepSize = int.Parse(txtStepSize.Text);
     }
 }
