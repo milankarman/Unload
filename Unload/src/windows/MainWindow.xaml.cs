@@ -138,10 +138,6 @@ namespace unload
             SetVideoFrame(1);
         }
 
-
-        // Update our video preview when moving the slider
-        private void sliderTimeline_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e) => SetVideoFrame((int)sliderTimeline.Value);
-
         // Loads in a given frame in the video preview
         private void SetVideoFrame(int frame)
         {
@@ -156,18 +152,8 @@ namespace unload
             txtMinSimilarity.IsEnabled = true;
         }
 
-        // Update the cropping of the selected load screen when the cropping sliders change
-        private void slidersCropping_OnValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
-        {
-            // Ensure a load frame is picked beforehand
-            if (pickedLoadingFrames.Count > 0)
-            {
-                UpdateLoadPreview();
-            }
-        }
-
         // Notifies the user of the similarity between the selected load frame and the current previewed frame
-        private void btnCheckSimilarity_Click(object sender, RoutedEventArgs e)
+        private void CheckSimilarity()
         {
             // Load and crop the loading screen and current frame
             Rectangle crop = CropSlidersToRectangle();
@@ -182,7 +168,7 @@ namespace unload
         }
 
         // Hashes every frame into a dictionary so similarity can be quickly checked and adjust without having to hash again.
-        private void btnPrepareFrames_Click(object sender, RoutedEventArgs e)
+        private void PrepareFrames()
         {
             // Warn the user on the length of this process
             string text = "This will start the long and intense process of preparing every frame from start to end using the specified cropping." + Environment.NewLine + Environment.NewLine +
@@ -194,12 +180,8 @@ namespace unload
                 return;
             }
 
-            // Read user defined arguments
-            int concurrentTasks = int.Parse(txtConcurrentTasks.Text);
-
             Rectangle crop = CropSlidersToRectangle();
 
-            // Create a new progress window to track progress
             ProgressWindow progress = new ProgressWindow("Preparing frames", this);
             progress.Show();
             IsEnabled = false;
@@ -219,13 +201,11 @@ namespace unload
                         progress.percentage = percentage;
                     });
 
-                    // Enable new options when frame hashing succeeds
                     Dispatcher.Invoke(() => SetFramesHashedState());
                 }
                 catch (OperationCanceledException) { }
                 finally
                 {
-                    // Dispose our now unneeded cancellation token and re-enable the main window even if hashing failed
                     progress.cts.Dispose();
                     Dispatcher.Invoke(() =>
                     {
@@ -241,88 +221,24 @@ namespace unload
             thread.Start();
         }
 
-        private void SetFramesHashedState()
-        {
-            btnAddLoadFrame.IsEnabled = false;
-            btnRemoveLoadFrame.IsEnabled = false;
-
-            sliderCropHeight.IsEnabled = false;
-            sliderCropWidth.IsEnabled = false;
-            sliderCropX.IsEnabled = false;
-            sliderCropY.IsEnabled = false;
-
-            txtStartFrame.IsEnabled = false;
-            txtEndFrame.IsEnabled = false;
-
-            btnSetEnd.IsEnabled = false;
-            btnSetStart.IsEnabled = false;
-            btnPrepareFrames.IsEnabled = false;
-
-            btnDetectLoadFrames.IsEnabled = true;
-            btnResetFrames.IsEnabled = true;
-        }
-
-        private void SetInitialUIState()
-        {
-            groupLoadDetection.IsEnabled = false;
-            groupDetectedLoads.IsEnabled = false;
-
-            btnExportTimes.IsEnabled = false;
-            btnNextLoadFrame.IsEnabled = false;
-            btnPreviousLoadFrame.IsEnabled = false;
-            btnRemoveLoadFrame.IsEnabled = false;
-            btnCheckSimilarity.IsEnabled = false;
-
-            cbxSnapLoads.IsEnabled = false;
-            lblPickedLoadCount.Visibility = Visibility.Hidden;
-        }
-
-        private void SetResetFramesUIState()
-        {
-            hashedFrames.Clear();
-            detectedLoads.Clear();
-            sliderTimeline.Ticks.Clear();
-
-            loadFrames = 0;
-            txtTimeOutput.Text = string.Empty;
-            btnExportTimes.IsEnabled = false;
-            cbxSnapLoads.IsEnabled = true;
-
-            sliderCropHeight.IsEnabled = true;
-            sliderCropWidth.IsEnabled = true;
-            sliderCropX.IsEnabled = true;
-            sliderCropY.IsEnabled = true;
-
-            btnAddLoadFrame.IsEnabled = true;
-            ToggleLoadPickerButtons();
-
-            groupDetectedLoads.IsEnabled = false;
-            txtStartFrame.IsEnabled = true;
-            txtEndFrame.IsEnabled = true;
-            btnSetEnd.IsEnabled = true;
-            btnSetStart.IsEnabled = true;
-            btnPrepareFrames.IsEnabled = true;
-
-            btnDetectLoadFrames.IsEnabled = false;
-            btnResetFrames.IsEnabled = false;
-            sliderTicks.Clear();
-            SetTimelineTicks();
-        }
-
-        // Clears the frame hash dictionairy and reenables load screen picking
-        private void btnResetFrames_Click(object sender, RoutedEventArgs e)
+        // Clears the prepared frames and updates the UI
+        private void ResetPreparedFrames()
         {
             // Warn user of the consequences of this action
             string text = "Doing this will require the frames to be prepared again. Are you sure?";
             MessageBoxResult result = MessageBox.Show(text, "Info", MessageBoxButton.YesNo, MessageBoxImage.Information);
 
-            if (result == MessageBoxResult.Yes) SetResetFramesUIState();
+            if (result == MessageBoxResult.Yes)
+            {
+                SetResetFramesUIState();
+                hashedFrames.Clear();
+                detectedLoads.Clear();
+            }
         }
-
+        
         // Compares the hashed frames against the picked loading screen and counts frames above the specified similarity as load frames
-        private void btnDetectLoadFrames_Click(object sender, RoutedEventArgs e)
+        private void DetectLoadFrames()
         {
-            // Reset the listbox and add headers
             detectedLoads.Clear();
 
             int concurrentTasks = int.Parse(txtConcurrentTasks.Text);
@@ -440,12 +356,6 @@ namespace unload
             loadFrames = frames;
         }
 
-        private void btnAddLoad_Click(object sender, RoutedEventArgs e)
-        {
-            detectedLoads.Add(new DetectedLoad(0, 0, 0));
-            SetDetectedLoads();
-        }
-
         // Calculates the final times and adds them to the interface
         private void CalculateTimes()
         {
@@ -456,18 +366,6 @@ namespace unload
             // Enable the export button when times are calculated
             btnExportTimes.IsEnabled = true;
         }
-
-        private void btnBack_Click(object sender, RoutedEventArgs e) => txtVideoFrame.Text = (videoFrame - 1).ToString();
-
-        private void btnBackFar_Click(object sender, RoutedEventArgs e) => txtVideoFrame.Text = (videoFrame - fps / (1000 / stepSize)).ToString();
-
-        private void btnForwardFar_Click(object sender, RoutedEventArgs e) => txtVideoFrame.Text = (videoFrame + 1).ToString();
-
-        private void btnForward_Click(object sender, RoutedEventArgs e) => txtVideoFrame.Text = (videoFrame + fps / (1000 / stepSize)).ToString();
-
-        private void btnSetStart_Click(object sender, RoutedEventArgs e) => txtStartFrame.Text = ((int)sliderTimeline.Value).ToString();
-
-        private void btnSetEnd_Click(object sender, RoutedEventArgs e) => txtEndFrame.Text = ((int)sliderTimeline.Value).ToString();
 
         // Applies cropping to the picked load screen and shows it on the interface
         private void UpdateLoadPreview()
@@ -498,24 +396,51 @@ namespace unload
             return cropPercentage;
         }
 
-        // Moves the timeline and updates the video preview to the frame the user entered
-        private void txtVideoFrame_TextChanged(object sender, EventArgs e)
+        // Checks if the user wants the timeline to snap to loads and makes it happen
+        private void SetTimelineTicks()
         {
-            if (totalVideoFrames == 0)
+            sliderTimeline.Ticks.Clear();
+
+            if (cbxSnapLoads.IsChecked == true)
             {
-                return;
+                foreach (int tick in sliderTicks)
+                {
+                    sliderTimeline.Ticks.Add(tick);
+                }
+            }
+        }
+
+        // Checks which buttons for picking loading frames should be enabled/disabled and applies that action
+        private void ToggleLoadPickerButtons()
+        {
+            btnNextLoadFrame.IsEnabled = pickedLoadingFrameIndex < pickedLoadingFrames.Count - 1;
+            btnPreviousLoadFrame.IsEnabled = pickedLoadingFrameIndex > 0;
+
+            if (hashedFrames == null) btnRemoveLoadFrame.IsEnabled = pickedLoadingFrameIndex >= 0;
+
+            if (pickedLoadingFrames.Count > 1)
+            {
+                lblPickedLoadCount.Visibility = Visibility.Visible;
+                lblPickedLoadCount.Content = $"{pickedLoadingFrameIndex + 1} / {pickedLoadingFrames.Count}";
+            }
+            else
+            {
+                lblPickedLoadCount.Visibility = Visibility.Hidden;
             }
 
-            if (!string.IsNullOrEmpty(txtVideoFrame.Text))
+            if (pickedLoadingFrames.Count > 0)
             {
-                videoFrame = Math.Clamp(int.Parse(txtVideoFrame.Text), 1, totalVideoFrames);
+                groupLoadDetection.IsEnabled = true;
+
+                if (!btnDetectLoadFrames.IsEnabled) btnPrepareFrames.IsEnabled = true;
+
+                btnCheckSimilarity.IsEnabled = true;
             }
-
-            // Update the interface
-            sliderTimeline.Value = videoFrame;
-            txtVideoFrame.Text = videoFrame.ToString();
-
-            SetVideoFrame(videoFrame);
+            else
+            {
+                btnPrepareFrames.IsEnabled = false;
+                btnCheckSimilarity.IsEnabled = false;
+            }
         }
 
         // Exports the frame count and load times ranges to a CSV file
@@ -545,134 +470,93 @@ namespace unload
             }
         }
 
-        // Deleted the detected load when the user clicks on the button next to it
-        private void btnDeleteDetectedLoad_Click(object sender, RoutedEventArgs e)
+        // Adds a new blank detected load
+        private void btnAddLoad_Click(object sender, RoutedEventArgs e)
         {
-            Button cmd = (Button)sender;
+            detectedLoads.Add(new DetectedLoad(0, 0, 0));
+            SetDetectedLoads();
+            CountLoadFrames();
+            CalculateTimes();
+        }
 
-            if (cmd.DataContext is DetectedLoad load)
+        // Updates the detected load selected frame to the TextBox value
+        private void UpdateDetectedLoadStartFrame(object sender, RoutedEventArgs e)
+        {
+            try
             {
-                detectedLoads.Remove(load);
+                TextBox cmd = (TextBox)sender;
+                if (cmd.DataContext is DetectedLoad load) detectedLoads[detectedLoads.IndexOf(load)].StartFrame = int.Parse(cmd.Text);
             }
+            catch { }
 
             SetDetectedLoads();
             CountLoadFrames();
             CalculateTimes();
         }
 
-        // Updates the detected load start frame to the textbox value
-        private void UpdateDetectedLoadStartFrame(object sender)
+        private void UpdateDetectedLoadEndFrame(object sender, RoutedEventArgs e)
         {
-            TextBox cmd = (TextBox)sender;
-
-            if (cmd.DataContext is DetectedLoad load)
+            try
             {
-                try
-                {
-                    detectedLoads[detectedLoads.IndexOf(load)].StartFrame = int.Parse(cmd.Text);
-                }
-                catch { }
+                TextBox cmd = (TextBox)sender;
+                if (cmd.DataContext is DetectedLoad load) detectedLoads[detectedLoads.IndexOf(load)].EndFrame = int.Parse(cmd.Text);
             }
+            catch { }
 
             SetDetectedLoads();
             CountLoadFrames();
             CalculateTimes();
         }
 
-        // Bind detected load update to text changing
-        private void txtStartFrameDetectedLoad_TextChanged(object sender, RoutedEventArgs e)
+
+        // Moves the timeline and updates the video preview to the frame the user entered
+        private void txtVideoFrame_TextChanged(object sender, EventArgs e)
         {
-            UpdateDetectedLoadStartFrame(sender);
+            if (totalVideoFrames == 0) return;
+
+            if (!string.IsNullOrEmpty(txtVideoFrame.Text))
+                videoFrame = Math.Clamp(int.Parse(txtVideoFrame.Text), 1, totalVideoFrames);
+
+            txtVideoFrame.Text = videoFrame.ToString();
+            SetVideoFrame(videoFrame);
         }
 
         // Bind detected load update to hitting enter
         private void txtStartFrameDetectedLoad_KeyDown(object sender, KeyEventArgs e)
         {
-            if (e.Key == Key.Return)
-            {
-                UpdateDetectedLoadStartFrame(sender);
-            }
+            if (e.Key == Key.Return) UpdateDetectedLoadStartFrame(sender, e);
         }
 
-        // Updates the detected load start frame to the textbox value
-        private void UpdateDetectedLoadEndFrame(object sender)
+        private void txtEndFrameDetectedLoad_KeyDown(object sender, KeyEventArgs e)
         {
-            TextBox cmd = (TextBox)sender;
+            if (e.Key == Key.Return) UpdateDetectedLoadEndFrame(sender, e);
+        }
 
-            if (cmd.DataContext is DetectedLoad load)
-            {
-                try
-                {
-                    detectedLoads[detectedLoads.IndexOf(load)].EndFrame = int.Parse(cmd.Text);
-                }
-                catch { }
-            }
+        // Moves the timeline to the selected frame of the detected load
+        private void btnGotoStartFrameDetectLoad_Click(object sender, RoutedEventArgs e)
+        {
+            Button cmd = (Button)sender;
+            if (cmd.DataContext is DetectedLoad load) txtVideoFrame.Text = load.StartFrame.ToString();
+        }
+
+        private void btnGotoEndFrameDetectLoad_Click(object sender, RoutedEventArgs e)
+        {
+            Button cmd = (Button)sender;
+            if (cmd.DataContext is DetectedLoad load) txtVideoFrame.Text = load.EndFrame.ToString();
+        }
+
+        // Deleted the detected load when the user clicks on the button next to it
+        private void btnDeleteDetectedLoad_Click(object sender, RoutedEventArgs e)
+        {
+            Button cmd = (Button)sender;
+            if (cmd.DataContext is DetectedLoad load) detectedLoads.Remove(load);
 
             SetDetectedLoads();
             CountLoadFrames();
             CalculateTimes();
         }
 
-        // Bind detected load update to text changing
-        private void txtEndFrameDetectedLoad_TextChanged(object sender, RoutedEventArgs e)
-        {
-            UpdateDetectedLoadEndFrame(sender);
-        }
-
-        // Bind detected load update to hitting enter
-        private void txtEndFrameDetectedLoad_KeyDown(object sender, KeyEventArgs e)
-        {
-            if (e.Key == Key.Return)
-            {
-                UpdateDetectedLoadEndFrame(sender);
-            }
-        }
-
-        // Moves the timeline to the start frame of the detected load
-        private void btnGotoStartFrameDetectLoad_Click(object sender, RoutedEventArgs e)
-        {
-            Button cmd = (Button)sender;
-
-            if (cmd.DataContext is DetectedLoad load)
-            {
-                sliderTimeline.Value = load.StartFrame;
-                txtVideoFrame.Text = load.StartFrame.ToString();
-            }
-        }
-
-        // Moves the timeline to the end frame of the detected load
-        private void btnGotoEndFrameDetectLoad_Click(object sender, RoutedEventArgs e)
-        {
-            Button cmd = (Button)sender;
-
-            if (cmd.DataContext is DetectedLoad load)
-            {
-                sliderTimeline.Value = load.EndFrame;
-                txtVideoFrame.Text = load.EndFrame.ToString();
-            }
-        }
-
-        // Checks if the user wants the timeline to snap to loads and makes it happen
-        private void SetTimelineTicks()
-        {
-            sliderTimeline.Ticks.Clear();
-
-            if (cbxSnapLoads.IsChecked == true)
-            {
-                foreach (int tick in sliderTicks)
-                {
-                    sliderTimeline.Ticks.Add(tick);
-                }
-            }
-        }
-
-        // Ensures every thread is shut down when the main window closes
-        private void window_Closed(object sender, EventArgs e) => Application.Current.Shutdown();
-
-        // Toggles snapping the timeline to load frames
-        private void cbxSnapLoads_CheckedChanged(object sender, RoutedEventArgs e) => SetTimelineTicks();
-
-        // Switch to the previous picked loading frames
+        // Methods for adding and removing picked load frames
         private void btnPreviousLoadFrame_Click(object sender, RoutedEventArgs e)
         {
             pickedLoadingFrameIndex--;
@@ -680,7 +564,6 @@ namespace unload
             ToggleLoadPickerButtons();
         }
 
-        // Switch to the next picked loading frame
         private void btnNextLoadFrame_Click(object sender, RoutedEventArgs e)
         {
             pickedLoadingFrameIndex++;
@@ -688,7 +571,6 @@ namespace unload
             ToggleLoadPickerButtons();
         }
 
-        // Pick and add the current video frame as loading frame
         private void btnAddLoadFrame_Click(object sender, RoutedEventArgs e)
         {
             pickedLoadingFrames.Add((int)sliderTimeline.Value);
@@ -698,7 +580,6 @@ namespace unload
             ToggleLoadPickerButtons();
         }
 
-        // Remove the current loading frame from the list of picked loading frames
         private void btnRemoveLoadFrame_Click(object sender, RoutedEventArgs e)
         {
             pickedLoadingFrames.RemoveAt(pickedLoadingFrameIndex);
@@ -707,57 +588,103 @@ namespace unload
             ToggleLoadPickerButtons();
         }
 
-        // Checks which buttons for picking loading frames should be enabled/disabled and applies that action
-        private void ToggleLoadPickerButtons()
+        private void window_Closed(object sender, EventArgs e) => Application.Current.Shutdown();
+
+        private void btnCheckSimilarity_Click(object sender, RoutedEventArgs e) => CheckSimilarity();
+        private void btnDetectLoadFrames_Click(object sender, RoutedEventArgs e) => DetectLoadFrames();
+        private void btnPrepareFrames_Click(object sender, RoutedEventArgs e) => PrepareFrames();
+        private void btnResetFrames_Click(object sender, RoutedEventArgs e) => ResetPreparedFrames();
+
+        private void slidersCropping_OnValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e) => UpdateLoadPreview();
+        private void sliderTimeline_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e) => SetVideoFrame((int)sliderTimeline.Value);
+
+        private void cbxSnapLoads_CheckedChanged(object sender, RoutedEventArgs e) => SetTimelineTicks();
+
+
+        // Update videoFrame along with the video controls
+        private void btnBack_Click(object sender, RoutedEventArgs e) => txtVideoFrame.Text = (videoFrame - 1).ToString();
+        private void btnBackFar_Click(object sender, RoutedEventArgs e) => txtVideoFrame.Text = (videoFrame - fps / (1000 / stepSize)).ToString();
+        private void btnForwardFar_Click(object sender, RoutedEventArgs e) => txtVideoFrame.Text = (videoFrame + 1).ToString();
+        private void btnForward_Click(object sender, RoutedEventArgs e) => txtVideoFrame.Text = (videoFrame + fps / (1000 / stepSize)).ToString();
+
+        // Set start and end frame buttons update their TextBoxes
+        private void btnSetStart_Click(object sender, RoutedEventArgs e) => txtStartFrame.Text = ((int)sliderTimeline.Value).ToString();
+        private void btnSetEnd_Click(object sender, RoutedEventArgs e) => txtEndFrame.Text = ((int)sliderTimeline.Value).ToString();
+
+        // Update fields when the user inputs a change in a TextBox 
+        private void txtStartFrame_TextChanged(object sender, TextChangedEventArgs e) => startFrame = int.Parse(txtStartFrame.Text);
+        private void txtEndFrame_TextChanged(object sender, TextChangedEventArgs e) => endFrame = int.Parse(txtEndFrame.Text);
+        private void txtFPS_TextChanged(object sender, TextChangedEventArgs e) => fps = double.Parse(txtFPS.Text);
+        private void txtMinSimilarity_TextChanged(object sender, TextChangedEventArgs e) => minSimilarity = double.Parse(txtMinSimilarity.Text);
+        private void txtMinFrames_TextChanged(object sender, TextChangedEventArgs e) => minFrames = int.Parse(txtMinFrames.Text);
+        private void txtConcurrentTasks_TextChanged(object sender, TextChangedEventArgs e) => concurrentTasks = int.Parse(txtConcurrentTasks.Text);
+        private void txtStepSize_TextChanged(object sender, TextChangedEventArgs e) => stepSize = int.Parse(txtStepSize.Text);
+
+        // Methods that change the UI state depending on how far the frame count is
+        private void SetInitialUIState()
         {
-            btnNextLoadFrame.IsEnabled = pickedLoadingFrameIndex < pickedLoadingFrames.Count - 1;
-            btnPreviousLoadFrame.IsEnabled = pickedLoadingFrameIndex > 0;
+            groupLoadDetection.IsEnabled = false;
+            groupDetectedLoads.IsEnabled = false;
 
-            if (hashedFrames == null)
-            {
-                btnRemoveLoadFrame.IsEnabled = pickedLoadingFrameIndex >= 0;
-            }
+            btnExportTimes.IsEnabled = false;
+            btnNextLoadFrame.IsEnabled = false;
+            btnPreviousLoadFrame.IsEnabled = false;
+            btnRemoveLoadFrame.IsEnabled = false;
+            btnCheckSimilarity.IsEnabled = false;
 
-            if (pickedLoadingFrames.Count > 1)
-            {
-                lblPickedLoadCount.Visibility = Visibility.Visible;
-                lblPickedLoadCount.Content = $"{pickedLoadingFrameIndex + 1} / {pickedLoadingFrames.Count}";
-            }
-            else
-            {
-                lblPickedLoadCount.Visibility = Visibility.Hidden;
-            }
-
-            if (pickedLoadingFrames.Count > 0)
-            {
-                groupLoadDetection.IsEnabled = true;
-
-                if (!btnDetectLoadFrames.IsEnabled)
-                {
-                    btnPrepareFrames.IsEnabled = true;
-                }
-
-                btnCheckSimilarity.IsEnabled = true;
-            }
-            else
-            {
-                btnPrepareFrames.IsEnabled = false;
-                btnCheckSimilarity.IsEnabled = false;
-            }
+            cbxSnapLoads.IsEnabled = false;
+            lblPickedLoadCount.Visibility = Visibility.Hidden;
         }
 
-        private void txtStartFrame_TextChanged(object sender, TextChangedEventArgs e) => startFrame = int.Parse(txtStartFrame.Text);
+        private void SetFramesHashedState()
+        {
+            btnAddLoadFrame.IsEnabled = false;
+            btnRemoveLoadFrame.IsEnabled = false;
 
-        private void txtEndFrame_TextChanged(object sender, TextChangedEventArgs e) => endFrame = int.Parse(txtEndFrame.Text);
+            sliderCropHeight.IsEnabled = false;
+            sliderCropWidth.IsEnabled = false;
+            sliderCropX.IsEnabled = false;
+            sliderCropY.IsEnabled = false;
 
-        private void txtFPS_TextChanged(object sender, TextChangedEventArgs e) => fps = double.Parse(txtFPS.Text);
+            txtStartFrame.IsEnabled = false;
+            txtEndFrame.IsEnabled = false;
 
-        private void txtMinSimilarity_TextChanged(object sender, TextChangedEventArgs e) => minSimilarity = double.Parse(txtMinSimilarity.Text);
+            btnSetEnd.IsEnabled = false;
+            btnSetStart.IsEnabled = false;
+            btnPrepareFrames.IsEnabled = false;
 
-        private void txtMinFrames_TextChanged(object sender, TextChangedEventArgs e) => minFrames = int.Parse(txtMinFrames.Text);
+            btnDetectLoadFrames.IsEnabled = true;
+            btnResetFrames.IsEnabled = true;
+        }
 
-        private void txtConcurrentTasks_TextChanged(object sender, TextChangedEventArgs e) => concurrentTasks = int.Parse(txtConcurrentTasks.Text);
+        private void SetResetFramesUIState()
+        {
+            sliderTimeline.Ticks.Clear();
 
-        private void txtStepSize_TextChanged(object sender, TextChangedEventArgs e) => stepSize = int.Parse(txtStepSize.Text);
+            txtLoadFrames.Text = "0";
+            txtTimeOutput.Text = string.Empty;
+            btnExportTimes.IsEnabled = false;
+            cbxSnapLoads.IsEnabled = true;
+
+            sliderCropHeight.IsEnabled = true;
+            sliderCropWidth.IsEnabled = true;
+            sliderCropX.IsEnabled = true;
+            sliderCropY.IsEnabled = true;
+
+            btnAddLoadFrame.IsEnabled = true;
+            ToggleLoadPickerButtons();
+
+            groupDetectedLoads.IsEnabled = false;
+            txtStartFrame.IsEnabled = true;
+            txtEndFrame.IsEnabled = true;
+            btnSetEnd.IsEnabled = true;
+            btnSetStart.IsEnabled = true;
+            btnPrepareFrames.IsEnabled = true;
+
+            btnDetectLoadFrames.IsEnabled = false;
+            btnResetFrames.IsEnabled = false;
+            sliderTicks.Clear();
+            SetTimelineTicks();
+        }
     }
 }

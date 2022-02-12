@@ -30,7 +30,7 @@
                         <ColumnDefinition Width="1*"/>
                         <ColumnDefinition Width="auto"/>
                     </Grid.ColumnDefinitions>
-                    <TextBox Grid.Column="0" Text="{Binding Path=StartFrame}" Margin="0,0,-1,0" LostFocus="txtStartFrameDetectedLoad_TextChanged" KeyDown="txtStartFrameDetectedLoad_KeyDown"/>
+                    <TextBox Grid.Column="0" Text="{Binding Path=StartFrame}" Margin="0,0,-1,0" LostFocus="UpdateDetectedLoadStartFrame" KeyDown="txtStartFrameDetectedLoad_KeyDown"/>
                     <Button Grid.Column="1" Content="►" Width="22" FontFamily="Arial" Click="btnGotoStartFrameDetectLoad_Click"/>
                 </Grid>
                 <Grid Grid.Column="2">
@@ -38,7 +38,7 @@
                         <ColumnDefinition Width="1*"/>
                         <ColumnDefinition Width="auto"/>
                     </Grid.ColumnDefinitions>
-                    <TextBox Grid.Column="0" Text="{Binding Path=EndFrame}" Margin="5,0,-1,0" LostFocus="txtEndFrameDetectedLoad_TextChanged" KeyDown="txtEndFrameDetectedLoad_KeyDown"/>
+                    <TextBox Grid.Column="0" Text="{Binding Path=EndFrame}" Margin="5,0,-1,0" LostFocus="UpdateDetectedLoadEndFrame" KeyDown="txtEndFrameDetectedLoad_KeyDown"/>
                     <Button Grid.Column="1" Content="►" Width="22" FontFamily="Arial" Click="btnGotoEndFrameDetectLoad_Click"/>
                 </Grid>
                 <Button Content="-" Width="30" Grid.Column="3" Margin="10,0,0,0" Click="btnDeleteDetectedLoad_Click"/>
