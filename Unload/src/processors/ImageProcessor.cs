@@ -28,13 +28,13 @@ namespace unload
         // Applies cropping and hashes all frames in range in a folder and returns the hashes in a dictionary
         public static Dictionary<int, Digest> CropAndPhashFolder(string? path, Rectangle cropPercentage, int startFrame, int endFrame, int concurrentTasks, CancellationTokenSource cts, Action onProgress)
         {
-            ConcurrentDictionary<int, Digest> frameHashes = new ConcurrentDictionary<int, Digest>();
+            ConcurrentDictionary<int, Digest> frameHashes = new();
 
             // Hashes frames in parallel to the max amount of concurrent tasks the user defined. Holds a cancellation token so it can be stopped
             Parallel.For(startFrame, endFrame, new ParallelOptions { MaxDegreeOfParallelism = concurrentTasks, CancellationToken = cts.Token }, i =>
             {
                 // Crops and hashes the current frame
-                Bitmap currentFrame = new Bitmap(Path.Join(path, $"{i}.jpg"));
+                Bitmap currentFrame = new(Path.Join(path, $"{i}.jpg"));
                 currentFrame = CropImage(currentFrame, cropPercentage);
                 Digest currentFrameHash = ImagePhash.ComputeDigest(currentFrame.ToLuminanceImage());
 
@@ -60,7 +60,7 @@ namespace unload
                 referenceHashes[i] = ImagePhash.ComputeDigest(references[i].ToLuminanceImage());
             }
 
-            ConcurrentDictionary<int, float[]> frameSimilarities = new ConcurrentDictionary<int, float[]>();
+            ConcurrentDictionary<int, float[]> frameSimilarities = new();
 
             // Gets similarity of all frames in parallel
             Parallel.ForEach(hashDict, new ParallelOptions { MaxDegreeOfParallelism = concurrentTasks }, hash =>
@@ -82,7 +82,7 @@ namespace unload
         public static Bitmap CropImage(Image source, Rectangle cropPercentages)
         {
             // Converts crop values to pixel sizes in a rectangle
-            Rectangle crop = new Rectangle
+            Rectangle crop = new()
             {
                 X = (int)Math.Round(cropPercentages.X / 100d * source.Width),
                 Y = (int)Math.Round(cropPercentages.Y / 100d * source.Height),
@@ -91,7 +91,7 @@ namespace unload
             };
 
             // Draws old image on a new image cropped to the right size
-            Bitmap bitmap = new Bitmap(crop.Width, crop.Height);
+            Bitmap bitmap = new(crop.Width, crop.Height);
             using (Graphics graphics = Graphics.FromImage(bitmap))
             {
                 graphics.DrawImage(source, new Rectangle(0, 0, bitmap.Width, bitmap.Height), crop, GraphicsUnit.Pixel);
@@ -103,12 +103,12 @@ namespace unload
         // Converts a bitmap to a bitmap image that can be displayed on the interface
         public static BitmapImage BitmapToBitmapImage(this Bitmap bitmap)
         {
-            using MemoryStream memory = new MemoryStream();
+            using MemoryStream memory = new();
 
             bitmap.Save(memory, ImageFormat.Png);
             memory.Position = 0;
 
-            BitmapImage bitmapImage = new BitmapImage();
+            BitmapImage bitmapImage = new();
             bitmapImage.BeginInit();
 
             bitmapImage.StreamSource = memory;
