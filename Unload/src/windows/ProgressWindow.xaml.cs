@@ -42,7 +42,7 @@ namespace unload
         }
 
         // Shows the user the percentage of progress
-        private void SetProgress()
+        public void SetProgress()
         {
             Owner.TaskbarItemInfo.ProgressValue = percentage / 100d;
             lblProgress.Content = $"{text}: {percentage:N2}%";

@@ -26,7 +26,8 @@ namespace unload
         }
 
         // Applies cropping and hashes all frames in range in a folder and returns the hashes in a dictionary
-        public static Dictionary<int, Digest> CropAndPhashFolder(string? path, Rectangle cropPercentage, int startFrame, int endFrame, int concurrentTasks, CancellationTokenSource cts, Action onProgress)
+        public static Dictionary<int, Digest> CropAndPhashFolder(string? path, Rectangle cropPercentage, int startFrame, int endFrame,
+            int concurrentTasks, CancellationTokenSource cts, Action onProgress, Action onFinished)
         {
             ConcurrentDictionary<int, Digest> frameHashes = new();
 
@@ -45,6 +46,8 @@ namespace unload
                 currentFrame.Dispose();
                 onProgress();
             });
+
+            onFinished();
 
             return new Dictionary<int, Digest>(frameHashes);
         }

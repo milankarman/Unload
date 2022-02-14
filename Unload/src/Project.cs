@@ -52,18 +52,22 @@ namespace unload
         {
             int doneFrames = 0;
 
-            HashedFrames = ImageProcessor.CropAndPhashFolder(framesDirectory, crop, startFrame,
+            Thread thread = new(() =>
+            {
+                HashedFrames = ImageProcessor.CropAndPhashFolder(framesDirectory, crop, startFrame,
                 endFrame, concurrentTasks, cts, () =>
             {
                 doneFrames += 1;
                 double percentage = doneFrames / (double)endFrame * 100d;
                 onProgress(percentage);
+            }, onFinished);
             });
 
             usedStartFrame = startFrame;
             usedEndFrame = endFrame;
 
-            onFinished();
+            thread.IsBackground = true;
+            thread.Start();
         }
 
         // Clears the prepared frames

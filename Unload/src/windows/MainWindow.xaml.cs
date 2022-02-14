@@ -19,11 +19,10 @@ namespace unload
 
         private readonly List<int> pickedLoadingFrames = new();
         private readonly List<int> sliderTicks = new();
+        private readonly bool ready;
 
-        private int pickedLoadingFrameIndex = -1;
+        private int selectedPickedLoad = -1;
         private const double defaultSimilarity = 0.95;
-
-        int videoFrame = 0;
 
         public MainWindow(Project _project)
         {
@@ -32,24 +31,34 @@ namespace unload
             InitializeComponent();
             Title += $" {FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).ProductVersion}";
 
-            lbxLoads.ItemsSource = project.DetectedLoads;
             txtMinSimilarity.Text = defaultSimilarity.ToString();
+
+            lbxLoads.ItemsSource = project.DetectedLoads;
+            sliderTimeline.Maximum = project.totalFrames;
+            txtEndFrame.Text = project.totalFrames.ToString();
+            txtFPS.Text = project.fps.ToString();
 
             BindValidationMethods();
             SetInitialUIState();
+
+            ready = true;
+
+            SetVideoFrame(1);
         }
 
         // Loads in a given frame in the video preview
-        private void SetVideoFrame(int frame)
+        private void SetVideoFrame(int frameIndex)
         {
-            // Ensure the requested frame exists
-            if (frame <= 0 || frame > project.totalFrames) return;
+            if (!ready) return;
+
+            frameIndex = Math.Clamp(frameIndex, 1, project.totalFrames);
+            txtVideoFrame.Text = frameIndex.ToString();
 
             // Set the video frame and update the interface
-            Uri image = new(Path.Join(project.framesDirectory, $"{frame}.jpg"));
+            Uri image = new(Path.Join(project.framesDirectory, $"{frameIndex}.jpg"));
             imageVideo.Source = new BitmapImage(image);
 
-            txtVideoFrame.Text = frame.ToString();
+            txtVideoFrame.Text = frameIndex.ToString();
             txtMinSimilarity.IsEnabled = true;
         }
 
@@ -81,8 +90,8 @@ namespace unload
         {
             if (pickedLoadingFrames.Count >= 1)
             {
-                Bitmap image = new(Path.Join(project.framesDirectory, $"{pickedLoadingFrames[pickedLoadingFrameIndex]}.jpg"));
-                Bitmap croppedImage = ImageProcessor.CropImage(image, CropSlidersToRectangle());
+                Bitmap image = new(Path.Join(project.framesDirectory, $"{pickedLoadingFrames[selectedPickedLoad]}.jpg"));
+                Bitmap croppedImage = ImageProcessor.CropImage(image, GetCropRect());
                 imageLoadFrame.Source = ImageProcessor.BitmapToBitmapImage(croppedImage);
             }
             else
@@ -92,7 +101,7 @@ namespace unload
         }
 
         // Reads cropping slider values and returns them in a rectangle class
-        private Rectangle CropSlidersToRectangle()
+        private Rectangle GetCropRect()
         {
             return new Rectangle
             {
@@ -120,15 +129,15 @@ namespace unload
         // Checks which buttons for picking loading frames should be enabled/disabled and applies that action
         private void ToggleLoadPickerButtons()
         {
-            btnNextLoadFrame.IsEnabled = pickedLoadingFrameIndex < pickedLoadingFrames.Count - 1;
-            btnPreviousLoadFrame.IsEnabled = pickedLoadingFrameIndex > 0;
+            btnNextLoadFrame.IsEnabled = selectedPickedLoad < pickedLoadingFrames.Count - 1;
+            btnPreviousLoadFrame.IsEnabled = selectedPickedLoad > 0;
 
-            if (project.HashedFrames == null) btnRemoveLoadFrame.IsEnabled = pickedLoadingFrameIndex >= 0;
+            if (project.HashedFrames == null) btnRemoveLoadFrame.IsEnabled = selectedPickedLoad >= 0;
 
             if (pickedLoadingFrames.Count > 1)
             {
                 lblPickedLoadCount.Visibility = Visibility.Visible;
-                lblPickedLoadCount.Content = $"{pickedLoadingFrameIndex + 1} / {pickedLoadingFrames.Count}";
+                lblPickedLoadCount.Content = $"{selectedPickedLoad + 1} / {pickedLoadingFrames.Count}";
             }
             else
             {
@@ -138,6 +147,7 @@ namespace unload
             if (pickedLoadingFrames.Count > 0)
             {
                 groupLoadDetection.IsEnabled = true;
+                btnRemoveLoadFrame.IsEnabled = true;
 
                 if (!btnDetectLoadFrames.IsEnabled) btnPrepareFrames.IsEnabled = true;
 
@@ -147,6 +157,7 @@ namespace unload
             {
                 btnPrepareFrames.IsEnabled = false;
                 btnCheckSimilarity.IsEnabled = false;
+                btnRemoveLoadFrame.IsEnabled = false;
             }
         }
 
@@ -211,17 +222,11 @@ namespace unload
             CalculateTimes();
         }
 
-
         // Moves the timeline and updates the video preview to the frame the user entered
         private void txtVideoFrame_TextChanged(object sender, EventArgs e)
         {
-            if (project.totalFrames == 0) return;
-
-            if (!string.IsNullOrEmpty(txtVideoFrame.Text))
-                videoFrame = Math.Clamp(int.Parse(txtVideoFrame.Text), 1, project.totalFrames);
-
-            txtVideoFrame.Text = videoFrame.ToString();
-            SetVideoFrame(videoFrame);
+            int frameIndex = int.Parse(txtVideoFrame.Text);
+            SetVideoFrame(frameIndex);
         }
 
         // Bind detected load update to hitting enter
@@ -248,7 +253,6 @@ namespace unload
             if (cmd.DataContext is DetectedLoad load) txtVideoFrame.Text = load.EndFrame.ToString();
         }
 
-        // Deleted the detected load when the user clicks on the button next to it
         private void btnDeleteDetectedLoad_Click(object sender, RoutedEventArgs e)
         {
             Button cmd = (Button)sender;
@@ -260,22 +264,22 @@ namespace unload
         // Methods for adding and removing picked load frames
         private void btnPreviousLoadFrame_Click(object sender, RoutedEventArgs e)
         {
-            pickedLoadingFrameIndex--;
+            selectedPickedLoad--;
             UpdateLoadPreview();
             ToggleLoadPickerButtons();
         }
 
         private void btnNextLoadFrame_Click(object sender, RoutedEventArgs e)
         {
-            pickedLoadingFrameIndex++;
+            selectedPickedLoad++;
             UpdateLoadPreview();
             ToggleLoadPickerButtons();
         }
 
         private void btnAddLoadFrame_Click(object sender, RoutedEventArgs e)
         {
-            pickedLoadingFrames.Add((int)sliderTimeline.Value);
-            pickedLoadingFrameIndex++;
+            pickedLoadingFrames.Add(int.Parse(txtVideoFrame.Text));
+            selectedPickedLoad++;
 
             UpdateLoadPreview();
             ToggleLoadPickerButtons();
@@ -283,8 +287,8 @@ namespace unload
 
         private void btnRemoveLoadFrame_Click(object sender, RoutedEventArgs e)
         {
-            pickedLoadingFrames.RemoveAt(pickedLoadingFrameIndex);
-            pickedLoadingFrameIndex = Math.Clamp(pickedLoadingFrameIndex, -1, pickedLoadingFrames.Count - 1);
+            pickedLoadingFrames.RemoveAt(selectedPickedLoad);
+            selectedPickedLoad = Math.Clamp(selectedPickedLoad, -1, pickedLoadingFrames.Count - 1);
             UpdateLoadPreview();
             ToggleLoadPickerButtons();
         }
@@ -293,7 +297,11 @@ namespace unload
 
         private void btnCheckSimilarity_Click(object sender, RoutedEventArgs e)
         {
+            int loadIndex = pickedLoadingFrames[selectedPickedLoad];
+            int videoFrame = int.Parse(txtVideoFrame.Text);
+            float similarity = project.GetSimilarity(loadIndex, videoFrame, GetCropRect());
 
+            MessageBox.Show(similarity.ToString());
         }
 
         private void btnDetectLoadFrames_Click(object sender, RoutedEventArgs e)
@@ -302,7 +310,7 @@ namespace unload
             int minFrames = int.Parse(txtMinFrames.Text);
             int concurrentTasks = int.Parse(txtConcurrentTasks.Text);
 
-            project.DetectLoadFrames(minSimilarity, minFrames, pickedLoadingFrames, CropSlidersToRectangle(), concurrentTasks);
+            project.DetectLoadFrames(minSimilarity, minFrames, pickedLoadingFrames, GetCropRect(), concurrentTasks);
         }
 
         private void btnPrepareFrames_Click(object sender, RoutedEventArgs e)
@@ -317,37 +325,46 @@ namespace unload
                 return;
             }
 
-            Rectangle crop = CropSlidersToRectangle();
+            Rectangle crop = GetCropRect();
 
             int startFrame = int.Parse(txtStartFrame.Text);
             int endFrame = int.Parse(txtEndFrame.Text);
             int concurrentTasks = int.Parse(txtConcurrentTasks.Text);
-
 
             ProgressWindow progress = new("Preparing frames", this);
             progress.Show();
 
             IsEnabled = false;
 
-            Thread thread = new(() => project.PrepareFrames(startFrame, endFrame, crop, concurrentTasks,
-                null, (double a) => { }, () => { }));
+            Action<double> onProgress = (double percentage) => progress.percentage = percentage;
+            Action onFinished = () => MessageBox.Show("Done");
 
-            thread.IsBackground = true;
-            thread.Start();
+            project.PrepareFrames(startFrame, endFrame, crop, concurrentTasks,
+                progress.cts, onProgress, onFinished);
         }
 
         private void btnResetFrames_Click(object sender, RoutedEventArgs e) => project.ClearFrames();
 
-        private void slidersCropping_OnValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e) => UpdateLoadPreview();
-        private void sliderTimeline_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e) => SetVideoFrame((int)sliderTimeline.Value);
+        private void slidersCropping_OnValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e) =>
+            UpdateLoadPreview();
+
+        private void sliderTimeline_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e) =>
+            SetVideoFrame((int)sliderTimeline.Value);
 
         private void cbxSnapLoads_CheckedChanged(object sender, RoutedEventArgs e) => SetTimelineTicks();
 
         // Update videoFrame along with the video controls
-        private void btnBack_Click(object sender, RoutedEventArgs e) => txtVideoFrame.Text = (videoFrame - 1).ToString();
-        private void btnBackFar_Click(object sender, RoutedEventArgs e) => txtVideoFrame.Text = (videoFrame - project.fps / (1000 / int.Parse(txtStepSize.Text))).ToString();
-        private void btnForwardFar_Click(object sender, RoutedEventArgs e) => txtVideoFrame.Text = (videoFrame + 1).ToString();
-        private void btnForward_Click(object sender, RoutedEventArgs e) => txtVideoFrame.Text = (videoFrame + project.fps / (1000 / int.Parse(txtStepSize.Text))).ToString();
+        private void btnBack_Click(object sender, RoutedEventArgs e) =>
+            txtVideoFrame.Text = (int.Parse(txtVideoFrame.Text) - 1).ToString();
+
+        private void btnBackFar_Click(object sender, RoutedEventArgs e) =>
+            txtVideoFrame.Text = (int.Parse(txtVideoFrame.Text) - project.fps / (1000 / int.Parse(txtStepSize.Text))).ToString();
+
+        private void btnForwardFar_Click(object sender, RoutedEventArgs e) =>
+            txtVideoFrame.Text = (int.Parse(txtVideoFrame.Text) + 1).ToString();
+
+        private void btnForward_Click(object sender, RoutedEventArgs e) =>
+            txtVideoFrame.Text = (int.Parse(txtVideoFrame.Text) + project.fps / (1000 / int.Parse(txtStepSize.Text))).ToString();
 
         // Set start and end frame buttons update their TextBoxes
         private void btnSetStart_Click(object sender, RoutedEventArgs e) => txtStartFrame.Text = ((int)sliderTimeline.Value).ToString();
