@@ -11,7 +11,7 @@ namespace unload
 {
     public partial class StartWindow : Window
     {
-        public string? workingDirectory = null;
+        public string? workingDirectory;
 
         private const string FRAMES_SUFFIX = "_frames";
 
@@ -33,6 +33,7 @@ namespace unload
             }
 
             workingDirectory = Settings.Default.WorkingDirectory;
+            if (workingDirectory.Length == 0) workingDirectory = null;
         }
 
         private void btnLoad_Click(object sender, RoutedEventArgs e)
@@ -86,7 +87,9 @@ namespace unload
 
         private void btnStartSettings_Click(object sender, RoutedEventArgs e)
         {
-
+            StartSettingsWindow startSettingsWindow = new(this, workingDirectory);
+            startSettingsWindow.Show();
+            IsEnabled = false;
         }
 
         private void LoadProject(string filePath, string framesDirectory)

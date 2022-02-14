@@ -5,21 +5,18 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:unload"
         mc:Ignorable="d"
-        Title="Unload" Height="auto" Width="470" SizeToContent="Height" ResizeMode="NoResize" ShowInTaskbar="False" WindowStyle="None" WindowStartupLocation="CenterOwner" Background="{DynamicResource bgDark}">
+        Title="Unload" Height="auto" Width="470" SizeToContent="Height" ResizeMode="NoResize" Style="{DynamicResource CustomWindowStyle}" Icon="../../icon/icon_32.png" Background="{DynamicResource bgDark}">
     <Window.TaskbarItemInfo>
         <TaskbarItemInfo/>
     </Window.TaskbarItemInfo>
-    <Grid>
-        <Grid Margin="5,5,5,5">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="1*"/>
-                <ColumnDefinition Width="1*"/>
-                <ColumnDefinition Width="auto"/>
-            </Grid.ColumnDefinitions>
-            <Button Grid.Column="0" x:Name="btnConvert" Margin="0,0,5,0" Content="Convert &amp; Load" Click="btnConvert_Click"/>
-            <Button Grid.Column="1" x:Name="btnLoad" Margin="5,0,5,0" Content="Load" Click="btnLoad_Click"/>
-            <Button Grid.Column="2" x:Name="btnStartSettings" Margin="5,0,0,0" Content="⚙" Click="btnStartSettings_Click"/>
-        </Grid>
-        <Rectangle Stroke="{DynamicResource highlight}"/>
+    <Grid Margin="10,10,10,10">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="1*"/>
+            <ColumnDefinition Width="1*"/>
+            <ColumnDefinition Width="auto"/>
+        </Grid.ColumnDefinitions>
+        <Button Grid.Column="0" x:Name="btnConvert" Margin="0,0,5,0" Content="Convert &amp; Load" Click="btnConvert_Click"/>
+        <Button Grid.Column="1" x:Name="btnLoad" Margin="5,0,5,0" Content="Load" Click="btnLoad_Click"/>
+        <Button Grid.Column="2" x:Name="btnStartSettings" Margin="5,0,0,0" Content="⚙" Click="btnStartSettings_Click"/>
     </Grid>
 </Window>

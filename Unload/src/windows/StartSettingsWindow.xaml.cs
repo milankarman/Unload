@@ -20,7 +20,7 @@ namespace unload
 
             InitializeComponent();
 
-            txtWorkingDirectory.Text = string.IsNullOrEmpty(workingDirectory) ? NO_WORKING_DIRECTORY : workingDirectory;
+            txtWorkingDirectory.Text = workingDirectory ?? NO_WORKING_DIRECTORY;
 
             if (_workingDirectory != null) btnClear.IsEnabled = true;
         }

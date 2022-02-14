@@ -181,9 +181,9 @@ namespace unload
 
             lines.Add("");
             lines.Add("Final Times");
-            lines.Add($"Time without loads,\"{GetLoadlessTime()}\"");
-            lines.Add($"Time with loads,\"{GetTotalTime()}\"");
-            lines.Add($"Time spent loading,\"{GetTimeSpentLoading()}\"");
+            lines.Add($"Time without loads,\"{GetLoadlessTime():hh\\:mm\\:ss\\.fff}\"");
+            lines.Add($"Time with loads,\"{GetTotalTime():hh\\:mm\\:ss\\.fff}\"");
+            lines.Add($"Time spent loading,\"{GetTimeSpentLoading():hh\\:mm\\:ss\\.fff}\"");
 
             lines.Add("");
             lines.Add("Unload Settings");
