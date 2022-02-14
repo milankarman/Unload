@@ -20,39 +20,14 @@ namespace unload
 {
     public partial class MainWindow : Window
     {
-        private int startFrame;
-        private int endFrame;
-        private int loadFrames;
-        private double fps;
+        private Project project;
 
-        private int videoFrame;
-
-        private double minSimilarity;
-        private int minFrames;
-
-        private int concurrentTasks;
-        private int stepSize;
-
-        private int TotalFrames { get => endFrame - startFrame + 1; }
-
-        // Keeps the directory of frames being used
-        public string? workingDirectory = null;
-        private readonly string? targetDirectory = null;
-
-        private int totalVideoFrames = 0;
+        private ObservableCollection<DetectedLoad> detectedLoadsCollection;
 
         private readonly List<int> pickedLoadingFrames = new List<int>();
-        private ObservableCollection<DetectedLoad> detectedLoads = new ObservableCollection<DetectedLoad>();
         private int pickedLoadingFrameIndex = -1;
 
         private const double defaultSimilarity = 0.95;
-
-        // Variables to track user actions to store in export
-        private double usedMinSimilarity = 0;
-        private int usedMinFrames = 0;
-
-        // Dictionary to keep hashed frames for quick comparison against multiple similarities
-        private Dictionary<int, Digest> hashedFrames = new Dictionary<int, Digest>();
 
         // List to keep every tick the timeline slider will snap to such as loading screens
         private readonly List<int> sliderTicks = new List<int>();
@@ -64,7 +39,7 @@ namespace unload
             InitializeComponent();
             Title += $" {FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).ProductVersion}";
 
-            lbxLoads.ItemsSource = detectedLoads;
+            // lbxLoads.ItemsSource = project.detectedLoads;
 
             txtVideoFrame.PreviewTextInput += TextBoxValidator.ForceInteger;
             txtStartFrame.PreviewTextInput += TextBoxValidator.ForceInteger;
@@ -80,275 +55,31 @@ namespace unload
             SetInitialUIState();
         }
 
-        // Prepares an image sequence and resets the application state
-        public async void LoadFolder(string file, string dir)
-        {
-            workingDirectory = dir;
-            int expectedFrames;
-
-            string infoPath = Path.Join(dir, "conversion-info.json");
-
-            // Attempt to get conversion info from json file, otherwise read values from original video
-            if (File.Exists(infoPath))
-            {
-                string jsonString = File.ReadAllText(infoPath);
-                ConversionInfo? info = JsonSerializer.Deserialize<ConversionInfo>(jsonString);
-
-                if (info == null)
-                {
-                    string message = "Couldn't read \"conversion-info.json\" in frames folder. The file might be corrupted.";
-                    MessageBox.Show(message, "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
-
-                    return;
-                }
-
-                fps = info.FPS;
-                expectedFrames = info.ExpectedFrames;
-            }
-            else
-            {
-                string message = "Couldn't find \"conversion-info.json\" in frames folder. If you converted with a custom frame rate then make sure to adjust for it manually.";
-                MessageBox.Show(message, "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
-
-                IMediaInfo info = await FFmpeg.GetMediaInfo(file);
-                TimeSpan duration = info.VideoStreams.First().Duration;
-
-                fps = info.VideoStreams.First().Framerate;
-                expectedFrames = (int)(duration.TotalSeconds * fps);
-            }
-
-            // Check if the same amount of converted images are found as the video has frames
-            if (File.Exists(Path.Join(dir, expectedFrames.ToString() + ".jpg")))
-            {
-                totalVideoFrames = expectedFrames;
-            }
-            else
-            {
-                string message = "Warning, fewer converted frames are found than expected. This could mean that the video has dropped frames.";
-                MessageBox.Show(message, "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
-
-                totalVideoFrames = Directory.GetFiles(dir, "*.jpg").Length;
-            }
-
-            txtEndFrame.Text = totalVideoFrames.ToString();
-
-            sliderTimeline.Maximum = totalVideoFrames;
-            sliderTimeline.Value = 1;
-
-            SetVideoFrame(1);
-        }
-
         // Loads in a given frame in the video preview
         private void SetVideoFrame(int frame)
         {
             // Ensure the requested frame exists
-            if (frame <= 0 || frame > totalVideoFrames) return;
+            if (frame <= 0 || frame > project.totalFrames) return;
 
             // Set the video frame and update the interface
-            Uri image = new Uri(Path.Join(workingDirectory, $"{frame}.jpg"));
+            Uri image = new Uri(Path.Join(project.framesDirectory, $"{frame}.jpg"));
             imageVideo.Source = new BitmapImage(image);
 
             txtVideoFrame.Text = frame.ToString();
             txtMinSimilarity.IsEnabled = true;
         }
 
-        // Notifies the user of the similarity between the selected load frame and the current previewed frame
-        private void CheckSimilarity()
-        {
-            // Load and crop the loading screen and current frame
-            Rectangle crop = CropSlidersToRectangle();
-
-            Bitmap loadFrame = new Bitmap(Path.Join(workingDirectory, $"{pickedLoadingFrames[pickedLoadingFrameIndex]}.jpg"));
-            loadFrame = ImageProcessor.CropImage(loadFrame, crop);
-
-            Bitmap currentFrame = new Bitmap(Path.Join(workingDirectory, $"{(int)sliderTimeline.Value}.jpg"));
-            currentFrame = ImageProcessor.CropImage(currentFrame, crop);
-
-            MessageBox.Show($"Similarity: {ImageProcessor.CompareBitmapPhash(loadFrame, currentFrame)}");
-        }
-
-        // Hashes every frame into a dictionary so similarity can be quickly checked and adjust without having to hash again.
-        private void PrepareFrames()
-        {
-            // Warn the user on the length of this process
-            string text = "This will start the long and intense process of preparing every frame from start to end using the specified cropping." + Environment.NewLine + Environment.NewLine +
-                "Make sure your start frame and end frame are set properly, and that the load image cropping is correct. To change these after you will have to reset frames first.";
-            MessageBoxResult result = MessageBox.Show(text, "Info", MessageBoxButton.YesNo, MessageBoxImage.Information);
-
-            if (result == MessageBoxResult.No)
-            {
-                return;
-            }
-
-            Rectangle crop = CropSlidersToRectangle();
-
-            ProgressWindow progress = new ProgressWindow("Preparing frames", this);
-            progress.Show();
-            IsEnabled = false;
-
-            // Attempt to hash every frame in a new thread
-            Thread thread = new Thread(() =>
-            {
-                try
-                {
-                    int doneFrames = 0;
-
-                    hashedFrames = ImageProcessor.CropAndPhashFolder(workingDirectory, crop, startFrame, endFrame, concurrentTasks, progress.cts, () =>
-                    {
-                        // Notify the progress window when a new frame is hashed
-                        doneFrames += 1;
-                        double percentage = doneFrames / (double)endFrame * 100d;
-                        progress.percentage = percentage;
-                    });
-
-                    Dispatcher.Invoke(() => SetFramesHashedState());
-                }
-                catch (OperationCanceledException) { }
-                finally
-                {
-                    progress.cts.Dispose();
-                    Dispatcher.Invoke(() =>
-                    {
-                        IsEnabled = true;
-                        progress.Close();
-                    });
-                }
-            })
-            {
-                IsBackground = true
-            };
-
-            thread.Start();
-        }
-
-        // Clears the prepared frames and updates the UI
-        private void ResetPreparedFrames()
-        {
-            // Warn user of the consequences of this action
-            string text = "Doing this will require the frames to be prepared again. Are you sure?";
-            MessageBoxResult result = MessageBox.Show(text, "Info", MessageBoxButton.YesNo, MessageBoxImage.Information);
-
-            if (result == MessageBoxResult.Yes)
-            {
-                SetResetFramesUIState();
-                hashedFrames.Clear();
-                detectedLoads.Clear();
-            }
-        }
-        
-        // Compares the hashed frames against the picked loading screen and counts frames above the specified similarity as load frames
-        private void DetectLoadFrames()
-        {
-            detectedLoads.Clear();
-
-            // Crop and store the user's picked loading frames
-            Bitmap[] loadFrames = new Bitmap[pickedLoadingFrames.Count];
-
-            for (int i = 0; i < pickedLoadingFrames.Count; i++)
-            {
-                Bitmap loadFrame = new Bitmap(Path.Join(workingDirectory, $"{pickedLoadingFrames[i]}.jpg"));
-                Rectangle cropPercentage = CropSlidersToRectangle();
-                loadFrames[i] = ImageProcessor.CropImage(loadFrame, cropPercentage);
-            }
-
-            // Store the similarity of all frames and store this in another dictionary
-            Dictionary<int, float[]> frameSimilarities = ImageProcessor.GetHashDictSimilarity(hashedFrames, loadFrames, concurrentTasks);
-
-            int loadScreenCounter = 0;
-            int loadFrameCounter = 0;
-
-            int currentLoadStartFrame = 0;
-            bool subsequentLoadFrame = false;
-
-            // Check every frame similarities to the load images against the minimum similarity and list them as loads
-            for (int i = startFrame; i < endFrame; i++)
-            {
-                for (int j = 0; j < frameSimilarities[i].Length; j++)
-                {
-                    if (frameSimilarities[i][j] > minSimilarity && i < endFrame)
-                    {
-                        loadFrameCounter += 1;
-
-                        // If the previous frame wasn't a load frame then mark this as a new loading screen
-                        if (!subsequentLoadFrame)
-                        {
-                            loadScreenCounter += 1;
-                            currentLoadStartFrame = i;
-                            subsequentLoadFrame = true;
-                        }
-
-                        break;
-                    }
-                    else if (j >= frameSimilarities[i].Length - 1 && subsequentLoadFrame)
-                    {
-                        int currentLoadEndFrame = i - 1;
-                        int currentLoadTotalFrames = currentLoadEndFrame - currentLoadStartFrame + 1;
-
-                        // Check if the detected loading screen matches the minimum number of frames set by user
-                        if (currentLoadTotalFrames >= minFrames)
-                        {
-                            // Print out loading screen number, start and end frame - and total frames
-                            detectedLoads.Add(new DetectedLoad(loadScreenCounter, currentLoadStartFrame, currentLoadEndFrame));
-
-                            // Save screen start and end to snap the timeline slider to later
-                            sliderTicks.Add(currentLoadStartFrame);
-                            sliderTicks.Add(currentLoadEndFrame);
-                        }
-
-                        subsequentLoadFrame = false;
-                        currentLoadStartFrame = 0;
-                    }
-                }
-            }
-
-            // Update the detected loads box and count the total load frames
-            SetDetectedLoads();
-            CountLoadFrames();
-
-            // Save start frame, end frame, first frame and last frame to snap the timeline slider to later
-            sliderTicks.Add(startFrame);
-            sliderTicks.Add(1);
-            sliderTicks.Add(startFrame);
-            sliderTicks.Add(totalVideoFrames);
-
-            // Update the interface
-            btnDetectLoadFrames.IsEnabled = true;
-            cbxSnapLoads.IsEnabled = true;
-            groupDetectedLoads.IsEnabled = true;
-
-            // Save settings used for detecting loads
-            usedMinSimilarity = minSimilarity;
-            usedMinFrames = minFrames;
-
-            // Set the timeline ticks and calculate the final times
-            SetTimelineTicks();
-            CalculateTimes();
-        }
-
         // Sorts and gives proper indexes to the detected loads
         private void SetDetectedLoads()
         {
-            detectedLoads = new ObservableCollection<DetectedLoad>(detectedLoads.OrderBy(i => i.StartFrame));
+            detectedLoadsCollection = new(project.DetectedLoads.OrderBy(i => i.StartFrame));
 
-            for (int i = 0; i < detectedLoads.Count; i++)
+            for (int i = 0; i < detectedLoadsCollection.Count; i++)
             {
-                detectedLoads[i].Index = i + 1;
+                detectedLoadsCollection[i].Index = i + 1;
             }
 
-            lbxLoads.ItemsSource = detectedLoads;
-        }
-
-        // Adds up the loads entered in the detected loads
-        private void CountLoadFrames()
-        {
-            int frames = 0;
-
-            foreach (DetectedLoad load in detectedLoads)
-            {
-                frames += load.EndFrame - load.StartFrame + 1;
-            }
-
-            loadFrames = frames;
+            lbxLoads.ItemsSource = detectedLoadsCollection;
         }
 
         // Calculates the final times and adds them to the interface
@@ -367,7 +98,7 @@ namespace unload
         {
             if (pickedLoadingFrames.Count >= 1)
             {
-                Bitmap image = new Bitmap(Path.Join(workingDirectory, $"{pickedLoadingFrames[pickedLoadingFrameIndex]}.jpg"));
+                Bitmap image = new Bitmap(Path.Join(project.framesDirectory, $"{pickedLoadingFrames[pickedLoadingFrameIndex]}.jpg"));
                 Bitmap croppedImage = ImageProcessor.CropImage(image, CropSlidersToRectangle());
                 imageLoadFrame.Source = ImageProcessor.BitmapToBitmapImage(croppedImage);
             }
@@ -411,7 +142,7 @@ namespace unload
             btnNextLoadFrame.IsEnabled = pickedLoadingFrameIndex < pickedLoadingFrames.Count - 1;
             btnPreviousLoadFrame.IsEnabled = pickedLoadingFrameIndex > 0;
 
-            if (hashedFrames == null) btnRemoveLoadFrame.IsEnabled = pickedLoadingFrameIndex >= 0;
+            if (project.HashedFrames == null) btnRemoveLoadFrame.IsEnabled = pickedLoadingFrameIndex >= 0;
 
             if (pickedLoadingFrames.Count > 1)
             {
@@ -444,9 +175,9 @@ namespace unload
             SaveFileDialog dialog = new SaveFileDialog
             {
                 Filter = "Comma Seperated Values (*.csv)|*.csv",
-                InitialDirectory = workingDirectory,
+                InitialDirectory = project.videoPath,
                 // Remove "_frames" from the name for the csv file
-                FileName = targetDirectory?.Substring(0, targetDirectory.Length - FRAMES_SUFFIX.Length),
+                FileName = project.videoPath?.Substring(0, project.videoPath.Length),
                 DefaultExt = "csv",
             };
 
@@ -454,8 +185,7 @@ namespace unload
             {
                 try
                 {
-                    ExportGenerator.ExportAndSave(dialog.FileName, fps, TotalFrames, loadFrames, detectedLoads, usedMinSimilarity, usedMinFrames,
-                        startFrame, endFrame);
+                    project.ExportCSV(dialog.FileName);
                 }
                 catch (Exception ex)
                 {
@@ -468,9 +198,8 @@ namespace unload
         // Adds a new blank detected load
         private void btnAddLoad_Click(object sender, RoutedEventArgs e)
         {
-            detectedLoads.Add(new DetectedLoad(0, 0, 0));
+            project.DetectedLoads.Add(new DetectedLoad(0, 0, 0));
             SetDetectedLoads();
-            CountLoadFrames();
             CalculateTimes();
         }
 
@@ -485,7 +214,6 @@ namespace unload
             catch { }
 
             SetDetectedLoads();
-            CountLoadFrames();
             CalculateTimes();
         }
 
@@ -499,7 +227,6 @@ namespace unload
             catch { }
 
             SetDetectedLoads();
-            CountLoadFrames();
             CalculateTimes();
         }
 
@@ -585,9 +312,42 @@ namespace unload
 
         private void window_Closed(object sender, EventArgs e) => Application.Current.Shutdown();
 
-        private void btnCheckSimilarity_Click(object sender, RoutedEventArgs e) => CheckSimilarity();
+        private void btnCheckSimilarity_Click(object sender, RoutedEventArgs e)
+        {
+        }
+        
         private void btnDetectLoadFrames_Click(object sender, RoutedEventArgs e) => DetectLoadFrames();
-        private void btnPrepareFrames_Click(object sender, RoutedEventArgs e) => PrepareFrames();
+
+        private void btnPrepareFrames_Click(object sender, RoutedEventArgs e)
+        {
+            // Warn the user on the length of this process
+            string text = "This will start the long and intense process of preparing every frame from start to end using the specified cropping." + Environment.NewLine + Environment.NewLine +
+                "Make sure your start frame and end frame are set properly, and that the load image cropping is correct. To change these after you will have to reset frames first.";
+            MessageBoxResult result = MessageBox.Show(text, "Info", MessageBoxButton.YesNo, MessageBoxImage.Information);
+
+            if (result == MessageBoxResult.No)
+            {
+                return;
+            }
+
+            Rectangle crop = CropSlidersToRectangle();
+
+            ProgressWindow progress = new ProgressWindow("Preparing frames", this);
+            progress.Show();
+            IsEnabled = false;
+
+            // Attempt to hash every frame in a new thread
+            Thread thread = new Thread(() =>
+            {
+
+            })
+            {
+                IsBackground = true
+            };
+
+            thread.Start();
+        }
+
         private void btnResetFrames_Click(object sender, RoutedEventArgs e) => ResetPreparedFrames();
 
         private void slidersCropping_OnValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e) => UpdateLoadPreview();

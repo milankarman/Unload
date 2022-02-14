@@ -102,6 +102,65 @@ namespace unload
             }
         }
 
+
+        //// Prepares an image sequence and resets the application state
+        //public async void LoadFolder(string file, string dir)
+        //{
+        //    workingDirectory = dir;
+        //    int expectedFrames;
+
+        //    string infoPath = Path.Join(dir, "conversion-info.json");
+
+        //    // Attempt to get conversion info from json file, otherwise read values from original video
+        //    if (File.Exists(infoPath))
+        //    {
+        //        string jsonString = File.ReadAllText(infoPath);
+        //        ConversionInfo? info = JsonSerializer.Deserialize<ConversionInfo>(jsonString);
+
+        //        if (info == null)
+        //        {
+        //            string message = "Couldn't read \"conversion-info.json\" in frames folder. The file might be corrupted.";
+        //            MessageBox.Show(message, "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+
+        //            return;
+        //        }
+
+        //        fps = info.FPS;
+        //        expectedFrames = info.ExpectedFrames;
+        //    }
+        //    else
+        //    {
+        //        string message = "Couldn't find \"conversion-info.json\" in frames folder. If you converted with a custom frame rate then make sure to adjust for it manually.";
+        //        MessageBox.Show(message, "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+
+        //        IMediaInfo info = await FFmpeg.GetMediaInfo(file);
+        //        TimeSpan duration = info.VideoStreams.First().Duration;
+
+        //        fps = info.VideoStreams.First().Framerate;
+        //        expectedFrames = (int)(duration.TotalSeconds * fps);
+        //    }
+
+        //    // Check if the same amount of converted images are found as the video has frames
+        //    if (File.Exists(Path.Join(dir, expectedFrames.ToString() + ".jpg")))
+        //    {
+        //        totalVideoFrames = expectedFrames;
+        //    }
+        //    else
+        //    {
+        //        string message = "Warning, fewer converted frames are found than expected. This could mean that the video has dropped frames.";
+        //        MessageBox.Show(message, "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+
+        //        totalVideoFrames = Directory.GetFiles(dir, "*.jpg").Length;
+        //    }
+
+        //    txtEndFrame.Text = totalVideoFrames.ToString();
+
+        //    sliderTimeline.Maximum = totalVideoFrames;
+        //    sliderTimeline.Value = 1;
+
+        //    SetVideoFrame(1);
+        //}
+
         private void btnStartSettings_Click(object sender, RoutedEventArgs e)
         {
 
