@@ -1,27 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Diagnostics;
 using System.Drawing;
 using System.IO;
-using System.Linq;
-using System.Reflection;
-using System.Text.Json;
 using System.Threading;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Input;
-using System.Windows.Media.Imaging;
-using Microsoft.Win32;
 using Shipwreck.Phash;
-using Xabe.FFmpeg;
 
 namespace unload
 {
     public class Project
     {
-        public readonly string? videoPath;
-        public readonly string? framesDirectory;
+        public readonly string videoPath;
+        public readonly string framesDirectory;
 
         public readonly int totalFrames;
         public readonly double fps;
@@ -31,9 +20,8 @@ namespace unload
 
         private int usedStartFrame;
         private int usedEndFrame;
-        private float usedMinSimilarity;
+        private double usedMinSimilarity;
         private int usedMinLoadFrames;
-
 
         public Project(string _videoPath, string _framesDirectory, int _totalFrames, double _fps)
         {
@@ -72,6 +60,9 @@ namespace unload
                 onProgress(percentage);
             });
 
+            usedStartFrame = startFrame;
+            usedEndFrame = endFrame;
+
             onFinished();
         }
 
@@ -82,7 +73,7 @@ namespace unload
         }
 
         // Compares every frame hash against the picked loads hashes and stores them
-        public void DetectLoadFrames(int startFrame, int endFrame, double minSimilarity, int minFrames,
+        public void DetectLoadFrames(double minSimilarity, int minLoadFrames,
             List<int> pickedLoadsIndeces, Rectangle crop, int concurrentTasks)
         {
             DetectedLoads.Clear();
@@ -105,11 +96,11 @@ namespace unload
             bool subsequentLoadFrame = false;
 
             // Check every frame similarities to the load images against the minimum similarity and list them as loads
-            for (int i = startFrame; i < endFrame; i++)
+            for (int i = usedStartFrame; i < usedEndFrame; i++)
             {
                 for (int j = 0; j < frameSimilarities[i].Length; j++)
                 {
-                    if (frameSimilarities[i][j] > minSimilarity && i < endFrame)
+                    if (frameSimilarities[i][j] > minSimilarity && i < usedEndFrame)
                     {
                         loadFrameCounter += 1;
 
@@ -129,7 +120,7 @@ namespace unload
                         int currentLoadTotalFrames = currentLoadEndFrame - currentLoadStartFrame + 1;
 
                         // Check if the detected loading screen matches the minimum number of frames set by user
-                        if (currentLoadTotalFrames >= minFrames)
+                        if (currentLoadTotalFrames >= minLoadFrames)
                         {
                             DetectedLoads.Add(new DetectedLoad(loadScreenCounter, currentLoadStartFrame, currentLoadEndFrame));
                         }
@@ -139,9 +130,11 @@ namespace unload
                     }
                 }
             }
+
+            usedMinSimilarity = minSimilarity;
+            usedMinLoadFrames = minLoadFrames;
         }
 
-        // Adds up the loads entered in the detected loads
         public int GetDetectedLoadFrames()
         {
             int frames = 0;
@@ -154,9 +147,27 @@ namespace unload
             return frames;
         }
 
+        public TimeSpan GetTotalTimeString()
+        {
+            double totalSecondsDouble = totalFrames / fps;
+            return TimeSpan.FromSeconds(Math.Round(totalSecondsDouble, 3));
+        }
+
+        public TimeSpan GetLoadlessTimeString()
+        {
+            int loadlessFrames = totalFrames - GetDetectedLoadFrames();
+            double loadlessSecondsDouble = loadlessFrames / fps;
+            return TimeSpan.FromSeconds(Math.Round(loadlessSecondsDouble, 3));
+        }
+
+        public TimeSpan GetTimeSpentLoading()
+        {
+            double loadlessSecondsDouble = GetDetectedLoadFrames() / fps;
+            return TimeSpan.FromSeconds(Math.Round(loadlessSecondsDouble, 3));
+        }
+
         public void ExportCSV(string path)
         {
-            // Read all load screens into to write to file
             List<string> lines = new List<string>
             {
                 "Loading Screens",
@@ -170,14 +181,12 @@ namespace unload
 
             int loadFrames = GetDetectedLoadFrames();
 
-            // Add final times into list to write to file
             lines.Add("");
             lines.Add("Final Times");
             lines.Add($"Time without loads,\"{TimeCalculator.GetLoadlessTimeString(fps, totalFrames, loadFrames)}\"");
             lines.Add($"Time with loads,\"{TimeCalculator.GetTotalTimeString(fps, totalFrames)}\"");
             lines.Add($"Time spent loading,\"{TimeCalculator.GetTimeSpentLoadingString(fps, totalFrames, loadFrames)}\"");
 
-            // Add unload settings into the list to write to the file
             lines.Add("");
             lines.Add("Unload Settings");
             lines.Add($"Minimum similarity,\"{usedMinSimilarity}\"");

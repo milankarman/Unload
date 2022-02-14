@@ -1,21 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Diagnostics;
-using System.Drawing;
-using System.IO;
-using System.Linq;
-using System.Reflection;
-using System.Text.Json;
+﻿using System.IO;
 using System.Text.RegularExpressions;
-using System.Threading;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Input;
-using System.Windows.Media.Imaging;
 using Microsoft.Win32;
-using Shipwreck.Phash;
-using unload.Properties;
+using Newtonsoft.Json;
 using Xabe.FFmpeg;
 
 namespace unload
@@ -23,14 +10,13 @@ namespace unload
     public partial class StartWindow : Window
     {
         public string? workingDirectory = null;
-        private string? targetDirectory = null;
+
         private const string FRAMES_SUFFIX = "_frames";
 
         public StartWindow()
         {
             InitializeComponent();
 
-            // Confirm FFmpeg is available
             try
             {
                 VideoProcessor.SetFFMpegPath();
@@ -43,10 +29,45 @@ namespace unload
             }
         }
 
-        public void StartMainWindow(string fileName)
+        public void LoadProject(string filePath)
         {
-            MainWindow mainWindow = new MainWindow();
-            mainWindow.LoadFolder(fileName, targetDirectory);
+            string infoPath = Path.Join(workingDirectory, "conversion-info.json");
+
+            // Attempt to get conversion info from json file, otherwise read values from original video
+            if (!File.Exists(infoPath))
+            {
+                string message = "Couldn't find \"conversion-info.json\" in frames folder. Please convert the video again.";
+                MessageBox.Show(message, "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+
+                return;
+            }
+
+            string jsonString = File.ReadAllText(infoPath);
+            ConversionInfo? info = JsonSerializer.Deserialize<ConversionInfo>(jsonString);
+
+            if (info == null)
+            {
+                string message = "Couldn't read \"conversion-info.json\" in frames folder. The file might be corrupted. Please convert the video again.";
+                MessageBox.Show(message, "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+
+                return;
+            }
+
+            double fps = info.FPS;
+            int totalFrames = info.ExpectedFrames;
+
+            // Check if the same amount of converted images are found as the video has frames
+            if (!File.Exists(Path.Join(workingDirectory, totalFrames.ToString() + ".jpg")))
+            {
+                string message = "Warning, fewer converted frames are found than expected. This could mean that the video has dropped frames.";
+                MessageBox.Show(message, "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+
+                totalFrames = Directory.GetFiles(workingDirectory, "*.jpg").Length;
+            }
+
+            Project project = new Project(filePath, workingDirectory, totalFrames, fps);
+
+            MainWindow mainWindow = new MainWindow(project);
             mainWindow.Show();
             Close();
         }
@@ -74,7 +95,7 @@ namespace unload
                     return;
                 }
 
-                StartMainWindow(dialog.FileName);
+                LoadProject(dialog.FileName);
             }
         }
 
@@ -106,59 +127,7 @@ namespace unload
         //// Prepares an image sequence and resets the application state
         //public async void LoadFolder(string file, string dir)
         //{
-        //    workingDirectory = dir;
-        //    int expectedFrames;
 
-        //    string infoPath = Path.Join(dir, "conversion-info.json");
-
-        //    // Attempt to get conversion info from json file, otherwise read values from original video
-        //    if (File.Exists(infoPath))
-        //    {
-        //        string jsonString = File.ReadAllText(infoPath);
-        //        ConversionInfo? info = JsonSerializer.Deserialize<ConversionInfo>(jsonString);
-
-        //        if (info == null)
-        //        {
-        //            string message = "Couldn't read \"conversion-info.json\" in frames folder. The file might be corrupted.";
-        //            MessageBox.Show(message, "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
-
-        //            return;
-        //        }
-
-        //        fps = info.FPS;
-        //        expectedFrames = info.ExpectedFrames;
-        //    }
-        //    else
-        //    {
-        //        string message = "Couldn't find \"conversion-info.json\" in frames folder. If you converted with a custom frame rate then make sure to adjust for it manually.";
-        //        MessageBox.Show(message, "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
-
-        //        IMediaInfo info = await FFmpeg.GetMediaInfo(file);
-        //        TimeSpan duration = info.VideoStreams.First().Duration;
-
-        //        fps = info.VideoStreams.First().Framerate;
-        //        expectedFrames = (int)(duration.TotalSeconds * fps);
-        //    }
-
-        //    // Check if the same amount of converted images are found as the video has frames
-        //    if (File.Exists(Path.Join(dir, expectedFrames.ToString() + ".jpg")))
-        //    {
-        //        totalVideoFrames = expectedFrames;
-        //    }
-        //    else
-        //    {
-        //        string message = "Warning, fewer converted frames are found than expected. This could mean that the video has dropped frames.";
-        //        MessageBox.Show(message, "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
-
-        //        totalVideoFrames = Directory.GetFiles(dir, "*.jpg").Length;
-        //    }
-
-        //    txtEndFrame.Text = totalVideoFrames.ToString();
-
-        //    sliderTimeline.Maximum = totalVideoFrames;
-        //    sliderTimeline.Value = 1;
-
-        //    SetVideoFrame(1);
         //}
 
         private void btnStartSettings_Click(object sender, RoutedEventArgs e)
