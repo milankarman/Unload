@@ -29,9 +29,60 @@ namespace unload
             }
         }
 
-        public void LoadProject(string filePath)
+        private void btnLoad_Click(object sender, RoutedEventArgs e)
         {
-            string infoPath = Path.Join(workingDirectory, "conversion-info.json");
+            OpenFileDialog dialog = new OpenFileDialog();
+
+            if (dialog.ShowDialog() == true)
+            {
+                // Remove symbols from path and append _frames
+                string? fileDirectory = Path.GetDirectoryName(dialog.FileName);
+
+                string framesDirectory = Path.Join(
+                    workingDirectory ?? fileDirectory,
+                    RemoveSymbols(dialog.SafeFileName) + FRAMES_SUFFIX);
+
+                if (!Directory.Exists(framesDirectory))
+                {
+                    MessageBox.Show(
+                        $"No {FRAMES_SUFFIX} folder accompanying this video found. Convert the video first.",
+                        "Error",
+                        MessageBoxButton.OK,
+                        MessageBoxImage.Error);
+                    return;
+                }
+
+                LoadProject(dialog.FileName, framesDirectory);
+            }
+        }
+
+        private void btnConvert_Click(object sender, RoutedEventArgs e)
+        {
+            OpenFileDialog dialog = new OpenFileDialog();
+
+            if (dialog.ShowDialog() == true)
+            {
+                // Create _frames folder to store the image sequence, ommiting illegal symbols
+                string? fileDirectory = Path.GetDirectoryName(dialog.FileName);
+
+                string framesDirectory = Path.Join(
+                    workingDirectory ?? fileDirectory,
+                    RemoveSymbols(dialog.SafeFileName) + FRAMES_SUFFIX);
+
+                if (!Directory.Exists(framesDirectory))
+                {
+                    Directory.CreateDirectory(framesDirectory);
+                }
+
+                IsEnabled = false;
+                ConvertWindow convertWindow = new ConvertWindow(this, dialog.FileName, framesDirectory);
+                convertWindow.GetVideoInfoAndShow();
+            }
+        }
+
+        public void LoadProject(string filePath, string framesDirectory)
+        {
+            string infoPath = Path.Join(framesDirectory, "conversion-info.json");
 
             // Attempt to get conversion info from json file, otherwise read values from original video
             if (!File.Exists(infoPath))
@@ -43,7 +94,7 @@ namespace unload
             }
 
             string jsonString = File.ReadAllText(infoPath);
-            ConversionInfo? info = JsonSerializer.Deserialize<ConversionInfo>(jsonString);
+            ConversionInfo? info = JsonConvert.DeserializeObject<ConversionInfo>(jsonString);
 
             if (info == null)
             {
@@ -62,73 +113,15 @@ namespace unload
                 string message = "Warning, fewer converted frames are found than expected. This could mean that the video has dropped frames.";
                 MessageBox.Show(message, "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
 
-                totalFrames = Directory.GetFiles(workingDirectory, "*.jpg").Length;
+                totalFrames = Directory.GetFiles(framesDirectory, "*.jpg").Length;
             }
 
-            Project project = new Project(filePath, workingDirectory, totalFrames, fps);
+            Project project = new Project(filePath, framesDirectory, totalFrames, fps);
 
             MainWindow mainWindow = new MainWindow(project);
             mainWindow.Show();
             Close();
         }
-
-        private void btnLoad_Click(object sender, RoutedEventArgs e)
-        {
-            OpenFileDialog dialog = new OpenFileDialog();
-
-            if (dialog.ShowDialog() == true)
-            {
-                // Remove symbols from path and append _frames
-                string? fileDirectory = Path.GetDirectoryName(dialog.FileName);
-
-                targetDirectory = Path.Join(
-                    workingDirectory ?? fileDirectory,
-                    RemoveSymbols(dialog.SafeFileName) + FRAMES_SUFFIX);
-
-                if (!Directory.Exists(targetDirectory))
-                {
-                    MessageBox.Show(
-                        $"No {FRAMES_SUFFIX} folder accompanying this video found. Convert the video first.",
-                        "Error",
-                        MessageBoxButton.OK,
-                        MessageBoxImage.Error);
-                    return;
-                }
-
-                LoadProject(dialog.FileName);
-            }
-        }
-
-        private void btnConvert_Click(object sender, RoutedEventArgs e)
-        {
-            OpenFileDialog dialog = new OpenFileDialog();
-
-            if (dialog.ShowDialog() == true)
-            {
-                // Create _frames folder to store the image sequence, ommiting illegal symbols
-                string? fileDirectory = Path.GetDirectoryName(dialog.FileName);
-
-                targetDirectory = Path.Join(
-                    workingDirectory ?? fileDirectory,
-                    RemoveSymbols(dialog.SafeFileName) + FRAMES_SUFFIX);
-
-                if (!Directory.Exists(targetDirectory))
-                {
-                    Directory.CreateDirectory(targetDirectory);
-                }
-
-                IsEnabled = false;
-                ConvertWindow convertWindow = new ConvertWindow(this, dialog.FileName, targetDirectory);
-                convertWindow.GetVideoInfoAndShow();
-            }
-        }
-
-
-        //// Prepares an image sequence and resets the application state
-        //public async void LoadFolder(string file, string dir)
-        //{
-
-        //}
 
         private void btnStartSettings_Click(object sender, RoutedEventArgs e)
         {

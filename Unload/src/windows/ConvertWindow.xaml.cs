@@ -114,7 +114,6 @@ namespace unload
                     // When done load in the files and re-enable the main window
                     Dispatcher.Invoke(() =>
                     {
-                        startWindow.LoadProject(filePath);
                         progress.Close();
                         Close();
                     });

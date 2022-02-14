@@ -146,11 +146,11 @@
                         <ColumnDefinition Width="1*"/>
                     </Grid.ColumnDefinitions>
                     <Label Grid.Row="0" Grid.Column="0" Margin="0,0,0,5" Content="Start Frame:"/>
-                    <TextBox Grid.Row="0" Grid.Column="1" x:Name="txtStartFrame" Margin="0,0,0,5" Text="1" HorizontalContentAlignment="Right" TextChanged="txtStartFrame_TextChanged"/>
+                    <TextBox Grid.Row="0" Grid.Column="1" x:Name="txtStartFrame" Margin="0,0,0,5" Text="1" HorizontalContentAlignment="Right"/>
                     <Label Grid.Row="1" Grid.Column="0" Margin="0,0,0,5" Content="End Frame:"/>
-                    <TextBox Grid.Row="1" Grid.Column="1" x:Name="txtEndFrame" Margin="0,0,0,5" Text="1" HorizontalContentAlignment="Right" TextChanged="txtEndFrame_TextChanged"/>
+                    <TextBox Grid.Row="1" Grid.Column="1" x:Name="txtEndFrame" Margin="0,0,0,5" Text="1" HorizontalContentAlignment="Right"/>
                     <Label Grid.Row="2" Grid.Column="0" Margin="0,0,0,5" Content="FPS:"/>
-                    <TextBox Grid.Row="2" Grid.Column="1" x:Name="txtFPS" Margin="0,0,0,5" Text="30" HorizontalContentAlignment="Right" TextChanged="txtFPS_TextChanged"/>
+                    <TextBox Grid.Row="2" Grid.Column="1" x:Name="txtFPS" Margin="0,0,0,5" Text="30" HorizontalContentAlignment="Right"/>
                     <Label Grid.Row="3" Grid.Column="0" Margin="0,0,0,10" Content="Load Frames:"/>
                     <TextBox Grid.Row="3" Grid.Column="1" x:Name="txtLoadFrames" Margin="0,0,0,10" Text="0" HorizontalContentAlignment="Right" IsReadOnly="True"/>
                     <TextBox Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="2" Height="auto" VerticalContentAlignment="Top" Padding="5,5,5,5" x:Name="txtTimeOutput" Margin="0,0,0,10" TextWrapping="Wrap" IsReadOnly="True"/>
@@ -179,9 +179,9 @@
                     <Button Grid.Row="0" Grid.Column="0" x:Name="btnPrepareFrames" Margin="0,0,5,10" Content="Prepare Frames" Click="btnPrepareFrames_Click"/>
                     <Button Grid.Row="0" Grid.Column="1" x:Name="btnResetFrames" Margin="5,0,0,10" Content="Reset Frames" Click="btnResetFrames_Click"/>
                     <Label Grid.Row="1" Grid.Column="0" Margin="0,0,5,5" Content="Minimum Similarity:"/>
-                    <TextBox Grid.Row="1" Grid.Column="1" x:Name="txtMinSimilarity" Margin="5,0,0,5" TextWrapping="Wrap" Text="1" HorizontalContentAlignment="Right" TextChanged="txtMinSimilarity_TextChanged"/>
+                    <TextBox Grid.Row="1" Grid.Column="1" x:Name="txtMinSimilarity" Margin="5,0,0,5" TextWrapping="Wrap" Text="1" HorizontalContentAlignment="Right"/>
                     <Label Grid.Row="2" Grid.Column="0" Margin="0,0,5,5" Content="Minimum Frames:"/>
-                    <TextBox Grid.Row="2" Grid.Column="1" x:Name="txtMinFrames" Margin="5,0,0,10" TextWrapping="Wrap" Text="1" HorizontalContentAlignment="Right" TextChanged="txtMinFrames_TextChanged"/>
+                    <TextBox Grid.Row="2" Grid.Column="1" x:Name="txtMinFrames" Margin="5,0,0,10" TextWrapping="Wrap" Text="1" HorizontalContentAlignment="Right"/>
                     <Button Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" x:Name="btnDetectLoadFrames" Content="Detect Load Frames" Click="btnDetectLoadFrames_Click"/>
                 </Grid>
             </GroupBox>
@@ -217,9 +217,9 @@
                         <ColumnDefinition Width="1*"/>
                     </Grid.ColumnDefinitions>
                     <Label Grid.Row="0" Grid.Column="0" Margin="0,0,0,5" Content="Concurrent tasks:"/>
-                    <TextBox Grid.Row="0" Grid.Column="1" x:Name="txtConcurrentTasks" Margin="0,0,0,5" Text="20" Height="20" HorizontalContentAlignment="Right" TextChanged="txtConcurrentTasks_TextChanged"/>
+                    <TextBox Grid.Row="0" Grid.Column="1" x:Name="txtConcurrentTasks" Margin="0,0,0,5" Text="20" Height="20" HorizontalContentAlignment="Right"/>
                     <Label Grid.Row="1" Grid.Column="0" Margin="0,0,0,5" Content="Fast forward step size (ms):"/>
-                    <TextBox Grid.Row="1" Grid.Column="1" x:Name="txtStepSize" Margin="0,0,0,5" Text="250" HorizontalContentAlignment="Right" TextChanged="txtStepSize_TextChanged"/>
+                    <TextBox Grid.Row="1" Grid.Column="1" x:Name="txtStepSize" Margin="0,0,0,5" Text="250" HorizontalContentAlignment="Right"/>
                     <CheckBox Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" x:Name="cbxSnapLoads" Content="Snap to detected loads" HorizontalAlignment="Left" VerticalContentAlignment="Center" Checked="cbxSnapLoads_CheckedChanged" Unchecked="cbxSnapLoads_CheckedChanged" IsChecked="True"/>
                 </Grid>
             </GroupBox>

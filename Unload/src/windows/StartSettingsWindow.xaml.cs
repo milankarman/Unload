@@ -6,16 +6,16 @@ namespace unload
 {
     public partial class StartSettingsWindow : Window
     {
-        private readonly MainWindow mainWindow;
+        private readonly StartWindow startWindow;
 
         private string? workingDirectory = null;
 
         private const string NO_WORKING_DIRECTORY = "Same as video";
 
-        public StartSettingsWindow(MainWindow _mainWindow, string? _workingDirectory)
+        public StartSettingsWindow(StartWindow _startWindow, string? _workingDirectory)
         {
-            Owner = _mainWindow;
-            mainWindow = _mainWindow;
+            Owner = _startWindow;
+            startWindow = _startWindow;
             workingDirectory = _workingDirectory;
 
             InitializeComponent();
@@ -53,17 +53,17 @@ namespace unload
 
         private void btnApply_Click(object sender, RoutedEventArgs e)
         {
-            mainWindow.workingDirectory = workingDirectory;
+            startWindow.workingDirectory = workingDirectory;
             Settings.Default.WorkingDirectory = workingDirectory;
             Settings.Default.Save();
 
-            mainWindow.IsEnabled = true;
+            startWindow.IsEnabled = true;
             Close();
         }
 
         private void btnCancel_Click(object sender, RoutedEventArgs e)
         {
-            mainWindow.IsEnabled = true;
+            startWindow.IsEnabled = true;
             Close();
         }
     }
