@@ -24,7 +24,7 @@ namespace unload
         }
 
         // Verifies user input is correct and returns the loadless time formatted as a string
-        public static string GetTimeSpentLoadingString(double framesPerSecond, int totalFrames, int loadFrames)
+        public static string GetTimeSpentLoadingString(double framesPerSecond, int loadFrames)
         {
             double loadlessSecondsDouble = loadFrames / framesPerSecond;
             TimeSpan timeSpentLoading = TimeSpan.FromSeconds(Math.Round(loadlessSecondsDouble, 3));

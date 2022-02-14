@@ -1,9 +1,11 @@
-﻿using System.IO;
+﻿using System.Diagnostics;
+using System.IO;
+using System.Reflection;
 using System.Text.RegularExpressions;
 using System.Windows;
 using Microsoft.Win32;
 using Newtonsoft.Json;
-using Xabe.FFmpeg;
+using unload.Properties;
 
 namespace unload
 {
@@ -17,6 +19,8 @@ namespace unload
         {
             InitializeComponent();
 
+            Title += $" {FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).ProductVersion}";
+
             try
             {
                 VideoProcessor.SetFFMpegPath();
@@ -27,19 +31,20 @@ namespace unload
                 MessageBox.Show(message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 Application.Current.Shutdown();
             }
+
+            workingDirectory = Settings.Default.WorkingDirectory;
         }
 
         private void btnLoad_Click(object sender, RoutedEventArgs e)
         {
-            OpenFileDialog dialog = new OpenFileDialog();
+            OpenFileDialog dialog = new();
 
             if (dialog.ShowDialog() == true)
             {
                 // Remove symbols from path and append _frames
                 string? fileDirectory = Path.GetDirectoryName(dialog.FileName);
 
-                string framesDirectory = Path.Join(
-                    workingDirectory ?? fileDirectory,
+                string framesDirectory = Path.Join(workingDirectory ?? fileDirectory,
                     RemoveSymbols(dialog.SafeFileName) + FRAMES_SUFFIX);
 
                 if (!Directory.Exists(framesDirectory))
@@ -58,15 +63,14 @@ namespace unload
 
         private void btnConvert_Click(object sender, RoutedEventArgs e)
         {
-            OpenFileDialog dialog = new OpenFileDialog();
+            OpenFileDialog dialog = new();
 
             if (dialog.ShowDialog() == true)
             {
                 // Create _frames folder to store the image sequence, ommiting illegal symbols
                 string? fileDirectory = Path.GetDirectoryName(dialog.FileName);
 
-                string framesDirectory = Path.Join(
-                    workingDirectory ?? fileDirectory,
+                string framesDirectory = Path.Join(workingDirectory ?? fileDirectory,
                     RemoveSymbols(dialog.SafeFileName) + FRAMES_SUFFIX);
 
                 if (!Directory.Exists(framesDirectory))
@@ -75,12 +79,17 @@ namespace unload
                 }
 
                 IsEnabled = false;
-                ConvertWindow convertWindow = new ConvertWindow(this, dialog.FileName, framesDirectory);
+                ConvertWindow convertWindow = new(this, dialog.FileName, framesDirectory);
                 convertWindow.GetVideoInfoAndShow();
             }
         }
 
-        public void LoadProject(string filePath, string framesDirectory)
+        private void btnStartSettings_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void LoadProject(string filePath, string framesDirectory)
         {
             string infoPath = Path.Join(framesDirectory, "conversion-info.json");
 
@@ -116,16 +125,11 @@ namespace unload
                 totalFrames = Directory.GetFiles(framesDirectory, "*.jpg").Length;
             }
 
-            Project project = new Project(filePath, framesDirectory, totalFrames, fps);
+            Project project = new(filePath, framesDirectory, totalFrames, fps);
 
-            MainWindow mainWindow = new MainWindow(project);
+            MainWindow mainWindow = new(project);
             mainWindow.Show();
             Close();
-        }
-
-        private void btnStartSettings_Click(object sender, RoutedEventArgs e)
-        {
-
         }
 
         // Removes symbols that conflict with FFmpeg arguments

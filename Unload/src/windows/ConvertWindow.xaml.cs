@@ -82,7 +82,7 @@ namespace unload
             double fps = double.Parse(txtFramesPerSecond.Text);
             int expectedFrames = (int)(fps * (endTime - startTime).TotalSeconds);
 
-            ConversionInfo info = new ConversionInfo()
+            ConversionInfo info = new()
             {
                 FPS = fps,
                 ExpectedFrames = expectedFrames
@@ -93,13 +93,13 @@ namespace unload
             File.WriteAllText(Path.Join(targetDirectory, "conversion-info.json"), jsonString);
 
             // Show a progress window and hide this window
-            ProgressWindow progress = new ProgressWindow("Converting video to images", startWindow);
+            ProgressWindow progress = new("Converting video to images", startWindow);
 
             progress.Show();
             Visibility = Visibility.Hidden;
 
             // Attempt to run the conversion in a new background thread
-            Thread thread = new Thread(async () =>
+            Thread thread = new(async () =>
             {
                 try
                 {

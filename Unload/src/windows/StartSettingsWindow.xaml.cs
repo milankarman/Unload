@@ -27,7 +27,7 @@ namespace unload
 
         private void btnBrowse_Click(object sender, RoutedEventArgs e)
         {
-            CommonOpenFileDialog dialog = new CommonOpenFileDialog()
+            CommonOpenFileDialog dialog = new()
             {
                 Title = "Select working directory for creating frames",
                 IsFolderPicker = true,

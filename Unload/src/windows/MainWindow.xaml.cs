@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
 using System.IO;
-using System.Linq;
 using System.Reflection;
 using System.Threading;
 using System.Windows;
@@ -16,10 +15,10 @@ namespace unload
 {
     public partial class MainWindow : Window
     {
-        private Project project;
+        private readonly Project project;
 
-        private readonly List<int> pickedLoadingFrames = new List<int>();
-        private readonly List<int> sliderTicks = new List<int>();
+        private readonly List<int> pickedLoadingFrames = new();
+        private readonly List<int> sliderTicks = new();
 
         private int pickedLoadingFrameIndex = -1;
         private const double defaultSimilarity = 0.95;
@@ -47,7 +46,7 @@ namespace unload
             if (frame <= 0 || frame > project.totalFrames) return;
 
             // Set the video frame and update the interface
-            Uri image = new Uri(Path.Join(project.framesDirectory, $"{frame}.jpg"));
+            Uri image = new(Path.Join(project.framesDirectory, $"{frame}.jpg"));
             imageVideo.Source = new BitmapImage(image);
 
             txtVideoFrame.Text = frame.ToString();
@@ -70,8 +69,8 @@ namespace unload
         // Calculates the final times and adds them to the interface
         private void CalculateTimes()
         {
-            txtTimeOutput.Text = "Time without loads:" + Environment.NewLine + project.GetLoadlessTimeString() + Environment.NewLine;
-            txtTimeOutput.Text += "Time with loads:" + Environment.NewLine + project.GetTotalTimeString() + Environment.NewLine;
+            txtTimeOutput.Text = "Time without loads:" + Environment.NewLine + project.GetLoadlessTime() + Environment.NewLine;
+            txtTimeOutput.Text += "Time with loads:" + Environment.NewLine + project.GetTotalTime() + Environment.NewLine;
             txtTimeOutput.Text += "Time spent loading:" + Environment.NewLine + project.GetTimeSpentLoading();
 
             btnExportTimes.IsEnabled = true;
@@ -82,7 +81,7 @@ namespace unload
         {
             if (pickedLoadingFrames.Count >= 1)
             {
-                Bitmap image = new Bitmap(Path.Join(project.framesDirectory, $"{pickedLoadingFrames[pickedLoadingFrameIndex]}.jpg"));
+                Bitmap image = new(Path.Join(project.framesDirectory, $"{pickedLoadingFrames[pickedLoadingFrameIndex]}.jpg"));
                 Bitmap croppedImage = ImageProcessor.CropImage(image, CropSlidersToRectangle());
                 imageLoadFrame.Source = ImageProcessor.BitmapToBitmapImage(croppedImage);
             }
@@ -154,12 +153,12 @@ namespace unload
         // Exports the frame count and load times ranges to a CSV file
         private void btnExportTimes_Click(object sender, RoutedEventArgs e)
         {
-            SaveFileDialog dialog = new SaveFileDialog
+            SaveFileDialog dialog = new()
             {
                 Filter = "Comma Seperated Values (*.csv)|*.csv",
                 InitialDirectory = project.videoPath,
                 // Remove "_frames" from the name for the csv file
-                FileName = project.videoPath?.Substring(0, project.videoPath.Length),
+                FileName = project.videoPath?[..],
                 DefaultExt = "csv",
             };
 
@@ -302,7 +301,7 @@ namespace unload
             int minSimilarity = int.Parse(txtMinSimilarity.Text);
             int minFrames = int.Parse(txtMinFrames.Text);
             int concurrentTasks = int.Parse(txtConcurrentTasks.Text);
-            
+
             project.DetectLoadFrames(minSimilarity, minFrames, pickedLoadingFrames, CropSlidersToRectangle(), concurrentTasks);
         }
 
@@ -325,13 +324,13 @@ namespace unload
             int concurrentTasks = int.Parse(txtConcurrentTasks.Text);
 
 
-            ProgressWindow progress = new ProgressWindow("Preparing frames", this);
+            ProgressWindow progress = new("Preparing frames", this);
             progress.Show();
 
             IsEnabled = false;
 
             Thread thread = new(() => project.PrepareFrames(startFrame, endFrame, crop, concurrentTasks,
-                null, null, null));
+                null, (double a) => { }, () => { }));
 
             thread.IsBackground = true;
             thread.Start();

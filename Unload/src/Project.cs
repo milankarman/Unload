@@ -37,8 +37,8 @@ namespace unload
         // Returns the similarity of 2 frames ranging from 0 to 1
         public float GetSimilarity(int frame1Index, int frame2Index, Rectangle crop)
         {
-            Bitmap frame1 = new Bitmap(Path.Join(framesDirectory, $"{frame1Index}.jpg"));
-            Bitmap frame2 = new Bitmap(Path.Join(framesDirectory, $"{frame2Index}.jpg"));
+            Bitmap frame1 = new(Path.Join(framesDirectory, $"{frame1Index}.jpg"));
+            Bitmap frame2 = new(Path.Join(framesDirectory, $"{frame2Index}.jpg"));
 
             frame1 = ImageProcessor.CropImage(frame1, crop);
             frame2 = ImageProcessor.CropImage(frame2, crop);
@@ -82,7 +82,7 @@ namespace unload
 
             for (int i = 0; i < pickedLoadsIndeces.Count; i++)
             {
-                Bitmap loadFrame = new Bitmap(Path.Join(framesDirectory, $"{i}.jpg"));
+                Bitmap loadFrame = new(Path.Join(framesDirectory, $"{i}.jpg"));
                 loadFrames[i] = ImageProcessor.CropImage(loadFrame, crop);
             }
 
@@ -147,13 +147,13 @@ namespace unload
             return frames;
         }
 
-        public TimeSpan GetTotalTimeString()
+        public TimeSpan GetTotalTime()
         {
             double totalSecondsDouble = totalFrames / fps;
             return TimeSpan.FromSeconds(Math.Round(totalSecondsDouble, 3));
         }
 
-        public TimeSpan GetLoadlessTimeString()
+        public TimeSpan GetLoadlessTime()
         {
             int loadlessFrames = totalFrames - GetDetectedLoadFrames();
             double loadlessSecondsDouble = loadlessFrames / fps;
@@ -168,7 +168,7 @@ namespace unload
 
         public void ExportCSV(string path)
         {
-            List<string> lines = new List<string>
+            List<string> lines = new()
             {
                 "Loading Screens",
                 "#,First,Last,Total"
@@ -179,13 +179,11 @@ namespace unload
                 lines.Add($"{load.Index},{load.StartFrame},{load.EndFrame},{load.EndFrame - load.StartFrame + 1}");
             }
 
-            int loadFrames = GetDetectedLoadFrames();
-
             lines.Add("");
             lines.Add("Final Times");
-            lines.Add($"Time without loads,\"{TimeCalculator.GetLoadlessTimeString(fps, totalFrames, loadFrames)}\"");
-            lines.Add($"Time with loads,\"{TimeCalculator.GetTotalTimeString(fps, totalFrames)}\"");
-            lines.Add($"Time spent loading,\"{TimeCalculator.GetTimeSpentLoadingString(fps, totalFrames, loadFrames)}\"");
+            lines.Add($"Time without loads,\"{GetLoadlessTime()}\"");
+            lines.Add($"Time with loads,\"{GetTotalTime()}\"");
+            lines.Add($"Time spent loading,\"{GetTimeSpentLoading()}\"");
 
             lines.Add("");
             lines.Add("Unload Settings");
