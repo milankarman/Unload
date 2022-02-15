@@ -1,7 +1,7 @@
-﻿using System;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.IO;
 using System.Reflection;
+using System.Collections.ObjectModel;
 using System.Text.RegularExpressions;
 using System.Windows;
 using Microsoft.Win32;
@@ -12,9 +12,22 @@ namespace unload
 {
     public partial class StartWindow : Window
     {
+        private class PreviousVideo
+        {
+            public string FilePath { get; set; }
+            public string ConvertedDate { get; set; }
+        }
+
         public string? workingDirectory;
 
         private const string FRAMES_SUFFIX = "_frames";
+
+        private ObservableCollection<PreviousVideo> previousVideos = new()
+        {
+            new PreviousVideo() { FilePath = "C:/Users/Milan/Downloads/12-44.mp4", ConvertedDate = "16/02/2022 00:18"},
+            new PreviousVideo() { FilePath = "C:/Users/Milan/Downloads/13-08.mp4", ConvertedDate = "16/02/2022 00:19"}
+        };
+
 
         public StartWindow()
         {
@@ -33,6 +46,7 @@ namespace unload
                 Application.Current.Shutdown();
             }
 
+            lbxPreviousVideos.ItemsSource = previousVideos;
             workingDirectory = Settings.Default.WorkingDirectory;
             if (workingDirectory.Length == 0) workingDirectory = null;
         }

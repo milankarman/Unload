@@ -200,7 +200,7 @@
                             <Label Grid.Column="2" Content="End"/>
                             <Button Grid.Column="3" Content="+" x:Name="btnAddLoad" Height="20" Click="btnDLoadAdd_Click"/>
                         </Grid>
-                        <ItemsControl HorizontalAlignment="Stretch" x:Name="lbxLoads" Margin="5,5,5,5" ItemsSource="{Binding}" ItemTemplate="{StaticResource DetectedLoadTemplate}"/>
+                        <ItemsControl x:Name="lbxLoads" Margin="5,5,5,5"  HorizontalAlignment="Stretch" ItemsSource="{Binding}" ItemTemplate="{StaticResource DetectedLoadTemplate}"/>
                     </StackPanel>
                 </ScrollViewer>
             </GroupBox>
