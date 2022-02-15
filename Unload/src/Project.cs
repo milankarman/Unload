@@ -23,7 +23,7 @@ namespace unload
         private double usedMinSimilarity;
         private int usedMinLoadFrames;
 
-        public Project(string _videoPath, string _framesDirectory, int _totalFrames, double _fps)
+        public Project(string _videoPath,string _framesDirectory, int _totalFrames, double _fps)
         {
             videoPath = _videoPath;
             framesDirectory = _framesDirectory;
@@ -126,6 +126,7 @@ namespace unload
             usedMinLoadFrames = minLoadFrames;
         }
 
+        // Returns the total detected load frames
         public int GetDetectedLoadFrames()
         {
             int frames = 0;

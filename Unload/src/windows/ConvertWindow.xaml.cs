@@ -16,7 +16,7 @@ namespace unload
 
         private TimeSpan fileDuration;
         private double fileFramerate;
-        private Action onFinished;
+        private readonly Action onFinished;
 
         public ConvertWindow(StartWindow _startWindow, string _filePath, string _targetDirectory, Action _onFinished)
         {
@@ -66,80 +66,6 @@ namespace unload
             txtEndTimeMS.Text = $"{fileDuration.Milliseconds:000}";
 
             Show();
-        }
-
-        private void btnConvert_Click(object sender, RoutedEventArgs e)
-        {
-            // Check if _frames directory exists, otherwise create it
-            if (Directory.Exists(targetDirectory))
-            {
-                Directory.Delete(targetDirectory, true);
-            }
-
-            Directory.CreateDirectory(targetDirectory);
-
-            // Get user conversion settings
-            TimeSpan startTime = GetStartTime();
-            TimeSpan endTime = GetEndTime();
-            int width = int.Parse(txtFrameWidth.Text);
-            int height = int.Parse(txtFrameHeight.Text);
-            double fps = double.Parse(txtFramesPerSecond.Text);
-            int expectedFrames = (int)(fps * (endTime - startTime).TotalSeconds);
-
-            ConversionInfo info = new()
-            {
-                FPS = fps,
-                ExpectedFrames = expectedFrames
-            };
-
-            // Save user conversion string into a file in json format
-            string jsonString = JsonSerializer.Serialize(info);
-            File.WriteAllText(Path.Join(targetDirectory, "conversion-info.json"), jsonString);
-
-            // Show a progress window and hide this window
-            ProgressWindow progress = new("Converting video to images", startWindow);
-
-            progress.Show();
-            Visibility = Visibility.Hidden;
-
-            Action<double> onProgress = (double percentage) => progress.percentage = percentage;
-
-            Thread thread = new Thread(async () =>
-            {
-                try
-                {
-                    await VideoProcessor.ConvertToImageSequence(filePath, targetDirectory, startTime, endTime, width,
-                        height, fps, progress.cts, onProgress);
-                }
-                catch (OperationCanceledException)
-                {
-                    Dispatcher.Invoke(() =>
-                    {
-                        progress.Close();
-                        Visibility = Visibility.Visible;
-                    });
-                }
-                finally
-                {
-                    Dispatcher.Invoke(() =>
-                    {
-                        progress.cts.Dispose();
-                        progress.Close();
-                        Close();
-                        onFinished();
-                    });
-                }
-            });
-
-            thread.IsBackground = true;
-            thread.Start();
-        }
-
-        // Closes the conversion window and re-enables the main window
-        private void btnCancel_Click(object sender, RoutedEventArgs e)
-        {
-            startWindow.IsEnabled = true;
-            Close();
         }
 
         // Reads user start time values and returns it as a timespan
@@ -230,6 +156,80 @@ namespace unload
                 TextBoxValidator.ClampInteger(txtEndTimeS, startTime.Seconds, fileDuration.Seconds, "00");
                 TextBoxValidator.ClampInteger(txtEndTimeMS, startTime.Milliseconds, fileDuration.Milliseconds, "000");
             }
+        }
+
+        private void btnConvert_Click(object sender, RoutedEventArgs e)
+        {
+            // Check if _frames directory exists, otherwise create it
+            if (Directory.Exists(targetDirectory))
+            {
+                Directory.Delete(targetDirectory, true);
+            }
+
+            Directory.CreateDirectory(targetDirectory);
+
+            // Get user conversion settings
+            TimeSpan startTime = GetStartTime();
+            TimeSpan endTime = GetEndTime();
+            int width = int.Parse(txtFrameWidth.Text);
+            int height = int.Parse(txtFrameHeight.Text);
+            double fps = double.Parse(txtFramesPerSecond.Text);
+            int expectedFrames = (int)(fps * (endTime - startTime).TotalSeconds);
+
+            ConversionInfo info = new()
+            {
+                FPS = fps,
+                ExpectedFrames = expectedFrames
+            };
+
+            // Save user conversion string into a file in json format
+            string jsonString = JsonSerializer.Serialize(info);
+            File.WriteAllText(Path.Join(targetDirectory, "conversion-info.json"), jsonString);
+
+            // Show a progress window and hide this window
+            ProgressWindow progress = new("Converting video to images", startWindow);
+
+            progress.Show();
+            Visibility = Visibility.Hidden;
+
+            void onProgress(double percentage) => progress.percentage = percentage;
+
+            Thread thread = new(async () =>
+            {
+                try
+                {
+                    await VideoProcessor.ConvertToImageSequence(filePath, targetDirectory, startTime, endTime, width,
+                        height, fps, progress.cts, onProgress);
+                }
+                catch (OperationCanceledException)
+                {
+                    Dispatcher.Invoke(() =>
+                    {
+                        progress.Close();
+                        Visibility = Visibility.Visible;
+                    });
+                }
+                finally
+                {
+                    Dispatcher.Invoke(() =>
+                    {
+                        progress.cts.Dispose();
+                        progress.Close();
+                        Close();
+                        onFinished();
+                    });
+                }
+            });
+
+            thread.IsBackground = true;
+            thread.Start();
+        }
+
+        // Closes the conversion window and re-enables the main window
+        private void btnCancel_Click(object sender, RoutedEventArgs e)
+        {
+            startWindow.IsEnabled = true;
+            Close();
         }
 
         // Ensure end time hours isn't empty and that the values are in the proper range

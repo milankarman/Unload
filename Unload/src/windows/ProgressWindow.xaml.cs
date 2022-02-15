@@ -8,13 +8,11 @@ namespace unload
 {
     public partial class ProgressWindow : Window
     {
-        // Keeps track of the progress percentage
-        public double percentage = 0;
+        public double percentage;
 
-        // Holds a cancellation token for the process this progress window is linked to
-        public CancellationTokenSource cts = new CancellationTokenSource();
+        public CancellationTokenSource cts = new();
 
-        readonly private string text = string.Empty;
+        readonly private string text;
 
         // Initalizes progress window and starts the timer to check for progress
         public ProgressWindow(string _text, Window owner)
@@ -26,22 +24,13 @@ namespace unload
 
             SetProgress();
 
-            DispatcherTimer timer = new DispatcherTimer
-            {
-                Interval = TimeSpan.FromSeconds(0.25)
-            };
+            DispatcherTimer timer = new();
 
+            timer.Interval = TimeSpan.FromSeconds(0.25);
             timer.Tick += timer_Tick;
             timer.Start();
         }
 
-        // Updates the progress every timer tick
-        public void timer_Tick(object? sender, EventArgs e)
-        {
-            SetProgress();
-        }
-
-        // Shows the user the percentage of progress
         public void SetProgress()
         {
             Owner.TaskbarItemInfo.ProgressValue = percentage / 100d;
@@ -49,14 +38,17 @@ namespace unload
             progressBar.Value = percentage;
         }
 
-        // Calls for a cancel on the cancellation token and closes the progress window when the user hits cancel 
+        public void timer_Tick(object? sender, EventArgs e)
+        {
+            SetProgress();
+        }
+
         private void buttonCancel_Click(object sender, RoutedEventArgs e)
         {
             cts.Cancel();
             Close();
         }
 
-        // Clear the taskbar progres state when the progress window closes
         private void Window_Closed(object sender, EventArgs e)
         {
             Owner.TaskbarItemInfo.ProgressState = TaskbarItemProgressState.None;

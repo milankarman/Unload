@@ -74,7 +74,6 @@ namespace unload
             imageVideo.Source = new BitmapImage(image);
 
             txtVideoFrame.Text = frameIndex.ToString();
-            txtMinSimilarity.IsEnabled = true;
         }
 
         // Sorts and gives proper indexes to the detected loads
@@ -88,16 +87,6 @@ namespace unload
             }
 
             lbxLoads.ItemsSource = orderedDetectedLoads;
-        }
-
-        // Calculates the final times and adds them to the interface
-        private void CalculateTimes()
-        {
-            txtTimeOutput.Text = "Time without loads:" + Environment.NewLine + project.GetLoadlessTime() + Environment.NewLine;
-            txtTimeOutput.Text += "Time with loads:" + Environment.NewLine + project.GetTotalTime() + Environment.NewLine;
-            txtTimeOutput.Text += "Time spent loading:" + Environment.NewLine + project.GetTimeSpentLoading();
-
-            btnExportTimes.IsEnabled = true;
         }
 
         // Applies cropping to the picked load screen and shows it on the interface
@@ -115,30 +104,12 @@ namespace unload
             }
         }
 
-        // Reads cropping slider values and returns them in a rectangle class
-        private Rectangle GetCropRect()
+        // Calculates the final times and adds them to the interface
+        private void SetFinalTimes()
         {
-            return new Rectangle
-            {
-                X = (int)Math.Round(sliderCropX.Value),
-                Y = (int)Math.Round(sliderCropY.Value),
-                Width = (int)Math.Round(sliderCropWidth.Value),
-                Height = (int)Math.Round(sliderCropHeight.Value)
-            };
-        }
-
-        // Checks if the user wants the timeline to snap to loads and makes it happen
-        private void SetTimelineTicks()
-        {
-            sliderTimeline.Ticks.Clear();
-
-            if (cbxSnapLoads.IsChecked == true)
-            {
-                foreach (int tick in sliderTicks)
-                {
-                    sliderTimeline.Ticks.Add(tick);
-                }
-            }
+            txtTimeOutput.Text = $"Time without loads:{Environment.NewLine}{project.GetLoadlessTime():hh\\:mm\\:ss\\.fff}{Environment.NewLine}";
+            txtTimeOutput.Text += $"Time with loads:{Environment.NewLine}{project.GetTotalTime():hh\\:mm\\:ss\\.fff}{Environment.NewLine}";
+            txtTimeOutput.Text += $"Time spent loading:{Environment.NewLine}{project.GetTimeSpentLoading():hh\\:mm\\:ss\\.fff}{Environment.NewLine}";
         }
 
         // Checks which buttons for picking loading frames should be enabled/disabled and applies that action
@@ -189,6 +160,32 @@ namespace unload
             }
         }
 
+        // Reads cropping slider values and returns them in a rectangle class
+        private Rectangle GetCropRect()
+        {
+            return new Rectangle
+            {
+                X = (int)Math.Round(sliderCropX.Value),
+                Y = (int)Math.Round(sliderCropY.Value),
+                Width = (int)Math.Round(sliderCropWidth.Value),
+                Height = (int)Math.Round(sliderCropHeight.Value)
+            };
+        }
+
+        // Checks if the user wants the timeline to snap to loads and makes it happen
+        private void SetTimelineTicks()
+        {
+            sliderTimeline.Ticks.Clear();
+
+            if (cbxSnapLoads.IsChecked == true)
+            {
+                foreach (int tick in sliderTicks)
+                {
+                    sliderTimeline.Ticks.Add(tick);
+                }
+            }
+        }
+
         private void BindValidationMethods()
         {
             txtVideoFrame.PreviewTextInput += TextBoxValidator.ForceInteger;
@@ -219,6 +216,7 @@ namespace unload
                     btnPrepareFrames.IsEnabled = false;
                     btnResetFrames.IsEnabled = false;
                     btnCheckSimilarity.IsEnabled = false;
+                    btnExportTimes.IsEnabled = false;
                     break;
 
                 case ProjectState.PICKED_LOADS:
@@ -231,6 +229,7 @@ namespace unload
                     btnCheckSimilarity.IsEnabled = true;
                     btnSetStart.IsEnabled = true;
                     btnSetEnd.IsEnabled = true;
+                    btnExportTimes.IsEnabled = false;
 
                     sliderCropHeight.IsEnabled = true;
                     sliderCropWidth.IsEnabled = true;
@@ -246,6 +245,7 @@ namespace unload
                     btnDetectLoadFrames.IsEnabled = true;
                     btnSetStart.IsEnabled = false;
                     btnSetEnd.IsEnabled = false;
+                    btnExportTimes.IsEnabled = false;
 
                     sliderCropHeight.IsEnabled = false;
                     sliderCropWidth.IsEnabled = false;
@@ -261,6 +261,7 @@ namespace unload
                     btnDetectLoadFrames.IsEnabled = true;
                     btnSetStart.IsEnabled = false;
                     btnSetEnd.IsEnabled = false;
+                    btnExportTimes.IsEnabled = true;
 
                     sliderCropHeight.IsEnabled = false;
                     sliderCropWidth.IsEnabled = false;
@@ -270,6 +271,7 @@ namespace unload
             }
         }
 
+        // UI Events
         // Video Navigation
         private void sliderTimeline_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e) =>
             SetVideoFrame((int)sliderTimeline.Value);
@@ -329,8 +331,7 @@ namespace unload
             UpdateLoadPickerState();
         }
 
-        private void slidersCropping_OnValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e) =>
-            UpdateLoadPreview();
+        private void slidersCropping_OnValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e) => UpdateLoadPreview();
 
         private void btnCheckSimilarity_Click(object sender, RoutedEventArgs e)
         {
@@ -407,6 +408,7 @@ namespace unload
 
                 SetDetectedLoads();
                 SetProjectState(ProjectState.DETECTED_LOADS);
+                SetFinalTimes();
             }
             catch (Exception ex)
             {
@@ -422,7 +424,7 @@ namespace unload
         {
             project.DetectedLoads.Add(new DetectedLoad(0, 0, 0));
             SetDetectedLoads();
-            CalculateTimes();
+            SetFinalTimes();
         }
 
         private void btnDLoadGotoStart_Click(object sender, RoutedEventArgs e)
@@ -447,7 +449,7 @@ namespace unload
             catch { }
 
             SetDetectedLoads();
-            CalculateTimes();
+            SetFinalTimes();
         }
 
         private void txtDLoadEnd_LostFocus(object sender, RoutedEventArgs e)
@@ -460,7 +462,7 @@ namespace unload
             catch { }
 
             SetDetectedLoads();
-            CalculateTimes();
+            SetFinalTimes();
         }
 
         private void txtDLoadStart_KeyDown(object sender, KeyEventArgs e)
@@ -482,7 +484,7 @@ namespace unload
                 orderedDetectedLoads?.Remove(load);
             }
 
-            CalculateTimes();
+            SetFinalTimes();
         }
 
         // Exports the frame count and load times ranges to a CSV file
@@ -492,8 +494,7 @@ namespace unload
             {
                 Filter = "Comma Seperated Values (*.csv)|*.csv",
                 InitialDirectory = project.videoPath,
-                // Remove "_frames" from the name for the csv file
-                FileName = project.videoPath?[..],
+                FileName = Path.GetFileNameWithoutExtension(project.videoPath),
                 DefaultExt = "csv",
             };
 

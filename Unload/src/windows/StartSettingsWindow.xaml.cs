@@ -8,7 +8,7 @@ namespace unload
     {
         private readonly StartWindow startWindow;
 
-        private string? workingDirectory = null;
+        private string? workingDirectory;
 
         private const string NO_WORKING_DIRECTORY = "Same as video";
 

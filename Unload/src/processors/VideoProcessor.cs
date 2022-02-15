@@ -15,12 +15,9 @@ namespace unload
         // Points the FFmpeg library to the right executables
         public static void SetFFMpegPath()
         {
-            // Automatically download FFmpeg, useful for development
-            // Release can ship with FFmpeg executables already at the right location
             FFmpeg.SetExecutablesPath(FFMPEG_PATH);
-            // Note: While, we could leave this on in Release, keeping the FFmpeg library always up to date,
-            // It would incur a ~222mb download everytime and *may* accidentally include breaking changes.
 #if DEBUG
+            // Automatically downloads FFmpeg useful for development
             FFmpegDownloader.GetLatestVersion(FFmpegVersion.Official, FFmpeg.ExecutablesPath);
 #endif
         }
