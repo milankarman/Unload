@@ -189,246 +189,6 @@ namespace unload
             }
         }
 
-        // Exports the frame count and load times ranges to a CSV file
-        private void btnExportTimes_Click(object sender, RoutedEventArgs e)
-        {
-            SaveFileDialog dialog = new()
-            {
-                Filter = "Comma Seperated Values (*.csv)|*.csv",
-                InitialDirectory = project.videoPath,
-                // Remove "_frames" from the name for the csv file
-                FileName = project.videoPath?[..],
-                DefaultExt = "csv",
-            };
-
-            if (dialog.ShowDialog() == true && dialog.FileName != null)
-            {
-                try
-                {
-                    project.ExportCSV(dialog.FileName);
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                }
-
-            }
-        }
-
-        // Adds a new blank detected load
-        private void btnAddLoad_Click(object sender, RoutedEventArgs e)
-        {
-            project.DetectedLoads.Add(new DetectedLoad(0, 0, 0));
-            SetDetectedLoads();
-            CalculateTimes();
-        }
-
-        // Updates the detected load selected frame to the TextBox value
-        private void UpdateDetectedLoadStartFrame(object sender, RoutedEventArgs e)
-        {
-            try
-            {
-                TextBox cmd = (TextBox)sender;
-                if (cmd.DataContext is DetectedLoad load) load.StartFrame = int.Parse(cmd.Text);
-            }
-            catch { }
-
-            SetDetectedLoads();
-            CalculateTimes();
-        }
-
-        private void UpdateDetectedLoadEndFrame(object sender, RoutedEventArgs e)
-        {
-            try
-            {
-                TextBox cmd = (TextBox)sender;
-                if (cmd.DataContext is DetectedLoad load) load.EndFrame = int.Parse(cmd.Text);
-            }
-            catch { }
-
-            SetDetectedLoads();
-            CalculateTimes();
-        }
-
-        // Moves the timeline and updates the video preview to the frame the user entered
-        private void txtVideoFrame_TextChanged(object sender, EventArgs e)
-        {
-            int frameIndex = int.Parse(txtVideoFrame.Text);
-            SetVideoFrame(frameIndex);
-        }
-
-        // Bind detected load update to hitting enter
-        private void txtStartFrameDetectedLoad_KeyDown(object sender, KeyEventArgs e)
-        {
-            if (e.Key == Key.Return) UpdateDetectedLoadStartFrame(sender, e);
-        }
-
-        private void txtEndFrameDetectedLoad_KeyDown(object sender, KeyEventArgs e)
-        {
-            if (e.Key == Key.Return) UpdateDetectedLoadEndFrame(sender, e);
-        }
-
-        // Moves the timeline to the selected frame of the detected load
-        private void btnGotoStartFrameDetectLoad_Click(object sender, RoutedEventArgs e)
-        {
-            Button cmd = (Button)sender;
-            if (cmd.DataContext is DetectedLoad load) txtVideoFrame.Text = load.StartFrame.ToString();
-        }
-
-        private void btnGotoEndFrameDetectLoad_Click(object sender, RoutedEventArgs e)
-        {
-            Button cmd = (Button)sender;
-            if (cmd.DataContext is DetectedLoad load) txtVideoFrame.Text = load.EndFrame.ToString();
-        }
-
-        private void btnDeleteDetectedLoad_Click(object sender, RoutedEventArgs e)
-        {
-            Button cmd = (Button)sender;
-            if (cmd.DataContext is DetectedLoad load) project.DetectedLoads.Remove(load);
-
-            CalculateTimes();
-        }
-
-        // Methods for adding and removing picked load frames
-        private void btnPreviousLoadFrame_Click(object sender, RoutedEventArgs e)
-        {
-            selectedPickedLoad--;
-            UpdateLoadPreview();
-            UpdateLoadPickerState();
-        }
-
-        private void btnNextLoadFrame_Click(object sender, RoutedEventArgs e)
-        {
-            selectedPickedLoad++;
-            UpdateLoadPreview();
-            UpdateLoadPickerState();
-        }
-
-        private void btnAddLoadFrame_Click(object sender, RoutedEventArgs e)
-        {
-            pickedLoadingFrames.Add(int.Parse(txtVideoFrame.Text));
-            selectedPickedLoad++;
-
-            UpdateLoadPreview();
-            UpdateLoadPickerState();
-        }
-
-        private void btnRemoveLoadFrame_Click(object sender, RoutedEventArgs e)
-        {
-            pickedLoadingFrames.RemoveAt(selectedPickedLoad);
-            selectedPickedLoad = Math.Clamp(selectedPickedLoad, -1, pickedLoadingFrames.Count - 1);
-            UpdateLoadPreview();
-            UpdateLoadPickerState();
-        }
-
-        private void window_Closed(object sender, EventArgs e) => Application.Current.Shutdown();
-
-        private void btnCheckSimilarity_Click(object sender, RoutedEventArgs e)
-        {
-            int loadIndex = pickedLoadingFrames[selectedPickedLoad];
-            int videoFrame = int.Parse(txtVideoFrame.Text);
-            float similarity = project.GetSimilarity(loadIndex, videoFrame, GetCropRect());
-
-            MessageBox.Show(similarity.ToString());
-        }
-
-        private void btnDetectLoadFrames_Click(object sender, RoutedEventArgs e)
-        {
-            try
-            {
-                double minSimilarity = double.Parse(txtMinSimilarity.Text);
-                int minFrames = int.Parse(txtMinFrames.Text);
-                int concurrentTasks = int.Parse(txtConcurrentTasks.Text);
-
-                project.DetectLoadFrames(minSimilarity, minFrames, pickedLoadingFrames, GetCropRect(), concurrentTasks);
-
-                SetDetectedLoads();
-                SetProjectState(ProjectState.DETECTED_LOADS);
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Failed to detect load frames {Environment.NewLine}{ex.Message}");
-            }
-        }
-
-        private void btnPrepareFrames_Click(object sender, RoutedEventArgs e)
-        {
-            // Warn the user on the length of this process
-            string text = "This will start the long and intense process of preparing every frame from start to end using the specified cropping." + Environment.NewLine + Environment.NewLine +
-                "Make sure your start frame and end frame are set properly, and that the load image cropping is correct. To change these after you will have to reset frames first.";
-            MessageBoxResult result = MessageBox.Show(text, "Info", MessageBoxButton.YesNo, MessageBoxImage.Information);
-
-            if (result == MessageBoxResult.No)
-            {
-                return;
-            }
-
-            Rectangle crop = GetCropRect();
-
-            int startFrame = int.Parse(txtStartFrame.Text);
-            int endFrame = int.Parse(txtEndFrame.Text);
-            int concurrentTasks = int.Parse(txtConcurrentTasks.Text);
-
-            ProgressWindow progress = new("Preparing frames", this);
-            progress.Show();
-
-            IsEnabled = false;
-
-            void onProgress(double percentage) => progress.percentage = percentage;
-
-            void onFinished()
-            {
-                Dispatcher.Invoke(() =>
-                {
-                    progress.Close();
-                    IsEnabled = true;
-                    SetProjectState(ProjectState.PREPARED_FRAMES);
-                });
-            }
-
-            Thread thread = new(() =>
-            {
-                project.PrepareFrames(startFrame, endFrame, crop, concurrentTasks,
-                    progress.cts, onProgress, onFinished);
-            });
-
-            thread.IsBackground = true;
-            thread.Start();
-        }
-
-        private void btnResetFrames_Click(object sender, RoutedEventArgs e)
-        {
-            project.ClearFrames();
-            project.DetectedLoads.Clear();
-            orderedDetectedLoads?.Clear();
-            SetProjectState(ProjectState.PICKED_LOADS);
-        }
-
-        private void slidersCropping_OnValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e) =>
-            UpdateLoadPreview();
-
-        private void sliderTimeline_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e) =>
-            SetVideoFrame((int)sliderTimeline.Value);
-
-        private void cbxSnapLoads_CheckedChanged(object sender, RoutedEventArgs e) => SetTimelineTicks();
-
-        // Update videoFrame along with the video controls
-        private void btnBack_Click(object sender, RoutedEventArgs e) =>
-            txtVideoFrame.Text = (int.Parse(txtVideoFrame.Text) - 1).ToString();
-
-        private void btnBackFar_Click(object sender, RoutedEventArgs e) =>
-            txtVideoFrame.Text = (int.Parse(txtVideoFrame.Text) - project.fps / (1000 / int.Parse(txtStepSize.Text))).ToString();
-
-        private void btnForwardFar_Click(object sender, RoutedEventArgs e) =>
-            txtVideoFrame.Text = (int.Parse(txtVideoFrame.Text) + 1).ToString();
-
-        private void btnForward_Click(object sender, RoutedEventArgs e) =>
-            txtVideoFrame.Text = (int.Parse(txtVideoFrame.Text) + project.fps / (1000 / int.Parse(txtStepSize.Text))).ToString();
-
-        // Set start and end frame buttons update their TextBoxes
-        private void btnSetStart_Click(object sender, RoutedEventArgs e) => txtStartFrame.Text = ((int)sliderTimeline.Value).ToString();
-        private void btnSetEnd_Click(object sender, RoutedEventArgs e) => txtEndFrame.Text = ((int)sliderTimeline.Value).ToString();
-
         private void BindValidationMethods()
         {
             txtVideoFrame.PreviewTextInput += TextBoxValidator.ForceInteger;
@@ -509,5 +269,246 @@ namespace unload
                     break;
             }
         }
+
+        // Video Navigation
+        private void sliderTimeline_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e) =>
+            SetVideoFrame((int)sliderTimeline.Value);
+
+        private void txtVideoFrame_TextChanged(object sender, EventArgs e)
+        {
+            int frameIndex = int.Parse(txtVideoFrame.Text);
+            SetVideoFrame(frameIndex);
+        }
+
+        private void btnBack_Click(object sender, RoutedEventArgs e) =>
+            txtVideoFrame.Text = (int.Parse(txtVideoFrame.Text) - 1).ToString();
+
+        private void btnBackFar_Click(object sender, RoutedEventArgs e) =>
+            txtVideoFrame.Text = (int.Parse(txtVideoFrame.Text) - project.fps / (1000 / int.Parse(txtStepSize.Text))).ToString();
+
+        private void btnForwardFar_Click(object sender, RoutedEventArgs e) =>
+            txtVideoFrame.Text = (int.Parse(txtVideoFrame.Text) + 1).ToString();
+
+        private void btnForward_Click(object sender, RoutedEventArgs e) =>
+            txtVideoFrame.Text = (int.Parse(txtVideoFrame.Text) + project.fps / (1000 / int.Parse(txtStepSize.Text))).ToString();
+
+        // Range selection
+        private void btnSetStart_Click(object sender, RoutedEventArgs e) => txtStartFrame.Text = ((int)sliderTimeline.Value).ToString();
+
+        private void btnSetEnd_Click(object sender, RoutedEventArgs e) => txtEndFrame.Text = ((int)sliderTimeline.Value).ToString();
+
+        // Load picking
+        private void btnPreviousLoadFrame_Click(object sender, RoutedEventArgs e)
+        {
+            selectedPickedLoad--;
+            UpdateLoadPreview();
+            UpdateLoadPickerState();
+        }
+
+        private void btnNextLoadFrame_Click(object sender, RoutedEventArgs e)
+        {
+            selectedPickedLoad++;
+            UpdateLoadPreview();
+            UpdateLoadPickerState();
+        }
+
+        private void btnAddLoadFrame_Click(object sender, RoutedEventArgs e)
+        {
+            pickedLoadingFrames.Add(int.Parse(txtVideoFrame.Text));
+            selectedPickedLoad++;
+
+            UpdateLoadPreview();
+            UpdateLoadPickerState();
+        }
+
+        private void btnRemoveLoadFrame_Click(object sender, RoutedEventArgs e)
+        {
+            pickedLoadingFrames.RemoveAt(selectedPickedLoad);
+            selectedPickedLoad = Math.Clamp(selectedPickedLoad, -1, pickedLoadingFrames.Count - 1);
+            UpdateLoadPreview();
+            UpdateLoadPickerState();
+        }
+
+        private void slidersCropping_OnValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e) =>
+            UpdateLoadPreview();
+
+        private void btnCheckSimilarity_Click(object sender, RoutedEventArgs e)
+        {
+            int loadIndex = pickedLoadingFrames[selectedPickedLoad];
+            int videoFrame = int.Parse(txtVideoFrame.Text);
+            float similarity = project.GetSimilarity(loadIndex, videoFrame, GetCropRect());
+
+            MessageBox.Show(similarity.ToString());
+        }
+
+        // Load detection
+        private void btnPrepareFrames_Click(object sender, RoutedEventArgs e)
+        {
+            // Warn the user on the length of this process
+            string text = "This will start the long and intense process of preparing every frame from start to end using the specified cropping." + Environment.NewLine + Environment.NewLine +
+                "Make sure your start frame and end frame are set properly, and that the load image cropping is correct. To change these after you will have to reset frames first.";
+            MessageBoxResult result = MessageBox.Show(text, "Info", MessageBoxButton.YesNo, MessageBoxImage.Information);
+
+            if (result == MessageBoxResult.No)
+            {
+                return;
+            }
+
+            Rectangle crop = GetCropRect();
+
+            int startFrame = int.Parse(txtStartFrame.Text);
+            int endFrame = int.Parse(txtEndFrame.Text);
+            int concurrentTasks = int.Parse(txtConcurrentTasks.Text);
+
+            ProgressWindow progress = new("Preparing frames", this);
+            progress.Show();
+
+            IsEnabled = false;
+
+            void onProgress(double percentage) => progress.percentage = percentage;
+
+            void onFinished()
+            {
+                Dispatcher.Invoke(() =>
+                {
+                    progress.Close();
+                    IsEnabled = true;
+                    SetProjectState(ProjectState.PREPARED_FRAMES);
+                });
+            }
+
+            Thread thread = new(() =>
+            {
+                project.PrepareFrames(startFrame, endFrame, crop, concurrentTasks,
+                    progress.cts, onProgress, onFinished);
+            });
+
+            thread.IsBackground = true;
+            thread.Start();
+        }
+
+        private void btnResetFrames_Click(object sender, RoutedEventArgs e)
+        {
+            project.ClearFrames();
+            project.DetectedLoads.Clear();
+            orderedDetectedLoads?.Clear();
+            SetProjectState(ProjectState.PICKED_LOADS);
+        }
+
+        private void btnDetectLoadFrames_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                double minSimilarity = double.Parse(txtMinSimilarity.Text);
+                int minFrames = int.Parse(txtMinFrames.Text);
+                int concurrentTasks = int.Parse(txtConcurrentTasks.Text);
+
+                project.DetectLoadFrames(minSimilarity, minFrames, pickedLoadingFrames, GetCropRect(), concurrentTasks);
+
+                SetDetectedLoads();
+                SetProjectState(ProjectState.DETECTED_LOADS);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Failed to detect load frames {Environment.NewLine}{ex.Message}");
+            }
+        }
+
+        // Settings
+        private void cbxSnapLoads_CheckedChanged(object sender, RoutedEventArgs e) => SetTimelineTicks();
+
+
+        // Detected load frame controls
+        private void btnAddLoad_Click(object sender, RoutedEventArgs e)
+        {
+            project.DetectedLoads.Add(new DetectedLoad(0, 0, 0));
+            SetDetectedLoads();
+            CalculateTimes();
+        }
+
+        private void btnGotoStartFrameDetectLoad_Click(object sender, RoutedEventArgs e)
+        {
+            Button cmd = (Button)sender;
+            if (cmd.DataContext is DetectedLoad load) txtVideoFrame.Text = load.StartFrame.ToString();
+        }
+
+        private void btnGotoEndFrameDetectLoad_Click(object sender, RoutedEventArgs e)
+        {
+            Button cmd = (Button)sender;
+            if (cmd.DataContext is DetectedLoad load) txtVideoFrame.Text = load.EndFrame.ToString();
+        }
+
+        private void btnDeleteDetectedLoad_Click(object sender, RoutedEventArgs e)
+        {
+            Button cmd = (Button)sender;
+            if (cmd.DataContext is DetectedLoad load) project.DetectedLoads.Remove(load);
+
+            CalculateTimes();
+        }
+
+        private void UpdateDetectedLoadStartFrame(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                TextBox cmd = (TextBox)sender;
+                if (cmd.DataContext is DetectedLoad load) load.StartFrame = int.Parse(cmd.Text);
+            }
+            catch { }
+
+            SetDetectedLoads();
+            CalculateTimes();
+        }
+
+        private void UpdateDetectedLoadEndFrame(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                TextBox cmd = (TextBox)sender;
+                if (cmd.DataContext is DetectedLoad load) load.EndFrame = int.Parse(cmd.Text);
+            }
+            catch { }
+
+            SetDetectedLoads();
+            CalculateTimes();
+        }
+
+        private void txtStartFrameDetectedLoad_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Return) UpdateDetectedLoadStartFrame(sender, e);
+        }
+
+        private void txtEndFrameDetectedLoad_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Return) UpdateDetectedLoadEndFrame(sender, e);
+        }
+
+        // Exports the frame count and load times ranges to a CSV file
+        private void btnExportTimes_Click(object sender, RoutedEventArgs e)
+        {
+            SaveFileDialog dialog = new()
+            {
+                Filter = "Comma Seperated Values (*.csv)|*.csv",
+                InitialDirectory = project.videoPath,
+                // Remove "_frames" from the name for the csv file
+                FileName = project.videoPath?[..],
+                DefaultExt = "csv",
+            };
+
+            if (dialog.ShowDialog() == true && dialog.FileName != null)
+            {
+                try
+                {
+                    project.ExportCSV(dialog.FileName);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+
+            }
+        }
+
+        // Window events
+        private void window_Closed(object sender, EventArgs e) => Application.Current.Shutdown();
     }
 }
