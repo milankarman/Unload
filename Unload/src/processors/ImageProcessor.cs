@@ -27,9 +27,11 @@ namespace unload
 
         // Applies cropping and hashes all frames in range in a folder and returns the hashes in a dictionary
         public static Dictionary<int, Digest> CropAndPhashFolder(string? path, Rectangle cropPercentage, int startFrame, int endFrame,
-            int concurrentTasks, CancellationTokenSource cts, Action onProgress, Action onFinished)
+            int concurrentTasks, CancellationTokenSource cts, Action<double> onProgress, Action onFinished)
         {
             ConcurrentDictionary<int, Digest> frameHashes = new();
+
+            int doneFrames = 0;
 
             // Hashes frames in parallel to the max amount of concurrent tasks the user defined. Holds a cancellation token so it can be stopped
             Parallel.For(startFrame, endFrame, new ParallelOptions { MaxDegreeOfParallelism = concurrentTasks, CancellationToken = cts.Token }, i =>
@@ -44,7 +46,10 @@ namespace unload
 
                 // Clears the current frame from memory and notifies the caller of its progress
                 currentFrame.Dispose();
-                onProgress();
+                doneFrames += 1;
+                double percentage = doneFrames / (double)endFrame * 100d;
+
+                onProgress(percentage);
             });
 
             onFinished();

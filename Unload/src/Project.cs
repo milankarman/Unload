@@ -50,24 +50,11 @@ namespace unload
         public void PrepareFrames(int startFrame, int endFrame, Rectangle crop, int concurrentTasks,
             CancellationTokenSource cts, Action<double> onProgress, Action onFinished)
         {
-            int doneFrames = 0;
-
-            Thread thread = new(() =>
-            {
-                HashedFrames = ImageProcessor.CropAndPhashFolder(framesDirectory, crop, startFrame,
-                endFrame, concurrentTasks, cts, () =>
-            {
-                doneFrames += 1;
-                double percentage = doneFrames / (double)endFrame * 100d;
-                onProgress(percentage);
-            }, onFinished);
-            });
+            HashedFrames = ImageProcessor.CropAndPhashFolder(framesDirectory, crop, startFrame,
+                 endFrame, concurrentTasks, cts, onProgress, onFinished);
 
             usedStartFrame = startFrame;
             usedEndFrame = endFrame;
-
-            thread.IsBackground = true;
-            thread.Start();
         }
 
         // Clears the prepared frames
@@ -86,7 +73,7 @@ namespace unload
 
             for (int i = 0; i < pickedLoadsIndeces.Count; i++)
             {
-                Bitmap loadFrame = new(Path.Join(framesDirectory, $"{i}.jpg"));
+                Bitmap loadFrame = new(Path.Join(framesDirectory, $"{pickedLoadsIndeces[i]}.jpg"));
                 loadFrames[i] = ImageProcessor.CropImage(loadFrame, crop);
             }
 

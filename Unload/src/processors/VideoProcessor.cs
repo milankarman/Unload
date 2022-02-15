@@ -26,7 +26,8 @@ namespace unload
         }
 
         // Outputs a video file as images of every individual frame in the specified directory
-        public static async Task<IConversionResult> ConvertToImageSequence(string inputPath, string outputPath, TimeSpan startTime, TimeSpan endTime, int frameWidth, int frameHeight, double fps, CancellationTokenSource cts, Action<double> onProgress)
+        public static async Task<IConversionResult> ConvertToImageSequence(string inputPath, string outputPath, TimeSpan startTime,
+            TimeSpan endTime, int frameWidth, int frameHeight, double fps, CancellationTokenSource cts, Action<double> onProgress)
         {
             // Reads in the video file
             IMediaInfo info = await FFmpeg.GetMediaInfo(inputPath).ConfigureAwait(false);
@@ -46,7 +47,7 @@ namespace unload
             // Notifies the calling location on the progress of converting
             conversion.OnProgress += (sender, args) =>
             {
-                double percent = Math.Round(args.Duration.TotalSeconds / args.TotalLength.TotalSeconds * 100, 2);
+                double percent = Math.Round(args.Duration.TotalSeconds / endTime.TotalSeconds * 100, 2);
                 onProgress(percent);
             };
 

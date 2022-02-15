@@ -16,14 +16,16 @@ namespace unload
 
         private TimeSpan fileDuration;
         private double fileFramerate;
+        private Action onFinished;
 
-        public ConvertWindow(StartWindow _startWindow, string _filePath, string _targetDirectory)
+        public ConvertWindow(StartWindow _startWindow, string _filePath, string _targetDirectory, Action _onFinished)
         {
             // Remember file info
             Owner = _startWindow;
             startWindow = _startWindow;
             filePath = _filePath;
             targetDirectory = _targetDirectory;
+            onFinished = _onFinished;
 
             InitializeComponent();
 
@@ -69,10 +71,12 @@ namespace unload
         private void btnConvert_Click(object sender, RoutedEventArgs e)
         {
             // Check if _frames directory exists, otherwise create it
-            if (!Directory.Exists(targetDirectory))
+            if (Directory.Exists(targetDirectory))
             {
-                Directory.CreateDirectory(targetDirectory);
+                Directory.Delete(targetDirectory, true);
             }
+
+            Directory.CreateDirectory(targetDirectory);
 
             // Get user conversion settings
             TimeSpan startTime = GetStartTime();
@@ -98,29 +102,17 @@ namespace unload
             progress.Show();
             Visibility = Visibility.Hidden;
 
-            // Attempt to run the conversion in a new background thread
-            Thread thread = new(async () =>
+            Action<double> onProgress = (double percentage) => progress.percentage = percentage;
+
+            Thread thread = new Thread(async () =>
             {
                 try
                 {
-                    // Start the video conversion with the user specificied parameters
                     await VideoProcessor.ConvertToImageSequence(filePath, targetDirectory, startTime, endTime, width,
-                        height, fps, progress.cts, (percent) =>
-                    {
-                        // Update the progress windows
-                        progress.percentage = percent;
-                    });
-
-                    // When done load in the files and re-enable the main window
-                    Dispatcher.Invoke(() =>
-                    {
-                        progress.Close();
-                        Close();
-                    });
+                        height, fps, progress.cts, onProgress);
                 }
                 catch (OperationCanceledException)
                 {
-                    // If canceled close the progress window and show the conversion settings again
                     Dispatcher.Invoke(() =>
                     {
                         progress.Close();
@@ -129,14 +121,17 @@ namespace unload
                 }
                 finally
                 {
-                    // Dispose our now unneeded cancellation token
-                    progress.cts.Dispose();
+                    Dispatcher.Invoke(() =>
+                    {
+                        progress.cts.Dispose();
+                        progress.Close();
+                        Close();
+                        onFinished();
+                    });
                 }
-            })
-            {
-                IsBackground = true
-            };
+            });
 
+            thread.IsBackground = true;
             thread.Start();
         }
 

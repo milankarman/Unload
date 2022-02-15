@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Drawing;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using System.Threading;
 using System.Windows;
@@ -19,10 +21,13 @@ namespace unload
 
         private readonly List<int> pickedLoadingFrames = new();
         private readonly List<int> sliderTicks = new();
+        private ObservableCollection<DetectedLoad>? orderedDetectedLoads = new();
+
         private readonly bool ready;
 
         private int selectedPickedLoad = -1;
         private const double defaultSimilarity = 0.95;
+
 
         public MainWindow(Project _project)
         {
@@ -33,7 +38,8 @@ namespace unload
 
             txtMinSimilarity.Text = defaultSimilarity.ToString();
 
-            lbxLoads.ItemsSource = project.DetectedLoads;
+            SetDetectedLoads();
+
             sliderTimeline.Maximum = project.totalFrames;
             txtEndFrame.Text = project.totalFrames.ToString();
             txtFPS.Text = project.fps.ToString();
@@ -65,14 +71,14 @@ namespace unload
         // Sorts and gives proper indexes to the detected loads
         private void SetDetectedLoads()
         {
-            //detectedLoadsCollection = new(project.DetectedLoads.OrderBy(i => i.StartFrame));
+            orderedDetectedLoads = new(project.DetectedLoads.OrderBy(i => i.StartFrame));
 
-            //for (int i = 0; i < detectedLoadsCollection.Count; i++)
-            //{
-            //    detectedLoadsCollection[i].Index = i + 1;
-            //}
+            for (int i = 0; i < orderedDetectedLoads.Count; i++)
+            {
+                orderedDetectedLoads[i].Index = i + 1;
+            }
 
-            //lbxLoads.ItemsSource = detectedLoadsCollection;
+            lbxLoads.ItemsSource = orderedDetectedLoads;
         }
 
         // Calculates the final times and adds them to the interface
@@ -306,11 +312,21 @@ namespace unload
 
         private void btnDetectLoadFrames_Click(object sender, RoutedEventArgs e)
         {
-            int minSimilarity = int.Parse(txtMinSimilarity.Text);
-            int minFrames = int.Parse(txtMinFrames.Text);
-            int concurrentTasks = int.Parse(txtConcurrentTasks.Text);
+            try
+            {
+                double minSimilarity = double.Parse(txtMinSimilarity.Text);
+                int minFrames = int.Parse(txtMinFrames.Text);
+                int concurrentTasks = int.Parse(txtConcurrentTasks.Text);
 
-            project.DetectLoadFrames(minSimilarity, minFrames, pickedLoadingFrames, GetCropRect(), concurrentTasks);
+                project.DetectLoadFrames(minSimilarity, minFrames, pickedLoadingFrames, GetCropRect(), concurrentTasks);
+
+                SetDetectedLoads();
+                groupDetectedLoads.IsEnabled = true;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Failed to detect load frames {Environment.NewLine}{ex.Message}");
+            }
         }
 
         private void btnPrepareFrames_Click(object sender, RoutedEventArgs e)
@@ -336,11 +352,26 @@ namespace unload
 
             IsEnabled = false;
 
-            Action<double> onProgress = (double percentage) => progress.percentage = percentage;
-            Action onFinished = () => MessageBox.Show("Done");
+            void onProgress(double percentage) => progress.percentage = percentage;
 
-            project.PrepareFrames(startFrame, endFrame, crop, concurrentTasks,
-                progress.cts, onProgress, onFinished);
+            void onFinished()
+            {
+                Dispatcher.Invoke(() =>
+                {
+                    progress.Close();
+                    IsEnabled = true;
+                    btnDetectLoadFrames.IsEnabled = true;
+                });
+            }
+
+            Thread thread = new(() =>
+            {
+                project.PrepareFrames(startFrame, endFrame, crop, concurrentTasks,
+                    progress.cts, onProgress, onFinished);
+            });
+
+            thread.IsBackground = true;
+            thread.Start();
         }
 
         private void btnResetFrames_Click(object sender, RoutedEventArgs e) => project.ClearFrames();

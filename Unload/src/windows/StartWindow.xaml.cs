@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Diagnostics;
 using System.IO;
 using System.Reflection;
 using System.Text.RegularExpressions;
@@ -79,8 +80,14 @@ namespace unload
                     Directory.CreateDirectory(framesDirectory);
                 }
 
+                Action onFinished = () =>
+                {
+                    IsEnabled = true;
+                    LoadProject(dialog.FileName, framesDirectory);
+                };
+
                 IsEnabled = false;
-                ConvertWindow convertWindow = new(this, dialog.FileName, framesDirectory);
+                ConvertWindow convertWindow = new(this, dialog.FileName, framesDirectory, onFinished);
                 convertWindow.GetVideoInfoAndShow();
             }
         }
@@ -92,7 +99,7 @@ namespace unload
             IsEnabled = false;
         }
 
-        private void LoadProject(string filePath, string framesDirectory)
+        public void LoadProject(string filePath, string framesDirectory)
         {
             string infoPath = Path.Join(framesDirectory, "conversion-info.json");
 
