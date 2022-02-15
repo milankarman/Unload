@@ -17,7 +17,16 @@ namespace unload
 {
     public partial class MainWindow : Window
     {
+        private enum ProjectState
+        {
+            START,
+            PICKED_LOADS,
+            PREPARED_FRAMES,
+            DETECTED_LOADS,
+        }
+
         private readonly Project project;
+        private ProjectState projectState;
 
         private readonly List<int> pickedLoadingFrames = new();
         private readonly List<int> sliderTicks = new();
@@ -27,7 +36,6 @@ namespace unload
 
         private int selectedPickedLoad = -1;
         private const double defaultSimilarity = 0.95;
-
 
         public MainWindow(Project _project)
         {
@@ -45,7 +53,8 @@ namespace unload
             txtFPS.Text = project.fps.ToString();
 
             BindValidationMethods();
-            SetInitialUIState();
+            SetProjectState(ProjectState.START);
+            UpdateLoadPickerState();
 
             ready = true;
 
@@ -133,7 +142,7 @@ namespace unload
         }
 
         // Checks which buttons for picking loading frames should be enabled/disabled and applies that action
-        private void ToggleLoadPickerButtons()
+        private void UpdateLoadPickerState()
         {
             btnNextLoadFrame.IsEnabled = selectedPickedLoad < pickedLoadingFrames.Count - 1;
             btnPreviousLoadFrame.IsEnabled = selectedPickedLoad > 0;
@@ -152,17 +161,30 @@ namespace unload
 
             if (pickedLoadingFrames.Count > 0)
             {
-                groupLoadDetection.IsEnabled = true;
+                if (projectState == ProjectState.START)
+                {
+                    SetProjectState(ProjectState.PICKED_LOADS);
+                }
+
+                if (projectState == ProjectState.PREPARED_FRAMES || projectState == ProjectState.DETECTED_LOADS)
+                {
+                    btnDetectLoadFrames.IsEnabled = true;
+                }
+
                 btnRemoveLoadFrame.IsEnabled = true;
-
-                if (!btnDetectLoadFrames.IsEnabled) btnPrepareFrames.IsEnabled = true;
-
-                btnCheckSimilarity.IsEnabled = true;
             }
             else
             {
-                btnPrepareFrames.IsEnabled = false;
-                btnCheckSimilarity.IsEnabled = false;
+                if (projectState == ProjectState.PICKED_LOADS)
+                {
+                    SetProjectState(ProjectState.START);
+                }
+
+                if (projectState == ProjectState.PREPARED_FRAMES || projectState == ProjectState.DETECTED_LOADS)
+                {
+                    btnDetectLoadFrames.IsEnabled = false;
+                }
+
                 btnRemoveLoadFrame.IsEnabled = false;
             }
         }
@@ -272,14 +294,14 @@ namespace unload
         {
             selectedPickedLoad--;
             UpdateLoadPreview();
-            ToggleLoadPickerButtons();
+            UpdateLoadPickerState();
         }
 
         private void btnNextLoadFrame_Click(object sender, RoutedEventArgs e)
         {
             selectedPickedLoad++;
             UpdateLoadPreview();
-            ToggleLoadPickerButtons();
+            UpdateLoadPickerState();
         }
 
         private void btnAddLoadFrame_Click(object sender, RoutedEventArgs e)
@@ -288,7 +310,7 @@ namespace unload
             selectedPickedLoad++;
 
             UpdateLoadPreview();
-            ToggleLoadPickerButtons();
+            UpdateLoadPickerState();
         }
 
         private void btnRemoveLoadFrame_Click(object sender, RoutedEventArgs e)
@@ -296,7 +318,7 @@ namespace unload
             pickedLoadingFrames.RemoveAt(selectedPickedLoad);
             selectedPickedLoad = Math.Clamp(selectedPickedLoad, -1, pickedLoadingFrames.Count - 1);
             UpdateLoadPreview();
-            ToggleLoadPickerButtons();
+            UpdateLoadPickerState();
         }
 
         private void window_Closed(object sender, EventArgs e) => Application.Current.Shutdown();
@@ -321,7 +343,7 @@ namespace unload
                 project.DetectLoadFrames(minSimilarity, minFrames, pickedLoadingFrames, GetCropRect(), concurrentTasks);
 
                 SetDetectedLoads();
-                groupDetectedLoads.IsEnabled = true;
+                SetProjectState(ProjectState.DETECTED_LOADS);
             }
             catch (Exception ex)
             {
@@ -360,7 +382,7 @@ namespace unload
                 {
                     progress.Close();
                     IsEnabled = true;
-                    btnDetectLoadFrames.IsEnabled = true;
+                    SetProjectState(ProjectState.PREPARED_FRAMES);
                 });
             }
 
@@ -374,7 +396,13 @@ namespace unload
             thread.Start();
         }
 
-        private void btnResetFrames_Click(object sender, RoutedEventArgs e) => project.ClearFrames();
+        private void btnResetFrames_Click(object sender, RoutedEventArgs e)
+        {
+            project.ClearFrames();
+            project.DetectedLoads.Clear();
+            orderedDetectedLoads?.Clear();
+            SetProjectState(ProjectState.PICKED_LOADS);
+        }
 
         private void slidersCropping_OnValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e) =>
             UpdateLoadPreview();
@@ -413,71 +441,73 @@ namespace unload
             txtMinSimilarity.PreviewTextInput += TextBoxValidator.ForceDouble;
         }
 
-        // Methods that change the UI state depending on how far the frame count is
-        private void SetInitialUIState()
+        private void SetProjectState(ProjectState _projectState)
         {
-            groupLoadDetection.IsEnabled = false;
-            groupDetectedLoads.IsEnabled = false;
-
-            btnExportTimes.IsEnabled = false;
-            btnNextLoadFrame.IsEnabled = false;
-            btnPreviousLoadFrame.IsEnabled = false;
-            btnRemoveLoadFrame.IsEnabled = false;
-            btnCheckSimilarity.IsEnabled = false;
-
-            cbxSnapLoads.IsEnabled = false;
-            lblPickedLoadCount.Visibility = Visibility.Hidden;
+            projectState = _projectState;
+            UpdateUIFromState();
         }
 
-        private void SetFramesHashedState()
+        private void UpdateUIFromState()
         {
-            btnAddLoadFrame.IsEnabled = false;
-            btnRemoveLoadFrame.IsEnabled = false;
+            switch (projectState)
+            {
+                case ProjectState.START:
+                    groupLoadDetection.IsEnabled = false;
+                    groupDetectedLoads.IsEnabled = false;
 
-            sliderCropHeight.IsEnabled = false;
-            sliderCropWidth.IsEnabled = false;
-            sliderCropX.IsEnabled = false;
-            sliderCropY.IsEnabled = false;
+                    btnDetectLoadFrames.IsEnabled = false;
+                    btnPrepareFrames.IsEnabled = false;
+                    btnResetFrames.IsEnabled = false;
+                    btnCheckSimilarity.IsEnabled = false;
+                    break;
 
-            txtStartFrame.IsEnabled = false;
-            txtEndFrame.IsEnabled = false;
+                case ProjectState.PICKED_LOADS:
+                    groupLoadDetection.IsEnabled = true;
+                    groupDetectedLoads.IsEnabled = false;
 
-            btnSetEnd.IsEnabled = false;
-            btnSetStart.IsEnabled = false;
-            btnPrepareFrames.IsEnabled = false;
+                    btnDetectLoadFrames.IsEnabled = false;
+                    btnPrepareFrames.IsEnabled = true;
+                    btnResetFrames.IsEnabled = false;
+                    btnCheckSimilarity.IsEnabled = true;
+                    btnSetStart.IsEnabled = true;
+                    btnSetEnd.IsEnabled = true;
 
-            btnDetectLoadFrames.IsEnabled = true;
-            btnResetFrames.IsEnabled = true;
-        }
+                    sliderCropHeight.IsEnabled = true;
+                    sliderCropWidth.IsEnabled = true;
+                    sliderCropX.IsEnabled = true;
+                    sliderCropY.IsEnabled = true;
+                    break;
 
-        private void SetResetFramesUIState()
-        {
-            sliderTimeline.Ticks.Clear();
+                case ProjectState.PREPARED_FRAMES:
+                    groupDetectedLoads.IsEnabled = false;
 
-            txtLoadFrames.Text = "0";
-            txtTimeOutput.Text = string.Empty;
-            btnExportTimes.IsEnabled = false;
-            cbxSnapLoads.IsEnabled = true;
+                    btnPrepareFrames.IsEnabled = false;
+                    btnResetFrames.IsEnabled = true;
+                    btnDetectLoadFrames.IsEnabled = true;
+                    btnSetStart.IsEnabled = false;
+                    btnSetEnd.IsEnabled = false;
 
-            sliderCropHeight.IsEnabled = true;
-            sliderCropWidth.IsEnabled = true;
-            sliderCropX.IsEnabled = true;
-            sliderCropY.IsEnabled = true;
+                    sliderCropHeight.IsEnabled = false;
+                    sliderCropWidth.IsEnabled = false;
+                    sliderCropX.IsEnabled = false;
+                    sliderCropY.IsEnabled = false;
+                    break;
 
-            btnAddLoadFrame.IsEnabled = true;
-            ToggleLoadPickerButtons();
+                case ProjectState.DETECTED_LOADS:
+                    groupDetectedLoads.IsEnabled = true;
 
-            groupDetectedLoads.IsEnabled = false;
-            txtStartFrame.IsEnabled = true;
-            txtEndFrame.IsEnabled = true;
-            btnSetEnd.IsEnabled = true;
-            btnSetStart.IsEnabled = true;
-            btnPrepareFrames.IsEnabled = true;
+                    btnPrepareFrames.IsEnabled = false;
+                    btnResetFrames.IsEnabled = true;
+                    btnDetectLoadFrames.IsEnabled = true;
+                    btnSetStart.IsEnabled = false;
+                    btnSetEnd.IsEnabled = false;
 
-            btnDetectLoadFrames.IsEnabled = false;
-            btnResetFrames.IsEnabled = false;
-            sliderTicks.Clear();
-            SetTimelineTicks();
+                    sliderCropHeight.IsEnabled = false;
+                    sliderCropWidth.IsEnabled = false;
+                    sliderCropX.IsEnabled = false;
+                    sliderCropY.IsEnabled = false;
+                    break;
+            }
         }
     }
 }
