@@ -30,18 +30,18 @@
                         <ColumnDefinition Width="1*"/>
                         <ColumnDefinition Width="auto"/>
                     </Grid.ColumnDefinitions>
-                    <TextBox Grid.Column="0" Text="{Binding Path=StartFrame}" Margin="0,0,-1,0" LostFocus="UpdateDetectedLoadStartFrame" KeyDown="txtStartFrameDetectedLoad_KeyDown"/>
-                    <Button Grid.Column="1" Content="►" Width="22" FontFamily="Arial" Click="btnGotoStartFrameDetectLoad_Click"/>
+                    <TextBox Grid.Column="0" Text="{Binding Path=StartFrame}" Margin="0,0,-1,0" LostFocus="txtDLoadStart_LostFocus" KeyDown="txtDLoadStart_KeyDown"/>
+                    <Button Grid.Column="1" Content="►" Width="22" FontFamily="Arial" Click="btnDLoadGotoStart_Click"/>
                 </Grid>
                 <Grid Grid.Column="2">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="1*"/>
                         <ColumnDefinition Width="auto"/>
                     </Grid.ColumnDefinitions>
-                    <TextBox Grid.Column="0" Text="{Binding Path=EndFrame}" Margin="5,0,-1,0" LostFocus="UpdateDetectedLoadEndFrame" KeyDown="txtEndFrameDetectedLoad_KeyDown"/>
-                    <Button Grid.Column="1" Content="►" Width="22" FontFamily="Arial" Click="btnGotoEndFrameDetectLoad_Click"/>
+                    <TextBox Grid.Column="0" Text="{Binding Path=EndFrame}" Margin="5,0,-1,0" LostFocus="txtDLoadEnd_LostFocus" KeyDown="txtDLoadEnd_KeyDown"/>
+                    <Button Grid.Column="1" Content="►" Width="22" FontFamily="Arial" Click="btnDLoadGotoEnd_Click"/>
                 </Grid>
-                <Button Content="-" Width="30" Grid.Column="3" Margin="10,0,0,0" Click="btnDeleteDetectedLoad_Click"/>
+                <Button Content="-" Width="30" Grid.Column="3" Margin="10,0,0,0" Click="btnDLoadDelete_Click"/>
             </Grid>
         </DataTemplate>
     </Window.Resources>
@@ -198,7 +198,7 @@
                             <Label Grid.Column="0" Content="#"/>
                             <Label Grid.Column="1" Content="Start"/>
                             <Label Grid.Column="2" Content="End"/>
-                            <Button Grid.Column="3" Content="+" x:Name="btnAddLoad" Height="20" Click="btnAddLoad_Click"/>
+                            <Button Grid.Column="3" Content="+" x:Name="btnAddLoad" Height="20" Click="btnDLoadAdd_Click"/>
                         </Grid>
                         <ItemsControl HorizontalAlignment="Stretch" x:Name="lbxLoads" Margin="5,5,5,5" ItemsSource="{Binding}" ItemTemplate="{StaticResource DetectedLoadTemplate}"/>
                     </StackPanel>

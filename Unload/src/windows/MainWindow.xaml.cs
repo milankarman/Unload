@@ -417,36 +417,27 @@ namespace unload
         // Settings
         private void cbxSnapLoads_CheckedChanged(object sender, RoutedEventArgs e) => SetTimelineTicks();
 
-
         // Detected load frame controls
-        private void btnAddLoad_Click(object sender, RoutedEventArgs e)
+        private void btnDLoadAdd_Click(object sender, RoutedEventArgs e)
         {
             project.DetectedLoads.Add(new DetectedLoad(0, 0, 0));
             SetDetectedLoads();
             CalculateTimes();
         }
 
-        private void btnGotoStartFrameDetectLoad_Click(object sender, RoutedEventArgs e)
+        private void btnDLoadGotoStart_Click(object sender, RoutedEventArgs e)
         {
             Button cmd = (Button)sender;
             if (cmd.DataContext is DetectedLoad load) txtVideoFrame.Text = load.StartFrame.ToString();
         }
 
-        private void btnGotoEndFrameDetectLoad_Click(object sender, RoutedEventArgs e)
+        private void btnDLoadGotoEnd_Click(object sender, RoutedEventArgs e)
         {
             Button cmd = (Button)sender;
             if (cmd.DataContext is DetectedLoad load) txtVideoFrame.Text = load.EndFrame.ToString();
         }
 
-        private void btnDeleteDetectedLoad_Click(object sender, RoutedEventArgs e)
-        {
-            Button cmd = (Button)sender;
-            if (cmd.DataContext is DetectedLoad load) project.DetectedLoads.Remove(load);
-
-            CalculateTimes();
-        }
-
-        private void UpdateDetectedLoadStartFrame(object sender, RoutedEventArgs e)
+        private void txtDLoadStart_LostFocus(object sender, RoutedEventArgs e)
         {
             try
             {
@@ -459,7 +450,7 @@ namespace unload
             CalculateTimes();
         }
 
-        private void UpdateDetectedLoadEndFrame(object sender, RoutedEventArgs e)
+        private void txtDLoadEnd_LostFocus(object sender, RoutedEventArgs e)
         {
             try
             {
@@ -472,14 +463,26 @@ namespace unload
             CalculateTimes();
         }
 
-        private void txtStartFrameDetectedLoad_KeyDown(object sender, KeyEventArgs e)
+        private void txtDLoadStart_KeyDown(object sender, KeyEventArgs e)
         {
-            if (e.Key == Key.Return) UpdateDetectedLoadStartFrame(sender, e);
+            if (e.Key == Key.Return) txtDLoadStart_LostFocus(sender, e);
         }
 
-        private void txtEndFrameDetectedLoad_KeyDown(object sender, KeyEventArgs e)
+        private void txtDLoadEnd_KeyDown(object sender, KeyEventArgs e)
         {
-            if (e.Key == Key.Return) UpdateDetectedLoadEndFrame(sender, e);
+            if (e.Key == Key.Return) txtDLoadEnd_LostFocus(sender, e);
+        }
+
+        private void btnDLoadDelete_Click(object sender, RoutedEventArgs e)
+        {
+            Button cmd = (Button)sender;
+            if (cmd.DataContext is DetectedLoad load)
+            {
+                project.DetectedLoads.Remove(load);
+                orderedDetectedLoads?.Remove(load);
+            }
+
+            CalculateTimes();
         }
 
         // Exports the frame count and load times ranges to a CSV file
