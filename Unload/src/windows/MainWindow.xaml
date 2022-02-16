@@ -216,8 +216,6 @@
                         <ColumnDefinition Width="3*"/>
                         <ColumnDefinition Width="1*"/>
                     </Grid.ColumnDefinitions>
-                    <Label Grid.Row="0" Grid.Column="0" Margin="0,0,0,5" Content="Concurrent tasks:"/>
-                    <TextBox Grid.Row="0" Grid.Column="1" x:Name="txtConcurrentTasks" Margin="0,0,0,5" Text="20" Height="20" HorizontalContentAlignment="Right"/>
                     <Label Grid.Row="1" Grid.Column="0" Margin="0,0,0,5" Content="Fast forward step size (ms):"/>
                     <TextBox Grid.Row="1" Grid.Column="1" x:Name="txtStepSize" Margin="0,0,0,5" Text="250" HorizontalContentAlignment="Right"/>
                     <CheckBox Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" x:Name="cbxSnapLoads" Margin="0,0,0,10" Content="Snap to detected loads" HorizontalAlignment="Left" VerticalContentAlignment="Center" Checked="cbxSnapLoads_CheckedChanged" Unchecked="cbxSnapLoads_CheckedChanged" IsChecked="True"/>

@@ -47,11 +47,11 @@ namespace unload
         }
 
         // Crops and hashes every video frame in the selected range and stores it for later comparisons
-        public void PrepareFrames(int startFrame, int endFrame, Rectangle crop, int concurrentTasks,
+        public void PrepareFrames(int startFrame, int endFrame, Rectangle crop,
             CancellationTokenSource cts, Action<double> onProgress, Action onFinished)
         {
             HashedFrames = ImageProcessor.CropAndPhashFolder(framesDirectory, crop, startFrame,
-                 endFrame, concurrentTasks, cts, onProgress, onFinished);
+                 endFrame, cts, onProgress, onFinished);
 
             usedStartFrame = startFrame;
             usedEndFrame = endFrame;
@@ -65,7 +65,7 @@ namespace unload
 
         // Compares every frame hash against the picked loads hashes and stores them
         public void DetectLoadFrames(double minSimilarity, int minLoadFrames,
-            List<int> pickedLoadsIndeces, Rectangle crop, int concurrentTasks)
+            List<int> pickedLoadsIndeces, Rectangle crop)
         {
             DetectedLoads.Clear();
 
@@ -78,7 +78,7 @@ namespace unload
             }
 
             // Store the similarity of all frames and store this in another dictionary
-            Dictionary<int, float[]> frameSimilarities = ImageProcessor.GetHashDictSimilarity(HashedFrames, loadFrames, concurrentTasks);
+            Dictionary<int, float[]> frameSimilarities = ImageProcessor.GetHashDictSimilarity(HashedFrames, loadFrames);
 
             int loadScreenCounter = 0;
             int loadFrameCounter = 0;

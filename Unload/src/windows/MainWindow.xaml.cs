@@ -194,7 +194,6 @@ namespace unload
             txtVideoFrame.PreviewTextInput += TextBoxValidator.ForceInteger;
             txtStartFrame.PreviewTextInput += TextBoxValidator.ForceInteger;
             txtEndFrame.PreviewTextInput += TextBoxValidator.ForceInteger;
-            txtConcurrentTasks.PreviewTextInput += TextBoxValidator.ForceInteger;
             txtStepSize.PreviewTextInput += TextBoxValidator.ForceInteger;
 
             txtFPS.PreviewTextInput += TextBoxValidator.ForceDouble;
@@ -362,7 +361,6 @@ namespace unload
 
             int startFrame = int.Parse(txtStartFrame.Text);
             int endFrame = int.Parse(txtEndFrame.Text);
-            int concurrentTasks = int.Parse(txtConcurrentTasks.Text);
 
             ProgressWindow progress = new("Preparing frames", this);
             progress.Show();
@@ -383,7 +381,7 @@ namespace unload
 
             Thread thread = new(() =>
             {
-                project.PrepareFrames(startFrame, endFrame, crop, concurrentTasks,
+                project.PrepareFrames(startFrame, endFrame, crop,
                     progress.cts, onProgress, onFinished);
             });
 
@@ -405,9 +403,8 @@ namespace unload
             {
                 double minSimilarity = double.Parse(txtMinSimilarity.Text);
                 int minFrames = int.Parse(txtMinFrames.Text);
-                int concurrentTasks = int.Parse(txtConcurrentTasks.Text);
 
-                project.DetectLoadFrames(minSimilarity, minFrames, pickedLoadingFrames, GetCropRect(), concurrentTasks);
+                project.DetectLoadFrames(minSimilarity, minFrames, pickedLoadingFrames, GetCropRect());
 
                 SetDetectedLoads();
                 SetProjectState(ProjectState.DETECTED_LOADS);

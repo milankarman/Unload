@@ -27,14 +27,14 @@ namespace unload
 
         // Applies cropping and hashes all frames in range in a folder and returns the hashes in a dictionary
         public static Dictionary<int, Digest> CropAndPhashFolder(string? path, Rectangle cropPercentage, int startFrame, int endFrame,
-            int concurrentTasks, CancellationTokenSource cts, Action<double> onProgress, Action onFinished)
+            CancellationTokenSource cts, Action<double> onProgress, Action onFinished)
         {
             ConcurrentDictionary<int, Digest> frameHashes = new();
 
             int doneFrames = 0;
 
             // Hashes frames in parallel to the max amount of concurrent tasks the user defined. Holds a cancellation token so it can be stopped
-            Parallel.For(startFrame, endFrame, new ParallelOptions { MaxDegreeOfParallelism = concurrentTasks, CancellationToken = cts.Token }, i =>
+            Parallel.For(startFrame, endFrame, new ParallelOptions { CancellationToken = cts.Token }, i =>
             {
                 // Crops and hashes the current frame
                 Bitmap currentFrame = new(Path.Join(path, $"{i}.jpg"));
@@ -58,7 +58,7 @@ namespace unload
         }
 
         // Compares an entire dictiory against a single image and returns a dictionary of similarity
-        public static Dictionary<int, float[]> GetHashDictSimilarity(Dictionary<int, Digest> hashDict, Bitmap[] references, int concurrentTasks)
+        public static Dictionary<int, float[]> GetHashDictSimilarity(Dictionary<int, Digest> hashDict, Bitmap[] references)
         {
             Digest[] referenceHashes = new Digest[references.Length];
 
@@ -71,7 +71,7 @@ namespace unload
             ConcurrentDictionary<int, float[]> frameSimilarities = new();
 
             // Gets similarity of all frames in parallel
-            Parallel.ForEach(hashDict, new ParallelOptions { MaxDegreeOfParallelism = concurrentTasks }, hash =>
+            Parallel.ForEach(hashDict, hash =>
             {
                 frameSimilarities[hash.Key] = new float[referenceHashes.Length];
 
