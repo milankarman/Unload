@@ -34,5 +34,17 @@ namespace unload.Properties {
                 this["WorkingDirectory"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("[]")]
+        public string PreviousVideos {
+            get {
+                return ((string)(this["PreviousVideos"]));
+            }
+            set {
+                this["PreviousVideos"] = value;
+            }
+        }
     }
 }

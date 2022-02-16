@@ -1,7 +1,9 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.IO;
 using System.Reflection;
-using System.Collections.ObjectModel;
+using System.Linq;
 using System.Text.RegularExpressions;
 using System.Windows;
 using Microsoft.Win32;
@@ -15,25 +17,29 @@ namespace unload
         private class PreviousVideo
         {
             public string FilePath { get; set; }
-            public string ConvertedDate { get; set; }
+            public DateTime LastOpened { get; set; }
+
+            public PreviousVideo(string filePath, DateTime convertedDate)
+            {
+                FilePath = filePath;
+                LastOpened = convertedDate;
+            }
         }
 
         public string? workingDirectory;
 
         private const string FRAMES_SUFFIX = "_frames";
 
-        private ObservableCollection<PreviousVideo> previousVideos = new()
-        {
-            new PreviousVideo() { FilePath = "C:/Users/Milan/Downloads/12-44.mp4", ConvertedDate = "16/02/2022 00:18"},
-            new PreviousVideo() { FilePath = "C:/Users/Milan/Downloads/13-08.mp4", ConvertedDate = "16/02/2022 00:19"}
-        };
-
+        private ObservableCollection<PreviousVideo> previousVideos;
 
         public StartWindow()
         {
             InitializeComponent();
 
             Title += $" {FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).ProductVersion}";
+
+            PreviousVideo[] previousVideosArray = JsonConvert.DeserializeObject<PreviousVideo[]>(Settings.Default.PreviousVideos);
+            previousVideos = new(previousVideosArray);
 
             try
             {
@@ -87,6 +93,23 @@ namespace unload
 
                 totalFrames = Directory.GetFiles(framesDirectory, "*.jpg").Length;
             }
+
+            PreviousVideo? existing = previousVideos.FirstOrDefault(i => i.FilePath == filePath);
+
+            if (existing != null)
+            {
+                existing.LastOpened = DateTime.Now;
+            }
+            else
+            {
+                PreviousVideo previousVideo = new(filePath, DateTime.Now);
+                previousVideos.Add(previousVideo);
+            }
+
+            previousVideos.OrderBy(i => i.LastOpened).Take(5);
+
+            Settings.Default.PreviousVideos = JsonConvert.SerializeObject(previousVideos);
+            Settings.Default.Save();
 
             // Create the project and start the main window
             Project project = new(filePath, framesDirectory, totalFrames, fps);

@@ -5,5 +5,8 @@
     <Setting Name="WorkingDirectory" Type="System.String" Scope="User">
       <Value Profile="(Default)" />
     </Setting>
+    <Setting Name="PreviousVideos" Type="System.String" Scope="User">
+      <Value Profile="(Default)">[]</Value>
+    </Setting>
   </Settings>
 </SettingsFile>
