@@ -20,10 +20,10 @@ namespace unload
             public string FilePath { get; set; }
             public DateTime LastOpened { get; set; }
 
-            public PreviousVideo(string filePath, DateTime convertedDate)
+            public PreviousVideo(string filePath, DateTime lastOpened)
             {
                 FilePath = filePath;
-                LastOpened = convertedDate;
+                LastOpened = lastOpened;
             }
         }
 
