@@ -18,8 +18,8 @@
                     <ColumnDefinition Width="auto"/>
                 </Grid.ColumnDefinitions>
                 <Label Grid.Column="0" Content="{Binding Path=FilePath}"/>
-                <Label Grid.Column="1" Content="{Binding Path=ConvertedDate}" HorizontalAlignment="Right"/>
-                <Button Grid.Column="2" x:Name="btnConvert" Margin="10,0,0,0" Width="40" Content="Load"/>
+                <Label Grid.Column="1" Content="{Binding Path=LastOpened}" HorizontalAlignment="Right"/>
+                <Button Grid.Column="2" x:Name="btnConvert" Margin="10,0,0,0" Width="40" Content="Load" Click="btnPreviousVideoLoad_Click"/>
             </Grid>
         </DataTemplate>
     </Window.Resources>

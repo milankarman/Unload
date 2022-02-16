@@ -6,6 +6,7 @@ using System.Reflection;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Windows;
+using System.Windows.Controls;
 using Microsoft.Win32;
 using Newtonsoft.Json;
 using unload.Properties;
@@ -94,6 +95,7 @@ namespace unload
                 totalFrames = Directory.GetFiles(framesDirectory, "*.jpg").Length;
             }
 
+            // Add to previously opened videos then sort and save them
             PreviousVideo? existing = previousVideos.FirstOrDefault(i => i.FilePath == filePath);
 
             if (existing != null)
@@ -106,7 +108,7 @@ namespace unload
                 previousVideos.Add(previousVideo);
             }
 
-            previousVideos.OrderBy(i => i.LastOpened).Take(5);
+            previousVideos = new(previousVideos.OrderByDescending(i => i.LastOpened).Take(5).ToList());
 
             Settings.Default.PreviousVideos = JsonConvert.SerializeObject(previousVideos);
             Settings.Default.Save();
@@ -178,6 +180,41 @@ namespace unload
             StartSettingsWindow startSettingsWindow = new(this, workingDirectory);
             startSettingsWindow.Show();
             IsEnabled = false;
+        }
+
+        private void btnPreviousVideoLoad_Click(object sender, RoutedEventArgs e)
+        {
+            Button cmd = (Button)sender;
+            if (cmd.DataContext is PreviousVideo previousVideo)
+            {
+                string? fileDirectory = Path.GetDirectoryName(previousVideo.FilePath);
+
+                string framesDirectory = Path.Join(workingDirectory ?? fileDirectory,
+                    RemoveSymbols(Path.GetFileName(previousVideo.FilePath)) + FRAMES_SUFFIX);
+
+                if (!File.Exists(previousVideo.FilePath))
+                {
+                    MessageBox.Show(
+                        $"{fileDirectory} not found. It might have been moved or deleted.",
+                        "Error",
+                        MessageBoxButton.OK,
+                        MessageBoxImage.Error);
+                    return;
+                }
+
+                if (!Directory.Exists(framesDirectory))
+                {
+                    MessageBox.Show(
+                        $"No {FRAMES_SUFFIX} folder accompanying this video found. The working directory might have changed or the frames folder " +
+                        $"could have been moved or deleted.",
+                        "Error",
+                        MessageBoxButton.OK,
+                        MessageBoxImage.Error);
+                    return;
+                }
+
+                LoadProject(previousVideo.FilePath, framesDirectory);
+            }
         }
 
         // Removes symbols that conflict with FFmpeg arguments
