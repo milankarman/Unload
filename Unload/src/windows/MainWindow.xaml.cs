@@ -419,6 +419,13 @@ namespace unload
         // Settings
         private void cbxSnapLoads_CheckedChanged(object sender, RoutedEventArgs e) => SetTimelineTicks();
 
+        private void btnStartWindow_Click(object sender, RoutedEventArgs e)
+        {
+            StartWindow startWindow = new();
+            startWindow.Show();
+            Close();
+        }
+
         // Detected load frame controls
         private void btnDLoadAdd_Click(object sender, RoutedEventArgs e)
         {
@@ -508,11 +515,7 @@ namespace unload
                 {
                     MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
-
             }
         }
-
-        // Window events
-        private void window_Closed(object sender, EventArgs e) => Application.Current.Shutdown();
     }
 }

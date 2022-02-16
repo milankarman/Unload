@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:unload"
         mc:Ignorable="d"
-        Title="Unload" Height="750" Width="1330" MinHeight="670" MinWidth="1100" WindowStartupLocation="CenterScreen" Closed="window_Closed" Style="{DynamicResource CustomWindowStyle}" Icon="../../icon/icon_32.png">
+        Title="Unload" Height="750" Width="1330" MinHeight="670" MinWidth="1100" WindowStartupLocation="CenterScreen" Style="{DynamicResource CustomWindowStyle}" Icon="../../icon/icon_32.png">
     <Window.TaskbarItemInfo>
         <TaskbarItemInfo/>
     </Window.TaskbarItemInfo>
@@ -220,7 +220,8 @@
                     <TextBox Grid.Row="0" Grid.Column="1" x:Name="txtConcurrentTasks" Margin="0,0,0,5" Text="20" Height="20" HorizontalContentAlignment="Right"/>
                     <Label Grid.Row="1" Grid.Column="0" Margin="0,0,0,5" Content="Fast forward step size (ms):"/>
                     <TextBox Grid.Row="1" Grid.Column="1" x:Name="txtStepSize" Margin="0,0,0,5" Text="250" HorizontalContentAlignment="Right"/>
-                    <CheckBox Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" x:Name="cbxSnapLoads" Content="Snap to detected loads" HorizontalAlignment="Left" VerticalContentAlignment="Center" Checked="cbxSnapLoads_CheckedChanged" Unchecked="cbxSnapLoads_CheckedChanged" IsChecked="True"/>
+                    <CheckBox Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" x:Name="cbxSnapLoads" Margin="0,0,0,10" Content="Snap to detected loads" HorizontalAlignment="Left" VerticalContentAlignment="Center" Checked="cbxSnapLoads_CheckedChanged" Unchecked="cbxSnapLoads_CheckedChanged" IsChecked="True"/>
+                    <Button Grid.Row="3" Grid.ColumnSpan="2" Content="Return to Start Window" x:Name="btnStartWindow" Click="btnStartWindow_Click"/>
                 </Grid>
             </GroupBox>
         </Grid>
