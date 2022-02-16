@@ -39,9 +39,6 @@ namespace unload
 
             Title += $" {FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).ProductVersion}";
 
-            PreviousVideo[] previousVideosArray = JsonConvert.DeserializeObject<PreviousVideo[]>(Settings.Default.PreviousVideos);
-            previousVideos = new(previousVideosArray);
-
             try
             {
                 VideoProcessor.SetFFMpegPath();
@@ -53,7 +50,19 @@ namespace unload
                 Application.Current.Shutdown();
             }
 
-            lbxPreviousVideos.ItemsSource = previousVideos;
+            PreviousVideo[] previousVideosArray = JsonConvert.DeserializeObject<PreviousVideo[]>(Settings.Default.PreviousVideos);
+            previousVideos = new(previousVideosArray);
+
+            if (previousVideos.Count > 0)
+            {
+                lbxPreviousVideos.ItemsSource = previousVideos;
+            }
+            else
+            {
+                lbxPreviousVideos.Visibility = Visibility.Hidden;
+                lblNoPreviousVideos.Visibility = Visibility.Visible;
+            }
+
             workingDirectory = Settings.Default.WorkingDirectory;
             if (workingDirectory.Length == 0) workingDirectory = null;
         }
