@@ -37,6 +37,9 @@ namespace unload
         private int selectedPickedLoad = -1;
         private const double defaultSimilarity = 0.95;
 
+        private bool hasExported;
+        private bool shouldOpenStart;
+
         public MainWindow(Project _project)
         {
             project = _project;
@@ -419,10 +422,9 @@ namespace unload
         // Settings
         private void cbxSnapLoads_CheckedChanged(object sender, RoutedEventArgs e) => SetTimelineTicks();
 
-        private void btnStartWindow_Click(object sender, RoutedEventArgs e)
+        private void btnStartWindow_Click(object sender, RoutedEventArgs e) 
         {
-            StartWindow startWindow = new();
-            startWindow.Show();
+            shouldOpenStart = true;
             Close();
         }
 
@@ -510,11 +512,33 @@ namespace unload
                 try
                 {
                     project.ExportCSV(dialog.FileName);
+                    hasExported = true;
                 }
                 catch (Exception ex)
                 {
                     MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
+            }
+        }
+
+        // Window events
+        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            if (!hasExported && projectState == ProjectState.DETECTED_LOADS)
+            {
+                MessageBoxResult result = MessageBox.Show("It appears you haven't exported the project yet. Are you sure you want close it?",
+                    "Warning", MessageBoxButton.YesNo, MessageBoxImage.Warning);
+
+                if (result == MessageBoxResult.No)
+                {
+                    e.Cancel = true;
+                }
+            }
+
+            if (shouldOpenStart)
+            {
+                StartWindow startWindow = new();
+                startWindow.Show();
             }
         }
     }
