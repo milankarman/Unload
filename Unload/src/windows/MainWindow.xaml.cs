@@ -233,6 +233,9 @@ namespace unload
                     btnSetEnd.IsEnabled = true;
                     btnExportTimes.IsEnabled = false;
 
+                    txtStartFrame.IsEnabled = true;
+                    txtEndFrame.IsEnabled = true;
+
                     sliderCropHeight.IsEnabled = true;
                     sliderCropWidth.IsEnabled = true;
                     sliderCropX.IsEnabled = true;
@@ -248,6 +251,9 @@ namespace unload
                     btnSetStart.IsEnabled = false;
                     btnSetEnd.IsEnabled = false;
                     btnExportTimes.IsEnabled = false;
+
+                    txtStartFrame.IsEnabled = false;
+                    txtEndFrame.IsEnabled = false;
 
                     sliderCropHeight.IsEnabled = false;
                     sliderCropWidth.IsEnabled = false;
@@ -288,13 +294,13 @@ namespace unload
             txtVideoFrame.Text = (int.Parse(txtVideoFrame.Text) - 1).ToString();
 
         private void btnBackFar_Click(object sender, RoutedEventArgs e) =>
-            txtVideoFrame.Text = (int.Parse(txtVideoFrame.Text) - project.fps / (1000 / int.Parse(txtStepSize.Text))).ToString();
+            txtVideoFrame.Text = (int.Parse(txtVideoFrame.Text) - (int)(project.fps / (1000 / int.Parse(txtStepSize.Text)))).ToString();
 
         private void btnForwardFar_Click(object sender, RoutedEventArgs e) =>
             txtVideoFrame.Text = (int.Parse(txtVideoFrame.Text) + 1).ToString();
 
         private void btnForward_Click(object sender, RoutedEventArgs e) =>
-            txtVideoFrame.Text = (int.Parse(txtVideoFrame.Text) + project.fps / (1000 / int.Parse(txtStepSize.Text))).ToString();
+            txtVideoFrame.Text = (int.Parse(txtVideoFrame.Text) + (int)(project.fps / (1000 / int.Parse(txtStepSize.Text)))).ToString();
 
         // Range selection
         private void btnSetStart_Click(object sender, RoutedEventArgs e) => txtStartFrame.Text = ((int)sliderTimeline.Value).ToString();
