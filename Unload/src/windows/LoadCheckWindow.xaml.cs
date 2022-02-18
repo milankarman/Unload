@@ -16,34 +16,41 @@ namespace unload
 {
     public partial class LoadCheckWindow : Window
     {
-        private Project project;
+        private readonly Project project;
 
         public LoadCheckWindow()
         {
-            string videoPath = "C:\\Users\\milan\\Downloads\\[WR] The Hobbit (PC) World Record in 11_48 _ Any% NMG [ikrXK1HM4u0].mp4";
-            string framesDirectory = "C:\\Users\\milan\\Downloads\\WRTheHobbitPCWorldRecordin1148AnyNMGikrXK1HM4u0mp4_frames";
+            string videoPath = "C:\\Users\\Milan\\Downloads\\[WR] The Hobbit(PC) World Record in 11_48 _ Any% NMG[ikrXK1HM4u0].webm";
+            string framesDirectory = "C:\\Users\\Milan\\Downloads\\WRTheHobbitPCWorldRecordin1148AnyNMGikrXK1HM4u0webm_frames";
 
-            project = new Project(videoPath, framesDirectory, 22252, 30);
+            project = new Project(videoPath, framesDirectory, 44505, 60);
 
             List<DetectedLoad> loads = new()
             {
-                new DetectedLoad(1, 89, 96),
-                new DetectedLoad(2, 645, 655),
-                new DetectedLoad(3, 2003, 2012),
-                new DetectedLoad(4, 2530, 2541),
-                new DetectedLoad(5, 2925, 2938),
-                new DetectedLoad(6, 7547, 7558),
-                new DetectedLoad(7, 10460, 10469),
-                new DetectedLoad(8, 12944, 12961),
-                new DetectedLoad(9, 13349, 13363),
-                new DetectedLoad(10, 15658, 15666),
-                new DetectedLoad(11, 16929, 16941),
-                new DetectedLoad(12, 17872, 17888),
+                new DetectedLoad(1, 176, 191),
+                new DetectedLoad(2, 1289, 1310),
+                new DetectedLoad(3, 4005, 4024),
+                new DetectedLoad(4, 5059, 5081),
+                new DetectedLoad(5, 5848, 5876),
+                new DetectedLoad(6, 15093, 15116),
+                new DetectedLoad(7, 20918, 20937),
+                new DetectedLoad(8, 25887, 25921),
+                new DetectedLoad(9, 26696, 26725),
+                new DetectedLoad(10, 31314, 31331),
+                new DetectedLoad(11, 33856, 33882),
+                new DetectedLoad(12, 35743, 35775),
             };
 
             project.TEST_SetDetectedLoads(loads);
 
             InitializeComponent();
+
+            UpdateDetectedLoads();
+        }
+
+        private void UpdateDetectedLoads()
+        {
+            lbxDetectedLoads.Items.Clear();
 
             foreach (DetectedLoad load in project.DetectedLoads)
             {
@@ -79,13 +86,107 @@ namespace unload
         {
             SetStartFrame(load.StartFrame);
             SetEndFrame(load.EndFrame);
+
             txtLoadNumber.Text = load.Index.ToString();
+            txtStartFrame.Text = load.StartFrame.ToString();
+            txtEndFrame.Text = load.EndFrame.ToString();
         }
 
-        private void lbxDetectedLoads_SelectionChanged(object sender, SelectionChangedEventArgs e) =>
-            SetLoadScreen(project.DetectedLoads[lbxDetectedLoads.SelectedIndex]);
+        private void lbxDetectedLoads_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (lbxDetectedLoads.SelectedIndex >= 0)
+                SetLoadScreen(project.DetectedLoads[lbxDetectedLoads.SelectedIndex]);
+        }
 
         private void sliderTimeline_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e) =>
             SetLoadScreen(project.DetectedLoads[(int)sliderTimeline.Value - 1]);
+
+        private void btnStartFrameBackFar_Click(object sender, RoutedEventArgs e)
+        {
+            int loadIndex = int.Parse(txtLoadNumber.Text) - 1;
+            DetectedLoad load = project.DetectedLoads[loadIndex];
+
+            load.StartFrame = Math.Clamp(load.StartFrame - 5, 0, project.totalFrames);
+
+            UpdateDetectedLoads();
+            SetLoadScreen(load);
+        }
+
+        private void btnStartFrameBack_Click(object sender, RoutedEventArgs e)
+        {
+            int loadIndex = int.Parse(txtLoadNumber.Text) - 1;
+            DetectedLoad load = project.DetectedLoads[loadIndex];
+
+            load.StartFrame = Math.Clamp(load.StartFrame - 1, 0, project.totalFrames);
+
+            UpdateDetectedLoads();
+            SetLoadScreen(load);
+        }
+
+        private void btnStartFrameForward_Click(object sender, RoutedEventArgs e)
+        {
+            int loadIndex = int.Parse(txtLoadNumber.Text) - 1;
+            DetectedLoad load = project.DetectedLoads[loadIndex];
+
+            load.StartFrame = Math.Clamp(load.StartFrame + 1, 0, project.totalFrames);
+
+            UpdateDetectedLoads();
+            SetLoadScreen(load);
+        }
+
+        private void btnStartFrameForwardFar_Click(object sender, RoutedEventArgs e)
+        {
+            int loadIndex = int.Parse(txtLoadNumber.Text) - 1;
+            DetectedLoad load = project.DetectedLoads[loadIndex];
+
+            load.StartFrame = Math.Clamp(load.StartFrame + 5, 0, project.totalFrames);
+
+            UpdateDetectedLoads();
+            SetLoadScreen(load);
+        }
+
+        private void btnEndFrameBackFar_Click(object sender, RoutedEventArgs e)
+        {
+            int loadIndex = int.Parse(txtLoadNumber.Text) - 1;
+            DetectedLoad load = project.DetectedLoads[loadIndex];
+
+            load.EndFrame = Math.Clamp(load.EndFrame - 5, 0, project.totalFrames);
+
+            UpdateDetectedLoads();
+            SetLoadScreen(load);
+        }
+
+        private void btnEndFrameBack_Click(object sender, RoutedEventArgs e)
+        {
+            int loadIndex = int.Parse(txtLoadNumber.Text) - 1;
+            DetectedLoad load = project.DetectedLoads[loadIndex];
+
+            load.EndFrame = Math.Clamp(load.EndFrame - 1, 0, project.totalFrames);
+
+            UpdateDetectedLoads();
+            SetLoadScreen(load);
+        }
+
+        private void btnEndFrameForward_Click(object sender, RoutedEventArgs e)
+        {
+            int loadIndex = int.Parse(txtLoadNumber.Text) - 1;
+            DetectedLoad load = project.DetectedLoads[loadIndex];
+
+            load.EndFrame = Math.Clamp(load.EndFrame + 1, 0, project.totalFrames);
+
+            UpdateDetectedLoads();
+            SetLoadScreen(load);
+        }
+
+        private void btnEndFrameForwardFar_Click(object sender, RoutedEventArgs e)
+        {
+            int loadIndex = int.Parse(txtLoadNumber.Text) - 1;
+            DetectedLoad load = project.DetectedLoads[loadIndex];
+
+            load.EndFrame = Math.Clamp(load.EndFrame + 5, 0, project.totalFrames);
+
+            UpdateDetectedLoads();
+            SetLoadScreen(load);
+        }
     }
 }
