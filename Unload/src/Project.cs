@@ -198,10 +198,5 @@ namespace unload
 
             File.WriteAllLinesAsync(path, lines);
         }
-
-        public void TEST_SetDetectedLoads(List<DetectedLoad> loads)
-        {
-            DetectedLoads = loads;
-        }
     }
 }

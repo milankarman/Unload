@@ -535,16 +535,19 @@ namespace unload
         // Window events
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
+            MessageBoxResult result;
+
             if (!hasExported && projectState == ProjectState.DETECTED_LOADS)
-            {
-                MessageBoxResult result = MessageBox.Show("It appears you haven't exported the project yet. Are you sure you want close it?",
+                result = MessageBox.Show("It appears you haven't exported the project yet. Are you sure you want close it?",
+                    "Warning", MessageBoxButton.YesNo, MessageBoxImage.Warning);
+            else
+                result = MessageBox.Show("Are you sure you want to close the project?",
                     "Warning", MessageBoxButton.YesNo, MessageBoxImage.Warning);
 
-                if (result == MessageBoxResult.No)
-                {
-                    shouldOpenStart = false;
-                    e.Cancel = true;
-                }
+            if (result == MessageBoxResult.No)
+            {
+                shouldOpenStart = false;
+                e.Cancel = true;
             }
 
             if (shouldOpenStart)
