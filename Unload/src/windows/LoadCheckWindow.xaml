@@ -115,6 +115,7 @@
                     </Grid.RowDefinitions>
                     <Button Grid.Row="0" Grid.Column="0" x:Name="btnBack" Margin="0,0,5,0" Width="40" Content="◄" FontFamily="Arial" Click="btnBack_Click"/>
                     <Button Grid.Row="0" Grid.Column="1" x:Name="btnForward" Margin="0,0,0,0" Width="40" Content="►" FontFamily="Arial" Click="btnForward_Click"/>
+                    <TextBlock Grid.Row="0" Grid.Column="2" x:Name="txtLoadInfo" Text="Load Info" Margin="10,0,10,0" HorizontalAlignment="Center"/>
                     <Button Grid.Row="0" Grid.Column="3" x:Name="btnRemoveLoad" Margin="0,0,5,0" Width="90" Content="Remove Load" Click="btnRemoveLoad_Click"/>
                     <TextBox Grid.Row="0" Grid.Column="4" x:Name="txtLoadNumber" Margin="0,0,0,0" Text="{Binding LoadNumber, UpdateSourceTrigger=PropertyChanged}" Width="50" Height="22" TextAlignment="Right"/>
                     <Slider Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="5" x:Name="sliderTimeline" Margin="0,5,0,0" Value="{Binding LoadNumber, UpdateSourceTrigger=PropertyChanged}" Height="18" TickPlacement="None" SmallChange="1" IsSnapToTickEnabled="True" Minimum="1"/>

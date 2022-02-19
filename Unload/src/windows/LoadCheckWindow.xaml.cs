@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
-using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media.Imaging;
@@ -27,6 +26,7 @@ namespace unload
             {
                 loadIndex = Math.Clamp(value, 1, project.DetectedLoads.Count) - 1;
                 ShowLoadScreen(loadIndex);
+                ShowLoadInfo(loadIndex);
                 OnPropertyChanged();
             }
         }
@@ -45,6 +45,7 @@ namespace unload
 
                 if (LoadNumber != load.Number) LoadNumber = load.Number;
 
+                ShowLoadInfo(loadIndex);
                 OnPropertyChanged();
             }
         }
@@ -63,6 +64,7 @@ namespace unload
 
                 if (LoadNumber != load.Number) LoadNumber = load.Number;
 
+                ShowLoadInfo(loadIndex);
                 OnPropertyChanged();
             }
         }
@@ -103,6 +105,7 @@ namespace unload
             UpdateDetectedLoads();
 
             DetectedLoad firstLoad = project.DetectedLoads[0];
+            LoadNumber = 1;
             StartFrame = firstLoad.StartFrame;
             EndFrame = firstLoad.EndFrame;
         }
@@ -110,7 +113,6 @@ namespace unload
         private void ShowLoadScreen(int loadIndex)
         {
             DetectedLoad load = project.DetectedLoads[loadIndex];
-
             StartFrame = load.StartFrame;
             EndFrame = load.EndFrame;
         }
@@ -148,6 +150,14 @@ namespace unload
             {
                 imgEndFrameAfter.Source = null;
             }
+        }
+
+        private void ShowLoadInfo(int frameIndex)
+        {
+            DetectedLoad load = project.DetectedLoads[frameIndex];
+            int frames = load.EndFrame - load.StartFrame + 1;
+            TimeSpan loadTime = TimeSpan.FromSeconds(Math.Round(frames / project.fps, 3));
+            txtLoadInfo.Text = $"Frames: {frames}, Duration: {loadTime:mm\\:ss\\.fff}";
         }
 
         private void UpdateDetectedLoads()
