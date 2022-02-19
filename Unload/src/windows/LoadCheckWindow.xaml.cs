@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.IO;
+using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media.Imaging;
@@ -78,6 +80,13 @@ namespace unload
 
             InitializeComponent();
             DataContext = this;
+            Title += $" {FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).ProductVersion} - Load Checking";
+
+            Left = mainWindow.Left;
+            Top = mainWindow.Top;
+            Height = mainWindow.Height;
+            Width = mainWindow.Width;
+            WindowState = mainWindow.WindowState;
 
             txtLoadNumber.PreviewTextInput += TextBoxValidator.ForceInteger;
             txtStartFrame.PreviewTextInput += TextBoxValidator.ForceInteger;
@@ -208,6 +217,11 @@ namespace unload
         private void btnMainWindow_Click(object sender, RoutedEventArgs e)
         {
             mainWindow.UpdateDetectedLoads();
+            mainWindow.Left = Left;
+            mainWindow.Top = Top;
+            mainWindow.Height = Height;
+            mainWindow.Width = Width;
+            mainWindow.WindowState = WindowState;
             mainWindow.Show();
             Close();
         }

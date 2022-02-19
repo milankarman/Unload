@@ -4,7 +4,6 @@ using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Drawing;
 using System.IO;
-using System.Linq;
 using System.Reflection;
 using System.Threading;
 using System.Windows;
@@ -505,6 +504,7 @@ namespace unload
         {
             LoadCheckWindow loadCheckWindow = new(project, this);
             loadCheckWindow.Show();
+            Hide();
         }
 
         // Exports the frame count and load times ranges to a CSV file
