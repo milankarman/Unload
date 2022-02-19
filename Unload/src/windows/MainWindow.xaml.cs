@@ -282,6 +282,7 @@ namespace unload
         private void txtVideoFrame_TextChanged(object sender, EventArgs e)
         {
             int frameIndex = int.Parse(txtVideoFrame.Text);
+            sliderTimeline.Value = frameIndex;
             SetVideoFrame(frameIndex);
         }
 
