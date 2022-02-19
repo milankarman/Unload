@@ -67,7 +67,7 @@ namespace unload
             SetVideoFrame(1);
         }
 
-        // Sorts and gives proper indexes to the detected loads
+        // Sorts and gives proper indexes to detected loads
         public void UpdateDetectedLoads()
         {
             project.OrderLoads();
@@ -76,7 +76,6 @@ namespace unload
             if (projectState == ProjectState.DETECTED_LOADS) SetFinalTimes();
         }
 
-        // Loads in a given frame in the video preview
         private void SetVideoFrame(int frameIndex)
         {
             if (!ready) return;
@@ -91,7 +90,6 @@ namespace unload
             txtVideoFrame.Text = frameIndex.ToString();
         }
 
-        // Applies cropping to the picked load screen and shows it on the interface
         private void UpdatePickedLoadPreview()
         {
             if (pickedLoadingFrames.Count >= 1)
@@ -126,7 +124,6 @@ namespace unload
             UpdatePickedLoadPreview();
         }
 
-        // Calculates the final times and adds them to the interface
         private void SetFinalTimes()
         {
             txtTimeOutput.Text = $"Time without loads:{Environment.NewLine}{project.GetLoadlessTime():hh\\:mm\\:ss\\.fff}{Environment.NewLine}";
@@ -154,29 +151,19 @@ namespace unload
 
             if (pickedLoadingFrames.Count > 0)
             {
-                if (projectState == ProjectState.START)
-                {
-                    SetProjectState(ProjectState.PICKED_LOADS);
-                }
+                if (projectState == ProjectState.START) SetProjectState(ProjectState.PICKED_LOADS);
 
                 if (projectState == ProjectState.PREPARED_FRAMES || projectState == ProjectState.DETECTED_LOADS)
-                {
                     btnDetectLoadFrames.IsEnabled = true;
-                }
 
                 btnRemoveLoadFrame.IsEnabled = true;
             }
             else
             {
-                if (projectState == ProjectState.PICKED_LOADS)
-                {
-                    SetProjectState(ProjectState.START);
-                }
+                if (projectState == ProjectState.PICKED_LOADS) SetProjectState(ProjectState.START);
 
                 if (projectState == ProjectState.PREPARED_FRAMES || projectState == ProjectState.DETECTED_LOADS)
-                {
                     btnDetectLoadFrames.IsEnabled = false;
-                }
 
                 btnRemoveLoadFrame.IsEnabled = false;
             }
