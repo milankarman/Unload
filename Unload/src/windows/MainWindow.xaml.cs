@@ -501,6 +501,12 @@ namespace unload
             }
         }
 
+        private void btnLoadCheckWindow_Click(object sender, RoutedEventArgs e)
+        {
+            LoadCheckWindow loadCheckWindow = new(project, this);
+            loadCheckWindow.Show();
+        }
+
         // Exports the frame count and load times ranges to a CSV file
         private void btnExportTimes_Click(object sender, RoutedEventArgs e)
         {
@@ -536,6 +542,7 @@ namespace unload
 
                 if (result == MessageBoxResult.No)
                 {
+                    shouldOpenStart = false;
                     e.Cancel = true;
                 }
             }
@@ -545,12 +552,6 @@ namespace unload
                 StartWindow startWindow = new();
                 startWindow.Show();
             }
-        }
-
-        private void btnLoadCheckWindow_Click(object sender, RoutedEventArgs e)
-        {
-            LoadCheckWindow loadCheckWindow = new(project, this);
-            loadCheckWindow.Show();
         }
     }
 }
