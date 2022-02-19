@@ -233,6 +233,8 @@ namespace unload
                     btnCheckSimilarity.IsEnabled = false;
                     btnExportTimes.IsEnabled = false;
 
+                    txtTimeOutput.IsEnabled = false;
+
                     sliderCropTop.IsEnabled = false;
                     sliderCropBottom.IsEnabled = false;
                     sliderCropLeft.IsEnabled = false;
@@ -254,6 +256,7 @@ namespace unload
 
                     txtStartFrame.IsEnabled = true;
                     txtEndFrame.IsEnabled = true;
+                    txtTimeOutput.IsEnabled = false;
 
                     sliderCropTop.IsEnabled = true;
                     sliderCropBottom.IsEnabled = true;
@@ -274,6 +277,7 @@ namespace unload
 
                     txtStartFrame.IsEnabled = false;
                     txtEndFrame.IsEnabled = false;
+                    txtTimeOutput.IsEnabled = false;
 
                     sliderCropTop.IsEnabled = false;
                     sliderCropBottom.IsEnabled = false;
@@ -291,6 +295,8 @@ namespace unload
                     btnSetStart.IsEnabled = false;
                     btnSetEnd.IsEnabled = false;
                     btnExportTimes.IsEnabled = true;
+
+                    txtTimeOutput.IsEnabled = true;
 
                     sliderCropTop.IsEnabled = false;
                     sliderCropBottom.IsEnabled = false;

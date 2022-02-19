@@ -130,12 +130,12 @@
                     <Button Grid.Row="1" Grid.Column="1" x:Name="btnNextLoadFrame" Margin="0,10,5,0" Content="►" FontFamily="Arial" Click="btnNextLoadFrame_Click"/>
                     <Button Grid.Row="1" Grid.Column="2" x:Name="btnAddLoadFrame" Margin="5,10,0,0" Content="+" FontFamily="Arial" FontSize="14" Click="btnAddLoadFrame_Click"/>
                     <Button Grid.Row="1" Grid.Column="3" x:Name="btnRemoveLoadFrame" Margin="10,10,0,0" Content="-" FontFamily="Arial" FontSize="14" Click="btnRemoveLoadFrame_Click"/>
-                    <Label Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" Content="Top" Margin="0,10,0,0" HorizontalContentAlignment="Center"/>
-                    <Label Grid.Row="2" Grid.Column="2" Grid.ColumnSpan="2" Content="Bottom" Margin="0,10,0,0" HorizontalContentAlignment="Center"/>
+                    <Label Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" Content="Top" Margin="0,10,0,0" HorizontalContentAlignment="Center" IsEnabled="{Binding ElementName=sliderCropTop, Path=IsEnabled}"/>
+                    <Label Grid.Row="2" Grid.Column="2" Grid.ColumnSpan="2" Content="Bottom" Margin="0,10,0,0" HorizontalContentAlignment="Center" IsEnabled="{Binding ElementName=sliderCropBottom, Path=IsEnabled}"/>
                     <Slider Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" x:Name="sliderCropTop" Margin="5,0,5,0" ValueChanged="slidersCropping_OnValueChanged" Maximum="100" />
                     <Slider Grid.Row="3" Grid.Column="2" Grid.ColumnSpan="2" x:Name="sliderCropBottom" Margin="5,0,5,0" ValueChanged="slidersCropping_OnValueChanged" Maximum="100"/>
-                    <Label Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="2" Content="Left" Margin="0,0,0,0" HorizontalContentAlignment="Center"/>
-                    <Label Grid.Row="4" Grid.Column="2" Grid.ColumnSpan="2" Content="Right" Margin="0,0,0,0" HorizontalContentAlignment="Center"/>
+                    <Label Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="2" Content="Left" Margin="0,0,0,0" HorizontalContentAlignment="Center" IsEnabled="{Binding ElementName=sliderCropLeft, Path=IsEnabled}"/>
+                    <Label Grid.Row="4" Grid.Column="2" Grid.ColumnSpan="2" Content="Right" Margin="0,0,0,0" HorizontalContentAlignment="Center" IsEnabled="{Binding ElementName=sliderCropRight, Path=IsEnabled}"/>
                     <Slider Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="2" x:Name="sliderCropLeft" Margin="5,0,5,0" ValueChanged="slidersCropping_OnValueChanged" Maximum="100"/>
                     <Slider Grid.Row="5" Grid.Column="2" Grid.ColumnSpan="2" x:Name="sliderCropRight" Margin="5,0,5,0" ValueChanged="slidersCropping_OnValueChanged" Maximum="100"/>
                     <Button Grid.Row="6" Grid.Column="0" Grid.ColumnSpan="2" x:Name="btnResetCrop" Margin="0,5,5,0" Content="Reset Crop" Click="btnResetCrop_Click"/>

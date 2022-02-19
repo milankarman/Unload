@@ -185,6 +185,9 @@
                 <Setter Property="Foreground" Value="{DynamicResource secondaryLight}"/>
                 <Setter Property="Background" Value="{DynamicResource secondaryDark}"/>
             </Trigger>
+            <Trigger Property="IsReadOnly" Value="True">
+                <Setter Property="Background" Value="{DynamicResource secondaryDark}"/>
+            </Trigger>
         </Style.Triggers>
     </Style>
     <Style TargetType="Label">
@@ -206,13 +209,56 @@
             </Trigger>
         </Style.Triggers>
     </Style>
-    <Style TargetType="CheckBox">
-        <Setter Property="Foreground" Value="{DynamicResource primaryLight}"/>
-        <Style.Triggers>
-            <Trigger Property="IsEnabled" Value="False">
-                <Setter Property="Foreground" Value="{DynamicResource secondaryLight}"/>
-            </Trigger>
-        </Style.Triggers>
+    <Style x:Key="CheckBoxFocusVisual">
+        <Setter Property="Control.Template">
+            <Setter.Value>
+                <ControlTemplate>
+                    <Border>
+                        <Rectangle Margin="15,0,0,0" StrokeThickness="1" Stroke="#60000000" StrokeDashArray="1 2"/>
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+    <Style x:Key="{x:Type CheckBox}" TargetType="CheckBox">
+        <Setter Property="OverridesDefaultStyle" Value="true"/>
+        <Setter Property="FocusVisualStyle"	Value="{StaticResource CheckBoxFocusVisual}"/>
+        <Setter Property="Foreground" Value="{StaticResource primaryLight}"/>
+        <Setter Property="BorderBrush" Value="{StaticResource secondaryLight}"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="CheckBox">
+                    <BulletDecorator Background="Transparent">
+                        <BulletDecorator.Bullet>
+                            <Border x:Name="Border" Width="13" Height="13" Background="{StaticResource bgDark}"
+                                    BorderThickness="1" BorderBrush="{TemplateBinding BorderBrush}">
+                                <Path Width="9" Height="9" x:Name="CheckMark" SnapsToDevicePixels="False" Stroke="{StaticResource primaryLight}"
+                                      StrokeThickness="1.5" Data="M 0 4 L 3 9 M 3 9 L 9 0" />
+                            </Border>
+                        </BulletDecorator.Bullet>
+                        <ContentPresenter Margin="5,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Left" RecognizesAccessKey="True"/>
+                    </BulletDecorator>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsChecked" Value="false">
+                            <Setter TargetName="CheckMark" Property="Visibility" Value="Collapsed"/>
+                        </Trigger>
+                        <Trigger Property="IsChecked" Value="true">
+                            <Setter TargetName="Border" Property="Background" Value="{StaticResource bgDark}" />
+                        </Trigger>
+                        <Trigger Property="IsMouseOver" Value="true">
+                            <Setter TargetName="Border" Property="Background" Value="{StaticResource highlightDark}" />
+                            <Setter Property="BorderBrush" Value="{StaticResource highlight}" />
+                        </Trigger>
+                        <Trigger Property="IsEnabled" Value="false">
+                            <Setter TargetName="Border" Property="Background" Value="{StaticResource bgDark}" />
+                            <Setter TargetName="Border" Property="BorderBrush" Value="{StaticResource secondaryLight}" />
+                            <Setter TargetName="CheckMark" Property="Stroke" Value="{StaticResource secondaryLight}" />
+                            <Setter Property="Foreground" Value="{StaticResource secondaryLight}"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
     </Style>
     <Style TargetType="GroupBox">
         <Setter Property="Background" Value="{DynamicResource primaryDark}" />
