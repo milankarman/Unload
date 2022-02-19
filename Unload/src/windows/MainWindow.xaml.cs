@@ -160,13 +160,15 @@ namespace unload
         // Reads cropping slider values and returns them in a rectangle class
         private Rectangle GetCropRect()
         {
-            return new Rectangle
-            {
-                X = (int)Math.Round(sliderCropX.Value),
-                Y = (int)Math.Round(sliderCropY.Value),
-                Width = (int)Math.Round(sliderCropWidth.Value),
-                Height = (int)Math.Round(sliderCropHeight.Value)
-            };
+            int top = (int)Math.Round(sliderCropTop.Value);
+            int bottom = (int)Math.Round(sliderCropBottom.Value);
+            int left = (int)Math.Round(sliderCropLeft.Value);
+            int right = (int)Math.Round(sliderCropRight.Value);
+
+            int width = Math.Clamp(right - left, 1, 100);
+            int height = Math.Clamp(bottom - top, 1, 100);
+
+            return new Rectangle(left, top, width, height);
         }
 
         // Checks if the user wants the timeline to snap to loads and makes it happen
@@ -232,10 +234,10 @@ namespace unload
                     txtStartFrame.IsEnabled = true;
                     txtEndFrame.IsEnabled = true;
 
-                    sliderCropHeight.IsEnabled = true;
-                    sliderCropWidth.IsEnabled = true;
-                    sliderCropX.IsEnabled = true;
-                    sliderCropY.IsEnabled = true;
+                    sliderCropTop.IsEnabled = true;
+                    sliderCropBottom.IsEnabled = true;
+                    sliderCropLeft.IsEnabled = true;
+                    sliderCropRight.IsEnabled = true;
                     break;
 
                 case ProjectState.PREPARED_FRAMES:
@@ -251,10 +253,10 @@ namespace unload
                     txtStartFrame.IsEnabled = false;
                     txtEndFrame.IsEnabled = false;
 
-                    sliderCropHeight.IsEnabled = false;
-                    sliderCropWidth.IsEnabled = false;
-                    sliderCropX.IsEnabled = false;
-                    sliderCropY.IsEnabled = false;
+                    sliderCropTop.IsEnabled = false;
+                    sliderCropBottom.IsEnabled = false;
+                    sliderCropLeft.IsEnabled = false;
+                    sliderCropRight.IsEnabled = false;
                     break;
 
                 case ProjectState.DETECTED_LOADS:
@@ -267,10 +269,10 @@ namespace unload
                     btnSetEnd.IsEnabled = false;
                     btnExportTimes.IsEnabled = true;
 
-                    sliderCropHeight.IsEnabled = false;
-                    sliderCropWidth.IsEnabled = false;
-                    sliderCropX.IsEnabled = false;
-                    sliderCropY.IsEnabled = false;
+                    sliderCropTop.IsEnabled = false;
+                    sliderCropBottom.IsEnabled = false;
+                    sliderCropLeft.IsEnabled = false;
+                    sliderCropRight.IsEnabled = false;
                     break;
             }
         }

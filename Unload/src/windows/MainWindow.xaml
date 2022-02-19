@@ -124,10 +124,10 @@
                     <Button Grid.Row="1" Grid.Column="1" x:Name="btnNextLoadFrame" Margin="0,10,5,0" Content="►" FontFamily="Arial" Click="btnNextLoadFrame_Click"/>
                     <Button Grid.Row="1" Grid.Column="2" x:Name="btnAddLoadFrame" Margin="5,10,0,0" Content="+" FontFamily="Arial" FontSize="14" Click="btnAddLoadFrame_Click"/>
                     <Button Grid.Row="1" Grid.Column="3" x:Name="btnRemoveLoadFrame" Margin="10,10,0,0" Content="-" FontFamily="Arial" FontSize="14" Click="btnRemoveLoadFrame_Click"/>
-                    <Slider Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" x:Name="sliderCropX" Margin="5,5,5,0" ValueChanged="slidersCropping_OnValueChanged" Maximum="100"/>
-                    <Slider Grid.Row="2" Grid.Column="2" Grid.ColumnSpan="2" x:Name="sliderCropWidth" Margin="5,5,5,0" ValueChanged="slidersCropping_OnValueChanged" Maximum="100" Minimum="1" Value="100"/>
-                    <Slider Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" x:Name="sliderCropY" Margin="5,0,5,0" ValueChanged="slidersCropping_OnValueChanged" Maximum="100"/>
-                    <Slider Grid.Row="3" Grid.Column="2" Grid.ColumnSpan="2" x:Name="sliderCropHeight" Margin="5,0,5,0" ValueChanged="slidersCropping_OnValueChanged" Maximum="100" Minimum="1" Value="100"/>
+                    <Slider Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" x:Name="sliderCropTop" Margin="5,5,5,0" ValueChanged="slidersCropping_OnValueChanged" Maximum="100"/>
+                    <Slider Grid.Row="2" Grid.Column="2" Grid.ColumnSpan="2" x:Name="sliderCropBottom" Margin="5,5,5,0" ValueChanged="slidersCropping_OnValueChanged" Maximum="100" Minimum="1" Value="100"/>
+                    <Slider Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" x:Name="sliderCropLeft" Margin="5,0,5,0" ValueChanged="slidersCropping_OnValueChanged" Maximum="100"/>
+                    <Slider Grid.Row="3" Grid.Column="2" Grid.ColumnSpan="2" x:Name="sliderCropRight" Margin="5,0,5,0" ValueChanged="slidersCropping_OnValueChanged" Maximum="100" Minimum="1" Value="100"/>
                     <Button Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="4" x:Name="btnCheckSimilarity" Margin="0,5,0,0" Content="Check Similarity to Video Frame" Click="btnCheckSimilarity_Click"/>
                 </Grid>
             </GroupBox>
