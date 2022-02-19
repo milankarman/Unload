@@ -10,7 +10,7 @@
         <TaskbarItemInfo/>
     </Window.TaskbarItemInfo>
     <Window.Resources>
-       
+
     </Window.Resources>
     <Grid Margin="10,10,10,10">
         <Grid.ColumnDefinitions>
@@ -46,7 +46,7 @@
                             </Grid.ColumnDefinitions>
                             <Button Grid.Column="0" x:Name="btnStartFrameBackFar" Margin="0,0,5,0" Width="40" Content="◄◄" FontFamily="Arial" Click="btnStartFrameBackFar_Click"/>
                             <Button Grid.Column="1" x:Name="btnStartFrameBack" Margin="5,0,0,0" Width="40" Content="◄" FontFamily="Arial" Click="btnStartFrameBack_Click"/>
-                            <TextBox Grid.Column="2" x:Name="txtStartFrame" Text="1" Width="100"/>
+                            <TextBox Grid.Column="2" x:Name="txtStartFrame" Text="{Binding StartFrame, UpdateSourceTrigger=PropertyChanged}"  TextAlignment="Right" Width="100"/>
                             <Button Grid.Column="3" x:Name="btnStartFrameForward" Margin="0,0,5,0" Width="40" Content="►" FontFamily="Arial" Click="btnStartFrameForward_Click"/>
                             <Button Grid.Column="4" x:Name="btnStartFrameForwardFar" Margin="5,0,0,0" Width="40" Content="►►" FontFamily="Arial" Click="btnStartFrameForwardFar_Click"/>
                         </Grid>
@@ -73,7 +73,7 @@
                             </Grid.ColumnDefinitions>
                             <Button Grid.Column="0" x:Name="btnEndFrameBackFar" Margin="0,0,5,0" Width="40" Content="◄◄" FontFamily="Arial" Click="btnEndFrameBackFar_Click"/>
                             <Button Grid.Column="1" x:Name="btnEndFrameBack" Margin="5,0,0,0" Width="40" Content="◄" FontFamily="Arial" Click="btnEndFrameBack_Click"/>
-                            <TextBox Grid.Column="2" x:Name="txtEndFrame" Text="1" Width="100"/>
+                            <TextBox Grid.Column="2" x:Name="txtEndFrame" Text="{Binding EndFrame, UpdateSourceTrigger=PropertyChanged}" TextAlignment="Right" Width="100"/>
                             <Button Grid.Column="3" x:Name="btnEndFrameForward" Margin="0,0,5,0" Width="40" Content="►" FontFamily="Arial" Click="btnEndFrameForward_Click"/>
                             <Button Grid.Column="4" x:Name="btnEndFrameForwardFar" Margin="5,0,0,0" Width="40" Content="►►" FontFamily="Arial" Click="btnEndFrameForwardFar_Click"/>
                         </Grid>
@@ -83,21 +83,21 @@
                 </GroupBox>
             </Grid>
             <GroupBox Grid.Row="1" Header="Load Navigation" Margin="0,10,0,0">
-                <Grid Margin="5,5,5,5">
+                <Grid Margin="5,5,5,0">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="auto"/>
-                        <ColumnDefinition Width="1*"/>
                         <ColumnDefinition Width="auto"/>
+                        <ColumnDefinition Width="1*"/>
                         <ColumnDefinition Width="auto"/>
                     </Grid.ColumnDefinitions>
                     <Grid.RowDefinitions>
                         <RowDefinition/>
                         <RowDefinition/>
                     </Grid.RowDefinitions>
-                    <TextBox Grid.Row="0" Grid.Column="0" x:Name="txtLoadNumber" Margin="0,0,5,0" Text="1" Width="40"/>
-                    <Button Grid.Row="0" Grid.Column="2" x:Name="btnBack" Margin="0,0,5,0" Width="40" Content="◄" FontFamily="Arial"/>
-                    <Button Grid.Row="0" Grid.Column="3"  x:Name="btnForward" Margin="0,0,0,0" Width="40" Content="►" FontFamily="Arial"/>
-                    <Slider Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="4" x:Name="sliderTimeline" Margin="5,10,5,0" Height="18" TickPlacement="None" SmallChange="1" IsSnapToTickEnabled="True" ValueChanged="sliderTimeline_ValueChanged" Minimum="1"/>
+                    <Button Grid.Row="0" Grid.Column="0" x:Name="btnBack" Margin="0,0,5,0" Width="40" Content="◄" FontFamily="Arial" Click="btnBack_Click"/>
+                    <TextBox Grid.Row="0" Grid.Column="3" x:Name="txtLoadNumber" Margin="0,0,0,0" Text="{Binding LoadNumber, UpdateSourceTrigger=PropertyChanged}" Width="50" Height="22" TextAlignment="Right"/>
+                    <Button Grid.Row="0" Grid.Column="1" x:Name="btnForward" Margin="0,0,0,0" Width="40" Content="►" FontFamily="Arial" Click="btnForward_Click"/>
+                    <Slider Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="4" x:Name="sliderTimeline" Margin="0,5,0,0" Value="{Binding LoadNumber, UpdateSourceTrigger=PropertyChanged}" Height="18" TickPlacement="None" SmallChange="1" IsSnapToTickEnabled="True" Minimum="1"/>
                 </Grid>
             </GroupBox>
         </Grid>
@@ -113,7 +113,17 @@
             </GroupBox>
             <GroupBox Grid.Row="1" Margin="10,0,0,0" Header="Settings">
                 <Grid Margin="5,5,5,5">
-                    <Button Grid.Row="0" x:Name="btnMainWindow" Margin="0,0,0,0" Content="Return to Main Window"/>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="auto"/>
+                        <RowDefinition Height="auto"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="3*"/>
+                        <ColumnDefinition Width="1*"/>
+                    </Grid.ColumnDefinitions>
+                    <Label Grid.Row="0" Grid.Column="0" Margin="0,0,0,10" Content="Large adjustment step size (ms):"/>
+                    <TextBox Grid.Row="0" Grid.Column="1" x:Name="txtStepSize" Margin="0,0,0,10" Text="250" HorizontalContentAlignment="Right"/>
+                    <Button Grid.Row="1" Grid.ColumnSpan="2" x:Name="btnMainWindow" Margin="0,0,0,0" Content="Return to Main Window"/>
                 </Grid>
             </GroupBox>
         </Grid>

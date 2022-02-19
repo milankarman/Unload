@@ -1,22 +1,65 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.IO;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
 using System.Windows.Media.Imaging;
 
 namespace unload
 {
-    public partial class LoadCheckWindow : Window
+    public partial class LoadCheckWindow : Window, INotifyPropertyChanged
     {
+        public event PropertyChangedEventHandler? PropertyChanged;
+
         private readonly Project project;
+
+        private int loadIndex;
+        private int startFrame;
+        private int endFrame;
+        
+        public int LoadNumber
+        {
+            get => loadIndex + 1;
+            set
+            {
+                loadIndex = Math.Clamp(value, 1, project.DetectedLoads.Count) - 1;
+                ShowLoadScreen(loadIndex);
+                OnPropertyChanged();
+            }
+        }
+
+        public int StartFrame
+        {
+            get => startFrame;
+            set
+            {
+                startFrame = Math.Clamp(value, 1, project.totalFrames);
+                ShowStartFrame(startFrame);
+
+                DetectedLoad load = project.DetectedLoads[loadIndex];
+                load.StartFrame = startFrame;
+                UpdateDetectedLoads();
+
+                OnPropertyChanged();
+            }
+        }
+
+        public int EndFrame
+        {
+            get => endFrame;
+            set
+            {
+                endFrame = Math.Clamp(value, 1, project.totalFrames);
+                ShowEndFrame(endFrame);
+
+                DetectedLoad load = project.DetectedLoads[loadIndex];
+                load.EndFrame = endFrame;
+                UpdateDetectedLoads();
+
+                OnPropertyChanged();
+            }
+        }
 
         public LoadCheckWindow()
         {
@@ -44,8 +87,61 @@ namespace unload
             project.TEST_SetDetectedLoads(loads);
 
             InitializeComponent();
+            DataContext = this;
+
+            txtLoadNumber.PreviewTextInput += TextBoxValidator.ForceInteger;
+            txtStartFrame.PreviewTextInput += TextBoxValidator.ForceInteger;
+            txtEndFrame.PreviewTextInput += TextBoxValidator.ForceInteger;
+            txtStepSize.PreviewTextInput += TextBoxValidator.ForceInteger;
 
             UpdateDetectedLoads();
+
+            DetectedLoad firstLoad = project.DetectedLoads[0];
+            StartFrame = firstLoad.StartFrame;
+            EndFrame = firstLoad.EndFrame;
+        }
+
+        private void ShowLoadScreen(int loadIndex)
+        {
+            DetectedLoad load = project.DetectedLoads[loadIndex];
+
+            StartFrame = load.StartFrame;
+            EndFrame = load.EndFrame;
+        }
+
+
+        private void ShowStartFrame(int frameIndex)
+        {
+            Uri startFrame = new(Path.Join(project.framesDirectory, $"{frameIndex}.jpg"));
+            imgStartFrame.Source = new BitmapImage(startFrame);
+
+            Uri startFrameBefore = new(Path.Join(project.framesDirectory, $"{frameIndex - 1}.jpg"));
+
+            if (frameIndex > 1)
+            {
+                imgStartFrameBefore.Source = new BitmapImage(startFrameBefore);
+            }
+            else
+            {
+                imgStartFrameBefore.Source = null;
+            }
+        }
+
+        private void ShowEndFrame(int frameIndex)
+        {
+            Uri endFrame = new(Path.Join(project.framesDirectory, $"{frameIndex}.jpg"));
+            imgEndFrame.Source = new BitmapImage(endFrame);
+
+            Uri endFrameAfter = new(Path.Join(project.framesDirectory, $"{frameIndex + 1}.jpg"));
+
+            if (frameIndex < project.totalFrames)
+            {
+                imgEndFrameAfter.Source = new BitmapImage(endFrameAfter);
+            }
+            else
+            {
+                imgEndFrameAfter.Source = null;
+            }
         }
 
         private void UpdateDetectedLoads()
@@ -60,133 +156,31 @@ namespace unload
             sliderTimeline.Maximum = project.DetectedLoads.Count;
         }
 
-        private void SetStartFrame(int frameIndex)
-        {
-            frameIndex = Math.Clamp(frameIndex, 1, project.totalFrames);
-
-            Uri startFrame = new(Path.Join(project.framesDirectory, $"{frameIndex}.jpg"));
-            imgStartFrame.Source = new BitmapImage(startFrame);
-
-            Uri startFrameBefore = new(Path.Join(project.framesDirectory, $"{frameIndex - 1}.jpg"));
-            imgStartFrameBefore.Source = new BitmapImage(startFrameBefore);
-        }
-
-        private void SetEndFrame(int frameIndex)
-        {
-            frameIndex = Math.Clamp(frameIndex, 1, project.totalFrames);
-
-            Uri endFrame = new(Path.Join(project.framesDirectory, $"{frameIndex}.jpg"));
-            imgEndFrame.Source = new BitmapImage(endFrame);
-
-            Uri endFrameAfter = new(Path.Join(project.framesDirectory, $"{frameIndex + 1}.jpg"));
-            imgEndFrameAfter.Source = new BitmapImage(endFrameAfter);
-        }
-
-        private void SetLoadScreen(DetectedLoad load)
-        {
-            SetStartFrame(load.StartFrame);
-            SetEndFrame(load.EndFrame);
-
-            txtLoadNumber.Text = load.Index.ToString();
-            txtStartFrame.Text = load.StartFrame.ToString();
-            txtEndFrame.Text = load.EndFrame.ToString();
-        }
-
         private void lbxDetectedLoads_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (lbxDetectedLoads.SelectedIndex >= 0)
-                SetLoadScreen(project.DetectedLoads[lbxDetectedLoads.SelectedIndex]);
+            if (lbxDetectedLoads.SelectedIndex >= 0) LoadNumber = lbxDetectedLoads.SelectedIndex + 1;
         }
 
-        private void sliderTimeline_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e) =>
-            SetLoadScreen(project.DetectedLoads[(int)sliderTimeline.Value - 1]);
+        private void btnStartFrameBackFar_Click(object sender, RoutedEventArgs e) => StartFrame -= 5;
 
-        private void btnStartFrameBackFar_Click(object sender, RoutedEventArgs e)
-        {
-            int loadIndex = int.Parse(txtLoadNumber.Text) - 1;
-            DetectedLoad load = project.DetectedLoads[loadIndex];
+        private void btnStartFrameBack_Click(object sender, RoutedEventArgs e) => StartFrame--;
 
-            load.StartFrame = Math.Clamp(load.StartFrame - 5, 0, project.totalFrames);
+        private void btnStartFrameForward_Click(object sender, RoutedEventArgs e) => StartFrame++;
 
-            UpdateDetectedLoads();
-            SetLoadScreen(load);
-        }
+        private void btnStartFrameForwardFar_Click(object sender, RoutedEventArgs e) => StartFrame += 5;
 
-        private void btnStartFrameBack_Click(object sender, RoutedEventArgs e)
-        {
-            int loadIndex = int.Parse(txtLoadNumber.Text) - 1;
-            DetectedLoad load = project.DetectedLoads[loadIndex];
+        private void btnEndFrameBackFar_Click(object sender, RoutedEventArgs e) => EndFrame -= 5;
 
-            load.StartFrame = Math.Clamp(load.StartFrame - 1, 0, project.totalFrames);
+        private void btnEndFrameBack_Click(object sender, RoutedEventArgs e) => EndFrame--;
 
-            UpdateDetectedLoads();
-            SetLoadScreen(load);
-        }
+        private void btnEndFrameForward_Click(object sender, RoutedEventArgs e) => EndFrame++;
 
-        private void btnStartFrameForward_Click(object sender, RoutedEventArgs e)
-        {
-            int loadIndex = int.Parse(txtLoadNumber.Text) - 1;
-            DetectedLoad load = project.DetectedLoads[loadIndex];
+        private void btnEndFrameForwardFar_Click(object sender, RoutedEventArgs e) => EndFrame += 5;
 
-            load.StartFrame = Math.Clamp(load.StartFrame + 1, 0, project.totalFrames);
+        private void btnBack_Click(object sender, RoutedEventArgs e) => LoadNumber--;
 
-            UpdateDetectedLoads();
-            SetLoadScreen(load);
-        }
+        private void btnForward_Click(object sender, RoutedEventArgs e) => LoadNumber++;
 
-        private void btnStartFrameForwardFar_Click(object sender, RoutedEventArgs e)
-        {
-            int loadIndex = int.Parse(txtLoadNumber.Text) - 1;
-            DetectedLoad load = project.DetectedLoads[loadIndex];
-
-            load.StartFrame = Math.Clamp(load.StartFrame + 5, 0, project.totalFrames);
-
-            UpdateDetectedLoads();
-            SetLoadScreen(load);
-        }
-
-        private void btnEndFrameBackFar_Click(object sender, RoutedEventArgs e)
-        {
-            int loadIndex = int.Parse(txtLoadNumber.Text) - 1;
-            DetectedLoad load = project.DetectedLoads[loadIndex];
-
-            load.EndFrame = Math.Clamp(load.EndFrame - 5, 0, project.totalFrames);
-
-            UpdateDetectedLoads();
-            SetLoadScreen(load);
-        }
-
-        private void btnEndFrameBack_Click(object sender, RoutedEventArgs e)
-        {
-            int loadIndex = int.Parse(txtLoadNumber.Text) - 1;
-            DetectedLoad load = project.DetectedLoads[loadIndex];
-
-            load.EndFrame = Math.Clamp(load.EndFrame - 1, 0, project.totalFrames);
-
-            UpdateDetectedLoads();
-            SetLoadScreen(load);
-        }
-
-        private void btnEndFrameForward_Click(object sender, RoutedEventArgs e)
-        {
-            int loadIndex = int.Parse(txtLoadNumber.Text) - 1;
-            DetectedLoad load = project.DetectedLoads[loadIndex];
-
-            load.EndFrame = Math.Clamp(load.EndFrame + 1, 0, project.totalFrames);
-
-            UpdateDetectedLoads();
-            SetLoadScreen(load);
-        }
-
-        private void btnEndFrameForwardFar_Click(object sender, RoutedEventArgs e)
-        {
-            int loadIndex = int.Parse(txtLoadNumber.Text) - 1;
-            DetectedLoad load = project.DetectedLoads[loadIndex];
-
-            load.EndFrame = Math.Clamp(load.EndFrame + 5, 0, project.totalFrames);
-
-            UpdateDetectedLoads();
-            SetLoadScreen(load);
-        }
+        protected void OnPropertyChanged(string? name = null) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
     }
 }
