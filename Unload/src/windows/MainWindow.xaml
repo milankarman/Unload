@@ -119,8 +119,10 @@
                         <ColumnDefinition/>
                         <ColumnDefinition/>
                     </Grid.ColumnDefinitions>
-                    <Image  Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="4" x:Name="imageLoadFrame" Margin="1,1,1,1"/>
-                    <Rectangle Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="4" Stroke="{DynamicResource borderDarkSecondary}"/>
+                    <Image x:Name="imageLoadFrame" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="4"/>
+                    <Grid x:Name="gridLoadCrop" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="4" Background="Transparent" MouseDown="gridLoadCrop_MouseDown" MouseMove="gridLoadCrop_MouseMove" MouseUp="gridLoadCrop_MouseUp">
+                        <Rectangle x:Name="rctLoadCrop" StrokeThickness="1" Stroke="{StaticResource primaryLight}" HorizontalAlignment="Left" VerticalAlignment="Top" Visibility="Collapsed"/>
+                    </Grid>
                     <Label Grid.Row="0" Grid.Column="3" x:Name="lblPickedLoadCount" Content="0 / 0" HorizontalAlignment="Right" Margin="0,1,1,0" VerticalAlignment="Top" Padding="10,2,10,2" Background="#FF5844FE" BorderBrush="{DynamicResource highlightDark}"/>
                     <Button Grid.Row="1" Grid.Column="0" x:Name="btnPreviousLoadFrame" Margin="0,10,10,0" Content="◄" FontFamily="Arial" Click="btnPreviousLoadFrame_Click"/>
                     <Button Grid.Row="1" Grid.Column="1" x:Name="btnNextLoadFrame" Margin="0,10,5,0" Content="►" FontFamily="Arial" Click="btnNextLoadFrame_Click"/>

@@ -11,6 +11,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media.Imaging;
 using Microsoft.Win32;
+using Point = System.Windows.Point;
 
 namespace unload
 {
@@ -557,6 +558,39 @@ namespace unload
                 StartWindow startWindow = new();
                 startWindow.Show();
             }
+        }
+
+        bool drawingLoadCrop;
+        Point loadCropStartPoint;
+        Rect loadCropDrawing;
+
+        private void gridLoadCrop_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            drawingLoadCrop = true;
+            loadCropStartPoint = e.GetPosition(gridLoadCrop);
+        }
+
+        private void gridLoadCrop_MouseMove(object sender, MouseEventArgs e)
+        {
+            if (drawingLoadCrop)
+            {
+                rctLoadCrop.Visibility = Visibility.Visible;
+                Point point = e.GetPosition(gridLoadCrop);
+
+                loadCropDrawing = new Rect(loadCropStartPoint, point);
+                rctLoadCrop.Margin = new Thickness(loadCropDrawing.Left, loadCropDrawing.Top, 0, 0);
+                rctLoadCrop.Width = loadCropDrawing.Width;
+                rctLoadCrop.Height = loadCropDrawing.Height;
+            }
+            else
+            {
+                rctLoadCrop.Visibility = Visibility.Collapsed;
+            }
+        }
+
+        private void gridLoadCrop_MouseUp(object sender, MouseButtonEventArgs e)
+        {
+            drawingLoadCrop = false;
         }
     }
 }
