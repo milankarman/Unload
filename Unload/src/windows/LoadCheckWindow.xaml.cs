@@ -20,8 +20,6 @@ namespace unload
         private int startFrame;
         private int endFrame;
 
-        private int editingLoadIndex;
-
         public int LoadNumber
         {
             get => loadIndex + 1;
@@ -38,13 +36,14 @@ namespace unload
             get => startFrame;
             set
             {
-                editingLoadIndex = loadIndex;
                 startFrame = Math.Clamp(value, 1, project.totalFrames);
                 ShowStartFrame(startFrame);
 
                 DetectedLoad load = project.DetectedLoads[loadIndex];
                 load.StartFrame = startFrame;
                 UpdateDetectedLoads();
+
+                if (LoadNumber != load.Number) LoadNumber = load.Number;
 
                 OnPropertyChanged();
             }
@@ -61,6 +60,8 @@ namespace unload
                 DetectedLoad load = project.DetectedLoads[loadIndex];
                 load.EndFrame = endFrame;
                 UpdateDetectedLoads();
+
+                if (LoadNumber != load.Number) LoadNumber = load.Number;
 
                 OnPropertyChanged();
             }
