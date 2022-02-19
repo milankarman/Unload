@@ -68,6 +68,8 @@ namespace unload
         {
             project.OrderLoads();
             lbxLoads.ItemsSource = new ObservableCollection<DetectedLoad>(project.DetectedLoads);
+
+            if (projectState == ProjectState.DETECTED_LOADS) SetFinalTimes();
         }
 
         // Loads in a given frame in the video preview
@@ -408,20 +410,31 @@ namespace unload
 
                 project.DetectLoadFrames(minSimilarity, minFrames, pickedLoadingFrames, GetCropRect());
 
-                UpdateDetectedLoads();
-                SetProjectState(ProjectState.DETECTED_LOADS);
-                SetFinalTimes();
+                if (project.DetectedLoads.Count > 0)
+                {
+                    SetProjectState(ProjectState.DETECTED_LOADS);
+                    UpdateDetectedLoads();
+                }
+                else
+                {
+                    MessageBox.Show("Failed to detect any load frames." +
+                        "Double check your load detection settings",
+                        "Warning",
+                        MessageBoxButton.OK,
+                        MessageBoxImage.Warning
+                    );
+                }
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Failed to detect load frames {Environment.NewLine}{ex.Message}");
+                MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
         // Settings
         private void cbxSnapLoads_CheckedChanged(object sender, RoutedEventArgs e) => SetTimelineTicks();
 
-        private void btnStartWindow_Click(object sender, RoutedEventArgs e) 
+        private void btnStartWindow_Click(object sender, RoutedEventArgs e)
         {
             shouldOpenStart = true;
             Close();
@@ -432,7 +445,6 @@ namespace unload
         {
             project.DetectedLoads.Add(new DetectedLoad(0, 0, 0));
             UpdateDetectedLoads();
-            SetFinalTimes();
         }
 
         private void btnDLoadGotoStart_Click(object sender, RoutedEventArgs e)
@@ -453,11 +465,9 @@ namespace unload
             {
                 TextBox cmd = (TextBox)sender;
                 if (cmd.DataContext is DetectedLoad load) load.StartFrame = int.Parse(cmd.Text);
+                UpdateDetectedLoads();
             }
             catch { }
-
-            UpdateDetectedLoads();
-            SetFinalTimes();
         }
 
         private void txtDLoadEnd_LostFocus(object sender, RoutedEventArgs e)
@@ -466,11 +476,9 @@ namespace unload
             {
                 TextBox cmd = (TextBox)sender;
                 if (cmd.DataContext is DetectedLoad load) load.EndFrame = int.Parse(cmd.Text);
+                UpdateDetectedLoads();
             }
             catch { }
-
-            UpdateDetectedLoads();
-            SetFinalTimes();
         }
 
         private void txtDLoadStart_KeyDown(object sender, KeyEventArgs e)
@@ -491,8 +499,6 @@ namespace unload
                 project.DetectedLoads.Remove(load);
                 UpdateDetectedLoads();
             }
-
-            SetFinalTimes();
         }
 
         // Exports the frame count and load times ranges to a CSV file
