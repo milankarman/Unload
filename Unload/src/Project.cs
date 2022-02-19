@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
+using System.Linq;
 using System.Threading;
 using Shipwreck.Phash;
 
@@ -126,6 +127,17 @@ namespace unload
             usedMinLoadFrames = minLoadFrames;
         }
 
+        // Orders loads and updates their load numbers
+        public void OrderLoads()
+        {
+            DetectedLoads = DetectedLoads.OrderBy(i => i.StartFrame).ToList();
+
+            for (int i = 0; i < DetectedLoads.Count; i++)
+            {
+                DetectedLoads[i].Number = i + 1;
+            }
+        }
+
         // Returns the total detected load frames
         public int GetDetectedLoadFrames()
         {
@@ -168,7 +180,7 @@ namespace unload
 
             foreach (DetectedLoad load in DetectedLoads)
             {
-                lines.Add($"{load.Index},{load.StartFrame},{load.EndFrame},{load.EndFrame - load.StartFrame + 1}");
+                lines.Add($"{load.Number},{load.StartFrame},{load.EndFrame},{load.EndFrame - load.StartFrame + 1}");
             }
 
             lines.Add("");

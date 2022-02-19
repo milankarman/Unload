@@ -1,8 +1,10 @@
 ﻿using System;
-using System.ComponentModel;
 using System.Collections.Generic;
-using System.Windows;
+using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.IO;
+using System.Linq;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media.Imaging;
 
@@ -17,7 +19,9 @@ namespace unload
         private int loadIndex;
         private int startFrame;
         private int endFrame;
-        
+
+        private int editingLoadIndex;
+
         public int LoadNumber
         {
             get => loadIndex + 1;
@@ -34,6 +38,7 @@ namespace unload
             get => startFrame;
             set
             {
+                editingLoadIndex = loadIndex;
                 startFrame = Math.Clamp(value, 1, project.totalFrames);
                 ShowStartFrame(startFrame);
 
@@ -146,19 +151,9 @@ namespace unload
 
         private void UpdateDetectedLoads()
         {
-            lbxDetectedLoads.Items.Clear();
-
-            foreach (DetectedLoad load in project.DetectedLoads)
-            {
-                lbxDetectedLoads.Items.Add($"{load.Index}\t{load.StartFrame}\t{load.EndFrame}");
-            }
-
+            project.OrderLoads();
+            lbxLoads.ItemsSource = new ObservableCollection<DetectedLoad>(project.DetectedLoads);
             sliderTimeline.Maximum = project.DetectedLoads.Count;
-        }
-
-        private void lbxDetectedLoads_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            if (lbxDetectedLoads.SelectedIndex >= 0) LoadNumber = lbxDetectedLoads.SelectedIndex + 1;
         }
 
         private void btnStartFrameBackFar_Click(object sender, RoutedEventArgs e) => StartFrame -= 5;
@@ -180,6 +175,27 @@ namespace unload
         private void btnBack_Click(object sender, RoutedEventArgs e) => LoadNumber--;
 
         private void btnForward_Click(object sender, RoutedEventArgs e) => LoadNumber++;
+
+        private void btnDLoadAdd_Click(object sender, RoutedEventArgs e)
+        {
+            project.DetectedLoads.Add(new DetectedLoad(0, 0, 0));
+            UpdateDetectedLoads();
+        }
+
+        private void btnDLoadNumber_Click(object sender, RoutedEventArgs e)
+        {
+            if (((Button)sender).DataContext is DetectedLoad load) LoadNumber = load.Number;
+        }
+
+        private void btnDLoadDelete_Click(object sender, RoutedEventArgs e)
+        {
+            Button cmd = (Button)sender;
+            if (cmd.DataContext is DetectedLoad load)
+            {
+                project.DetectedLoads.Remove(load);
+                UpdateDetectedLoads();
+            }
+        }
 
         protected void OnPropertyChanged(string? name = null) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
     }

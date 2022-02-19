@@ -10,7 +10,23 @@
         <TaskbarItemInfo/>
     </Window.TaskbarItemInfo>
     <Window.Resources>
-
+        <DataTemplate x:Key="DetectedLoadTemplate">
+            <Grid Width="auto" Margin="0,0,0,5">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="1*"/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="auto"/>
+                    <ColumnDefinition Width="1*"/>
+                    <ColumnDefinition Width="1*"/>
+                    <ColumnDefinition Width="auto"/>
+                </Grid.ColumnDefinitions>
+                <Button Grid.Column="0" Content="{Binding Path=Number}" Margin="0,0,10,0" Width="40" FontFamily="Arial" Click="btnDLoadNumber_Click"/>
+                <TextBlock Grid.Column="1" Text="{Binding Path=StartFrame}" Margin="0,0,0,0"/>
+                <TextBlock Grid.Column="2" Text="{Binding Path=EndFrame}" Margin="5,0,0,0"/>
+                <Button Grid.Column="3" Content="-" Width="30" Margin="10,0,0,0" Click="btnDLoadDelete_Click"/>
+            </Grid>
+        </DataTemplate>
     </Window.Resources>
     <Grid Margin="10,10,10,10">
         <Grid.ColumnDefinitions>
@@ -106,10 +122,25 @@
                 <RowDefinition Height="1*"/>
                 <RowDefinition Height="auto"/>
             </Grid.RowDefinitions>
-            <GroupBox Grid.Row="0" Margin="10,0,0,10" Header="Detected Loads Lists">
-                <Grid Margin="5,5,5,5">
-                    <ListBox x:Name="lbxDetectedLoads" SelectionChanged="lbxDetectedLoads_SelectionChanged"/>
-                </Grid>
+            <GroupBox Grid.Row="0" Margin="10,0,0,10" Header="Detected Loads">
+                <ScrollViewer VerticalScrollBarVisibility="Hidden">
+                    <StackPanel>
+                        <Grid HorizontalAlignment="Stretch" Margin="5,5,5,0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="auto"/>
+                                <ColumnDefinition Width="1*"/>
+                                <ColumnDefinition Width="1*"/>
+                                <ColumnDefinition Width="30"/>
+                            </Grid.ColumnDefinitions>
+                            <Rectangle Stroke="{StaticResource bgDark}"></Rectangle>
+                            <Label Grid.Column="0" Content="#" Width="40" Margin="0,0,10,0"/>
+                            <Label Grid.Column="1" Content="Start"/>
+                            <Label Grid.Column="2" Content="End"/>
+                            <Button Grid.Column="3" Content="+" x:Name="btnDLoadAdd" Height="20" Click="btnDLoadAdd_Click" />
+                        </Grid>
+                        <ItemsControl x:Name="lbxLoads" Margin="5,5,5,5"  HorizontalAlignment="Stretch" ItemTemplate="{StaticResource DetectedLoadTemplate}"/>
+                    </StackPanel>
+                </ScrollViewer>
             </GroupBox>
             <GroupBox Grid.Row="1" Margin="10,0,0,0" Header="Settings">
                 <Grid Margin="5,5,5,5">

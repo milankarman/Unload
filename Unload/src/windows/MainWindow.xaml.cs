@@ -30,7 +30,6 @@ namespace unload
 
         private readonly List<int> pickedLoadingFrames = new();
         private readonly List<int> sliderTicks = new();
-        private ObservableCollection<DetectedLoad>? orderedDetectedLoads = new();
 
         private readonly bool ready;
 
@@ -49,7 +48,7 @@ namespace unload
 
             txtMinSimilarity.Text = defaultSimilarity.ToString();
 
-            SetDetectedLoads();
+            UpdateDetectedLoads();
 
             sliderTimeline.Maximum = project.totalFrames;
             txtEndFrame.Text = project.totalFrames.ToString();
@@ -80,16 +79,10 @@ namespace unload
         }
 
         // Sorts and gives proper indexes to the detected loads
-        private void SetDetectedLoads()
+        private void UpdateDetectedLoads()
         {
-            orderedDetectedLoads = new(project.DetectedLoads.OrderBy(i => i.StartFrame));
-
-            for (int i = 0; i < orderedDetectedLoads.Count; i++)
-            {
-                orderedDetectedLoads[i].Index = i + 1;
-            }
-
-            lbxLoads.ItemsSource = orderedDetectedLoads;
+            project.OrderLoads();
+            lbxLoads.ItemsSource = new ObservableCollection<DetectedLoad>(project.DetectedLoads);
         }
 
         // Applies cropping to the picked load screen and shows it on the interface
@@ -399,7 +392,7 @@ namespace unload
         {
             project.ClearFrames();
             project.DetectedLoads.Clear();
-            orderedDetectedLoads?.Clear();
+            UpdateDetectedLoads();
             SetProjectState(ProjectState.PICKED_LOADS);
         }
 
@@ -412,7 +405,7 @@ namespace unload
 
                 project.DetectLoadFrames(minSimilarity, minFrames, pickedLoadingFrames, GetCropRect());
 
-                SetDetectedLoads();
+                UpdateDetectedLoads();
                 SetProjectState(ProjectState.DETECTED_LOADS);
                 SetFinalTimes();
             }
@@ -435,7 +428,7 @@ namespace unload
         private void btnDLoadAdd_Click(object sender, RoutedEventArgs e)
         {
             project.DetectedLoads.Add(new DetectedLoad(0, 0, 0));
-            SetDetectedLoads();
+            UpdateDetectedLoads();
             SetFinalTimes();
         }
 
@@ -460,7 +453,7 @@ namespace unload
             }
             catch { }
 
-            SetDetectedLoads();
+            UpdateDetectedLoads();
             SetFinalTimes();
         }
 
@@ -473,7 +466,7 @@ namespace unload
             }
             catch { }
 
-            SetDetectedLoads();
+            UpdateDetectedLoads();
             SetFinalTimes();
         }
 
@@ -493,7 +486,7 @@ namespace unload
             if (cmd.DataContext is DetectedLoad load)
             {
                 project.DetectedLoads.Remove(load);
-                orderedDetectedLoads?.Remove(load);
+                UpdateDetectedLoads();
             }
 
             SetFinalTimes();
