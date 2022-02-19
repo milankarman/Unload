@@ -43,60 +43,62 @@
                     <ColumnDefinition Width="1*"/>
                     <ColumnDefinition Width="1*"/>
                 </Grid.ColumnDefinitions>
-                <GroupBox Grid.Column="0" Header="Start Frame" Margin="0,0,5,0">
-                    <Grid Margin="5,5,5,5">
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="1*"/>
-                            <RowDefinition Height="auto"/>
-                            <RowDefinition Height="1*"/>
-                        </Grid.RowDefinitions>
-                        <Rectangle Grid.Row="0" Margin="0,0,0,10" Stroke="{DynamicResource borderDarkPrimary}"/>
-                        <Image Grid.Row="0" Margin="1,1,1,11" x:Name="imgStartFrame"/>
-                        <Grid Grid.Row="1">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="auto"/>
-                                <ColumnDefinition Width="auto"/>
-                                <ColumnDefinition Width="1*"/>
-                                <ColumnDefinition Width="auto"/>
-                                <ColumnDefinition Width="auto"/>
-                            </Grid.ColumnDefinitions>
-                            <Button Grid.Column="0" x:Name="btnStartFrameBackFar" Margin="0,0,5,0" Width="40" Content="◄◄" FontFamily="Arial" Click="btnStartFrameBackFar_Click"/>
-                            <Button Grid.Column="1" x:Name="btnStartFrameBack" Margin="0,0,0,0" Width="40" Content="◄" FontFamily="Arial" Click="btnStartFrameBack_Click"/>
-                            <TextBox Grid.Column="2" x:Name="txtStartFrame" Text="{Binding StartFrame, UpdateSourceTrigger=PropertyChanged}"  TextAlignment="Right" Width="100"/>
-                            <Button Grid.Column="3" x:Name="btnStartFrameForward" Margin="0,0,0,0" Width="40" Content="►" FontFamily="Arial" Click="btnStartFrameForward_Click"/>
-                            <Button Grid.Column="4" x:Name="btnStartFrameForwardFar" Margin="5,0,0,0" Width="40" Content="►►" FontFamily="Arial" Click="btnStartFrameForwardFar_Click"/>
-                        </Grid>
-                        <Rectangle Grid.Row="2" Margin="0,10,0,0" Stroke="{DynamicResource borderDarkPrimary}"/>
-                        <Image Grid.Row="2" Margin="1,11,1,1" x:Name="imgStartFrameBefore"/>
+                <Grid Grid.Column="0" Margin="0,0,5,0">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="1*"/>
+                        <RowDefinition Height="auto"/>
+                        <RowDefinition Height="1*"/>
+                    </Grid.RowDefinitions>
+                    <GroupBox Grid.Row="0" Header="Start Frame">
+                        <Image x:Name="imgStartFrame"/>
+                    </GroupBox>
+                    <Grid Grid.Row="1" Margin="0,10,0,10">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="auto"/>
+                            <ColumnDefinition Width="auto"/>
+                            <ColumnDefinition Width="1*"/>
+                            <ColumnDefinition Width="auto"/>
+                            <ColumnDefinition Width="auto"/>
+                        </Grid.ColumnDefinitions>
+                        <Button Grid.Column="0" x:Name="btnStartFrameBackFar" Margin="0,0,5,0" Width="40" Content="◄◄" FontFamily="Arial" Click="btnStartFrameBackFar_Click"/>
+                        <Button Grid.Column="1" x:Name="btnStartFrameBack" Margin="0,0,0,0" Width="40" Content="◄" FontFamily="Arial" Click="btnStartFrameBack_Click"/>
+                        <TextBox Grid.Column="2" x:Name="txtStartFrame" Text="{Binding StartFrame, UpdateSourceTrigger=PropertyChanged}"  TextAlignment="Right" Width="100"/>
+                        <Button Grid.Column="3" x:Name="btnStartFrameForward" Margin="0,0,0,0" Width="40" Content="►" FontFamily="Arial" Click="btnStartFrameForward_Click"/>
+                        <Button Grid.Column="4" x:Name="btnStartFrameForwardFar" Margin="5,0,0,0" Width="40" Content="►►" FontFamily="Arial" Click="btnStartFrameForwardFar_Click"/>
                     </Grid>
-                </GroupBox>
-                <GroupBox  Grid.Column="1" Header="End Frame" Margin="5,0,0,0">
-                    <Grid Margin="5,5,5,5">
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="1*"/>
-                            <RowDefinition Height="auto"/>
-                            <RowDefinition Height="1*"/>
-                        </Grid.RowDefinitions>
-                        <Rectangle Grid.Row="0" Margin="0,0,0,10" Stroke="{DynamicResource borderDarkPrimary}"/>
-                        <Image Grid.Row="0" Margin="1,1,1,11" x:Name="imgEndFrame"/>
-                        <Grid Grid.Row="1">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="auto"/>
-                                <ColumnDefinition Width="auto"/>
-                                <ColumnDefinition Width="1*"/>
-                                <ColumnDefinition Width="auto"/>
-                                <ColumnDefinition Width="auto"/>
-                            </Grid.ColumnDefinitions>
-                            <Button Grid.Column="0" x:Name="btnEndFrameBackFar" Margin="0,0,0,0" Width="40" Content="◄◄" FontFamily="Arial" Click="btnEndFrameBackFar_Click"/>
-                            <Button Grid.Column="1" x:Name="btnEndFrameBack" Margin="5,0,0,0" Width="40" Content="◄" FontFamily="Arial" Click="btnEndFrameBack_Click"/>
-                            <TextBox Grid.Column="2" x:Name="txtEndFrame" Text="{Binding EndFrame, UpdateSourceTrigger=PropertyChanged}" TextAlignment="Right" Width="100"/>
-                            <Button Grid.Column="3" x:Name="btnEndFrameForward" Margin="0,0,0,0" Width="40" Content="►" FontFamily="Arial" Click="btnEndFrameForward_Click"/>
-                            <Button Grid.Column="4" x:Name="btnEndFrameForwardFar" Margin="5,0,0,0" Width="40" Content="►►" FontFamily="Arial" Click="btnEndFrameForwardFar_Click"/>
-                        </Grid>
-                        <Rectangle Grid.Row="2" Margin="0,10,0,0" Stroke="{DynamicResource borderDarkPrimary}"/>
-                        <Image Grid.Row="2" Margin="1,11,1,1" x:Name="imgEndFrameAfter"/>
+                    <GroupBox Grid.Row="2" Header="Frame Before Start Frame">
+                        <Image x:Name="imgStartFrameBefore"/>
+                    </GroupBox>
+                </Grid>
+
+                <Grid Grid.Column="1" Margin="5,0,0,0">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="1*"/>
+                        <RowDefinition Height="auto"/>
+                        <RowDefinition Height="1*"/>
+                    </Grid.RowDefinitions>
+                    <GroupBox Grid.Row="0" Header="End Frame">
+                        <Image x:Name="imgEndFrame"/>
+                    </GroupBox>
+                    <Grid Grid.Row="1" Margin="0,10,0,10">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="auto"/>
+                            <ColumnDefinition Width="auto"/>
+                            <ColumnDefinition Width="1*"/>
+                            <ColumnDefinition Width="auto"/>
+                            <ColumnDefinition Width="auto"/>
+                        </Grid.ColumnDefinitions>
+                        <Button Grid.Column="0" x:Name="btnEndFrameBackFar" Margin="0,0,0,0" Width="40" Content="◄◄" FontFamily="Arial" Click="btnEndFrameBackFar_Click"/>
+                        <Button Grid.Column="1" x:Name="btnEndFrameBack" Margin="5,0,0,0" Width="40" Content="◄" FontFamily="Arial" Click="btnEndFrameBack_Click"/>
+                        <TextBox Grid.Column="2" x:Name="txtEndFrame" Text="{Binding EndFrame, UpdateSourceTrigger=PropertyChanged}" TextAlignment="Right" Width="100"/>
+                        <Button Grid.Column="3" x:Name="btnEndFrameForward" Margin="0,0,0,0" Width="40" Content="►" FontFamily="Arial" Click="btnEndFrameForward_Click"/>
+                        <Button Grid.Column="4" x:Name="btnEndFrameForwardFar" Margin="5,0,0,0" Width="40" Content="►►" FontFamily="Arial" Click="btnEndFrameForwardFar_Click"/>
                     </Grid>
-                </GroupBox>
+                    <GroupBox Grid.Row="2" Header="Frame After End Frame">
+                        <Image x:Name="imgEndFrameAfter"/>
+                    </GroupBox>
+                </Grid>
+
             </Grid>
             <GroupBox Grid.Row="1" Header="Load Navigation" Margin="0,10,0,0">
                 <Grid Margin="5,5,5,0">
@@ -134,7 +136,6 @@
                                 <ColumnDefinition Width="1*"/>
                                 <ColumnDefinition Width="30"/>
                             </Grid.ColumnDefinitions>
-                            <Rectangle Stroke="{StaticResource bgDark}"></Rectangle>
                             <Label Grid.Column="0" Content="#" Width="40" Margin="0,0,10,0"/>
                             <Label Grid.Column="1" Content="Start"/>
                             <Label Grid.Column="2" Content="End"/>
