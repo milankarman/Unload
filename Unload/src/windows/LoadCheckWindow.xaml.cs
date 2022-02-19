@@ -179,7 +179,7 @@ namespace unload
 
         private void btnDLoadAdd_Click(object sender, RoutedEventArgs e)
         {
-            project.DetectedLoads.Add(new DetectedLoad(0, 0, 0));
+            project.DetectedLoads.Add(new DetectedLoad(0, 1, 1));
             UpdateDetectedLoads();
         }
 
@@ -194,8 +194,22 @@ namespace unload
             if (cmd.DataContext is DetectedLoad load)
             {
                 project.DetectedLoads.Remove(load);
+
+                if (project.DetectedLoads.Count == 0) project.DetectedLoads.Add(new DetectedLoad(0, 1, 1));
+                if (load.Number == LoadNumber) LoadNumber--;
+
                 UpdateDetectedLoads();
             }
+        }
+
+        private void btnRemoveLoad_Click(object sender, RoutedEventArgs e)
+        {
+            project.DetectedLoads.RemoveAt(loadIndex);
+
+            if (project.DetectedLoads.Count == 0) project.DetectedLoads.Add(new DetectedLoad(0, 1, 1));
+            LoadNumber--;
+
+            UpdateDetectedLoads();
         }
 
         protected void OnPropertyChanged(string? name = null) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
