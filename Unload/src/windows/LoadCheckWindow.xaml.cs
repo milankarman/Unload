@@ -157,21 +157,23 @@ namespace unload
             sliderTimeline.Maximum = project.DetectedLoads.Count;
         }
 
-        private void btnStartFrameBackFar_Click(object sender, RoutedEventArgs e) => StartFrame -= 5;
+        private int GetStepSizeFrames() => (int)(project.fps / (1000 / int.Parse(txtStepSize.Text)));
+
+        private void btnStartFrameBackFar_Click(object sender, RoutedEventArgs e) => StartFrame -= GetStepSizeFrames();
 
         private void btnStartFrameBack_Click(object sender, RoutedEventArgs e) => StartFrame--;
 
         private void btnStartFrameForward_Click(object sender, RoutedEventArgs e) => StartFrame++;
 
-        private void btnStartFrameForwardFar_Click(object sender, RoutedEventArgs e) => StartFrame += 5;
+        private void btnStartFrameForwardFar_Click(object sender, RoutedEventArgs e) => StartFrame += GetStepSizeFrames();
 
-        private void btnEndFrameBackFar_Click(object sender, RoutedEventArgs e) => EndFrame -= 5;
+        private void btnEndFrameBackFar_Click(object sender, RoutedEventArgs e) => EndFrame -= GetStepSizeFrames();
 
         private void btnEndFrameBack_Click(object sender, RoutedEventArgs e) => EndFrame--;
 
         private void btnEndFrameForward_Click(object sender, RoutedEventArgs e) => EndFrame++;
 
-        private void btnEndFrameForwardFar_Click(object sender, RoutedEventArgs e) => EndFrame += 5;
+        private void btnEndFrameForwardFar_Click(object sender, RoutedEventArgs e) => EndFrame += GetStepSizeFrames();
 
         private void btnBack_Click(object sender, RoutedEventArgs e) => LoadNumber--;
 

@@ -182,6 +182,8 @@ namespace unload
             }
         }
 
+        private int GetStepSizeFrames() => (int)(project.fps / (1000 / int.Parse(txtStepSize.Text)));
+
         private void BindValidationMethods()
         {
             txtVideoFrame.PreviewTextInput += TextBoxValidator.ForceInteger;
@@ -287,13 +289,13 @@ namespace unload
             txtVideoFrame.Text = (int.Parse(txtVideoFrame.Text) - 1).ToString();
 
         private void btnBackFar_Click(object sender, RoutedEventArgs e) =>
-            txtVideoFrame.Text = (int.Parse(txtVideoFrame.Text) - (int)(project.fps / (1000 / int.Parse(txtStepSize.Text)))).ToString();
+            txtVideoFrame.Text = (int.Parse(txtVideoFrame.Text) - GetStepSizeFrames()).ToString();
 
         private void btnForwardFar_Click(object sender, RoutedEventArgs e) =>
             txtVideoFrame.Text = (int.Parse(txtVideoFrame.Text) + 1).ToString();
 
         private void btnForward_Click(object sender, RoutedEventArgs e) =>
-            txtVideoFrame.Text = (int.Parse(txtVideoFrame.Text) + (int)(project.fps / (1000 / int.Parse(txtStepSize.Text)))).ToString();
+            txtVideoFrame.Text = (int.Parse(txtVideoFrame.Text) + GetStepSizeFrames()).ToString();
 
         // Range selection
         private void btnSetStart_Click(object sender, RoutedEventArgs e) => txtStartFrame.Text = ((int)sliderTimeline.Value).ToString();

@@ -12,6 +12,7 @@
     <SolidColorBrush Color="#382BA4" x:Key="highlightDark" />
 
     <Style x:Key="CustomWindowStyle" TargetType="{x:Type Window}">
+        <Setter Property="SnapsToDevicePixels" Value="True" />
         <Setter Property="BorderBrush" Value="{StaticResource highlight}" />
         <Setter Property="Background" Value="{StaticResource bgDark}" />
         <Setter Property="Foreground" Value="{StaticResource primaryLight}"/>
