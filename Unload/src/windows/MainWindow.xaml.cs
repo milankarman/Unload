@@ -88,12 +88,12 @@ namespace unload
         }
 
         // Applies cropping to the picked load screen and shows it on the interface
-        private void UpdateLoadPreview()
+        private void UpdatePickedLoadPreview()
         {
             if (pickedLoadingFrames.Count >= 1)
             {
                 Bitmap image = new(Path.Join(project.framesDirectory, $"{pickedLoadingFrames[selectedPickedLoad]}.jpg"));
-                Bitmap croppedImage = ImageProcessor.CropImage(image, GetCropRect());
+                Bitmap croppedImage = ImageProcessor.CropImage(image, GetSliderCropRect());
                 imageLoadFrame.Source = ImageProcessor.BitmapToBitmapImage(croppedImage);
             }
             else
@@ -159,7 +159,7 @@ namespace unload
         }
 
         // Reads cropping slider values and returns them in a rectangle class
-        private Rectangle GetCropRect()
+        private Rectangle GetSliderCropRect()
         {
             int top = (int)Math.Round(sliderCropTop.Value);
             int bottom = 100 - (int)Math.Round(sliderCropBottom.Value);
@@ -311,14 +311,14 @@ namespace unload
         private void btnPreviousLoadFrame_Click(object sender, RoutedEventArgs e)
         {
             selectedPickedLoad--;
-            UpdateLoadPreview();
+            UpdatePickedLoadPreview();
             UpdateLoadPickerState();
         }
 
         private void btnNextLoadFrame_Click(object sender, RoutedEventArgs e)
         {
             selectedPickedLoad++;
-            UpdateLoadPreview();
+            UpdatePickedLoadPreview();
             UpdateLoadPickerState();
         }
 
@@ -327,7 +327,7 @@ namespace unload
             pickedLoadingFrames.Add(int.Parse(txtVideoFrame.Text));
             selectedPickedLoad++;
 
-            UpdateLoadPreview();
+            UpdatePickedLoadPreview();
             UpdateLoadPickerState();
         }
 
@@ -335,17 +335,17 @@ namespace unload
         {
             pickedLoadingFrames.RemoveAt(selectedPickedLoad);
             selectedPickedLoad = Math.Clamp(selectedPickedLoad, -1, pickedLoadingFrames.Count - 1);
-            UpdateLoadPreview();
+            UpdatePickedLoadPreview();
             UpdateLoadPickerState();
         }
 
-        private void slidersCropping_OnValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e) => UpdateLoadPreview();
+        private void slidersCropping_OnValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e) => UpdatePickedLoadPreview();
 
         private void btnCheckSimilarity_Click(object sender, RoutedEventArgs e)
         {
             int loadIndex = pickedLoadingFrames[selectedPickedLoad];
             int videoFrame = int.Parse(txtVideoFrame.Text);
-            float similarity = project.GetSimilarity(loadIndex, videoFrame, GetCropRect());
+            float similarity = project.GetSimilarity(loadIndex, videoFrame, GetSliderCropRect());
 
             MessageBox.Show(similarity.ToString());
         }
@@ -363,7 +363,7 @@ namespace unload
                 return;
             }
 
-            Rectangle crop = GetCropRect();
+            Rectangle crop = GetSliderCropRect();
 
             int startFrame = int.Parse(txtStartFrame.Text);
             int endFrame = int.Parse(txtEndFrame.Text);
@@ -410,7 +410,7 @@ namespace unload
                 double minSimilarity = double.Parse(txtMinSimilarity.Text);
                 int minFrames = int.Parse(txtMinFrames.Text);
 
-                project.DetectLoadFrames(minSimilarity, minFrames, pickedLoadingFrames, GetCropRect());
+                project.DetectLoadFrames(minSimilarity, minFrames, pickedLoadingFrames, GetSliderCropRect());
 
                 if (project.DetectedLoads.Count > 0)
                 {
@@ -567,7 +567,7 @@ namespace unload
         private void gridLoadCrop_MouseDown(object sender, MouseButtonEventArgs e)
         {
             drawingLoadCrop = true;
-            loadCropStartPoint = e.GetPosition(gridLoadCrop);
+            loadCropStartPoint = e.GetPosition(imageLoadFrame);
         }
 
         private void gridLoadCrop_MouseMove(object sender, MouseEventArgs e)
@@ -575,7 +575,7 @@ namespace unload
             if (drawingLoadCrop)
             {
                 rctLoadCrop.Visibility = Visibility.Visible;
-                Point point = e.GetPosition(gridLoadCrop);
+                Point point = e.GetPosition(imageLoadFrame);
 
                 loadCropDrawing = new Rect(loadCropStartPoint, point);
                 rctLoadCrop.Margin = new Thickness(loadCropDrawing.Left, loadCropDrawing.Top, 0, 0);
@@ -591,6 +591,18 @@ namespace unload
         private void gridLoadCrop_MouseUp(object sender, MouseButtonEventArgs e)
         {
             drawingLoadCrop = false;
+
+            double top = rctLoadCrop.Margin.Top;
+            double bottom = imageLoadFrame.ActualHeight - (top + rctLoadCrop.Height);
+            double left = rctLoadCrop.Margin.Left;
+            double right = imageLoadFrame.ActualWidth - (left + rctLoadCrop.Width);
+
+            sliderCropTop.Value = top / imageLoadFrame.ActualHeight * 100;
+            sliderCropBottom.Value = bottom / imageLoadFrame.ActualHeight * 100;
+            sliderCropLeft.Value = left / imageLoadFrame.ActualWidth * 100;
+            sliderCropRight.Value = right / imageLoadFrame.ActualWidth * 100;
+
+            UpdatePickedLoadPreview();
         }
     }
 }
