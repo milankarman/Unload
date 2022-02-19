@@ -2,8 +2,8 @@
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
-using System.Reflection;
 using System.Linq;
+using System.Reflection;
 using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
@@ -174,11 +174,11 @@ namespace unload
 
                 void onFinished()
                 {
-                    IsEnabled = true;
+                    gridContainer.IsEnabled = true;
                     LoadProject(dialog.FileName, framesDirectory);
                 }
 
-                IsEnabled = false;
+                gridContainer.IsEnabled = false;
                 ConvertWindow convertWindow = new(this, dialog.FileName, framesDirectory, onFinished);
                 convertWindow.GetVideoInfoAndShow();
             }
@@ -188,7 +188,7 @@ namespace unload
         {
             StartSettingsWindow startSettingsWindow = new(this, workingDirectory);
             startSettingsWindow.Show();
-            IsEnabled = false;
+            gridContainer.IsEnabled = false;
         }
 
         private void btnPreviousVideoLoad_Click(object sender, RoutedEventArgs e)

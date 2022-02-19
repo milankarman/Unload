@@ -66,13 +66,13 @@ namespace unload
             Settings.Default.WorkingDirectory = workingDirectory;
             Settings.Default.Save();
 
-            startWindow.IsEnabled = true;
+            startWindow.gridContainer.IsEnabled = true;
             Close();
         }
 
         private void btnCancel_Click(object sender, RoutedEventArgs e)
         {
-            startWindow.IsEnabled = true;
+            startWindow.gridContainer.IsEnabled = true;
             Close();
         }
     }

@@ -23,7 +23,7 @@
             </Grid>
         </DataTemplate>
     </Window.Resources>
-    <Grid>
+    <Grid x:Name="gridContainer">
         <Grid.RowDefinitions>
             <RowDefinition/>
             <RowDefinition/>

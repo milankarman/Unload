@@ -236,7 +236,7 @@ namespace unload
         // Closes the conversion window and re-enables the main window
         private void btnCancel_Click(object sender, RoutedEventArgs e)
         {
-            startWindow.IsEnabled = true;
+            startWindow.gridContainer.IsEnabled = true;
             Close();
         }
 

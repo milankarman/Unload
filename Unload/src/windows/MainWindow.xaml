@@ -45,7 +45,7 @@
             </Grid>
         </DataTemplate>
     </Window.Resources>
-    <Grid x:Name="gridMain" Margin="10,10,10,10">
+    <Grid x:Name="gridContainer" Margin="10,10,10,10">
         <Grid.RowDefinitions>
             <RowDefinition/>
         </Grid.RowDefinitions>

@@ -449,7 +449,7 @@ namespace unload
             ProgressWindow progress = new("Preparing frames", this);
             progress.Show();
 
-            IsEnabled = false;
+            gridContainer.IsEnabled = false;
 
             void onProgress(double percentage) => progress.percentage = percentage;
 
@@ -458,7 +458,7 @@ namespace unload
                 Dispatcher.Invoke(() =>
                 {
                     progress.Close();
-                    IsEnabled = true;
+                    gridContainer.IsEnabled = true;
                     SetProjectState(ProjectState.PREPARED_FRAMES);
                 });
             }
