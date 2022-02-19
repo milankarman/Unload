@@ -28,8 +28,8 @@
             <Label Grid.Row="2" Grid.Column="0" Content="Start Time:" Margin="0,0,10,5"/>
             <Label Grid.Row="3" Grid.Column="0" Content="End Time:" Margin="0,0,10,5"/>
 
-            <TextBlock Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="4" x:Name="tblFilePath" Text="C:\Video\my-video.mp4" Margin="0,0,0,5" VerticalAlignment="Top"/>
-            <TextBlock Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="4" x:Name="tblOutputFolderPath" Text="C:\Video\my-video_frames" Margin="0,0,0,10"/>
+            <TextBlock Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="4" x:Name="tblFilePath" Text="C:\Video\my-video.mp4" Margin="0,0,0,5" VerticalAlignment="Top" TextTrimming="CharacterEllipsis"/>
+            <TextBlock Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="4" x:Name="tblOutputFolderPath" Text="C:\Video\my-video_frames" Margin="0,0,0,10" TextTrimming="CharacterEllipsis"/>
             <Grid Grid.Row="2" Grid.Column="1" x:Name="gridStartTime" Margin="0,0,10,5">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="4*"/>

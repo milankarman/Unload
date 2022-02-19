@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:unload"
         mc:Ignorable="d"
-        Title="Unload" Height="auto" Width="600" SizeToContent="Height" WindowStartupLocation="CenterScreen" ResizeMode="NoResize" Style="{DynamicResource CustomWindowStyle}" Icon="../../icon/icon_32.png" Background="{DynamicResource bgDark}">
+        Title="Unload" MinHeight="300" MinWidth="600" Height="300" Width="600" WindowStartupLocation="CenterScreen" ResizeMode="NoResize" Style="{DynamicResource CustomWindowStyle}" Icon="../../icon/icon_32.png" Background="{DynamicResource bgDark}">
     <Window.TaskbarItemInfo>
         <TaskbarItemInfo/>
     </Window.TaskbarItemInfo>
@@ -25,9 +25,9 @@
     </Window.Resources>
     <Grid x:Name="gridContainer">
         <Grid.RowDefinitions>
-            <RowDefinition/>
-            <RowDefinition/>
-            <RowDefinition/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="1*"/>
         </Grid.RowDefinitions>
         <Grid Grid.Row="0" Background="{DynamicResource highlight}">
             <Image Source="../../icon/icon.png" Height="64" Margin="10,10,10,10"/>
@@ -45,8 +45,12 @@
         <Grid Grid.Row="2" Margin="10,10,10,10">
             <GroupBox x:Name="groupPreviousVideos" Header="Previously Loaded Videos">
                 <Grid>
-                    <ItemsControl HorizontalAlignment="Stretch" x:Name="lbxPreviousVideos" Margin="5,0,5,0" ItemsSource="{Binding}" ItemTemplate="{StaticResource PreviousVideo}"/>
-                    <Label x:Name="lblNoPreviousVideos" Margin="5,5,5,5" Content="No previously loaded videos found." Visibility="Collapsed"/>
+                    <ScrollViewer VerticalScrollBarVisibility="Hidden">
+                        <StackPanel>
+                            <ItemsControl HorizontalAlignment="Stretch" x:Name="lbxPreviousVideos" Margin="5,0,5,0" ItemsSource="{Binding}" ItemTemplate="{StaticResource PreviousVideo}"/>
+                            <Label x:Name="lblNoPreviousVideos" Margin="5,5,5,5" Content="No previously loaded videos found." Visibility="Collapsed"/>
+                        </StackPanel>
+                    </ScrollViewer>
                 </Grid>
             </GroupBox>
         </Grid>
