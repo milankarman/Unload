@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
@@ -14,6 +13,7 @@ namespace unload
         public event PropertyChangedEventHandler? PropertyChanged;
 
         private readonly Project project;
+        private readonly MainWindow mainWindow;
 
         private int loadIndex;
         private int startFrame;
@@ -69,30 +69,12 @@ namespace unload
             }
         }
 
-        public LoadCheckWindow()
+        public LoadCheckWindow(Project _project, MainWindow _mainWindow)
         {
-            string videoPath = "C:\\Users\\Milan\\Downloads\\[WR] The Hobbit(PC) World Record in 11_48 _ Any% NMG[ikrXK1HM4u0].webm";
-            string framesDirectory = "C:\\Users\\Milan\\Downloads\\WRTheHobbitPCWorldRecordin1148AnyNMGikrXK1HM4u0webm_frames";
+            project = _project;
+            mainWindow = _mainWindow;
 
-            project = new Project(videoPath, framesDirectory, 44505, 60);
-
-            List<DetectedLoad> loads = new()
-            {
-                new DetectedLoad(1, 176, 191),
-                new DetectedLoad(2, 1289, 1310),
-                new DetectedLoad(3, 4005, 4024),
-                new DetectedLoad(4, 5059, 5081),
-                new DetectedLoad(5, 5848, 5876),
-                new DetectedLoad(6, 15093, 15116),
-                new DetectedLoad(7, 20918, 20937),
-                new DetectedLoad(8, 25887, 25921),
-                new DetectedLoad(9, 26696, 26725),
-                new DetectedLoad(10, 31314, 31331),
-                new DetectedLoad(11, 33856, 33882),
-                new DetectedLoad(12, 35743, 35775),
-            };
-
-            project.TEST_SetDetectedLoads(loads);
+            Owner = _mainWindow;
 
             InitializeComponent();
             DataContext = this;
@@ -116,7 +98,6 @@ namespace unload
             StartFrame = load.StartFrame;
             EndFrame = load.EndFrame;
         }
-
 
         private void ShowStartFrame(int frameIndex)
         {
@@ -169,6 +150,10 @@ namespace unload
 
         private int GetStepSizeFrames() => (int)(project.fps / (1000 / int.Parse(txtStepSize.Text)));
 
+        private void btnBack_Click(object sender, RoutedEventArgs e) => LoadNumber--;
+
+        private void btnForward_Click(object sender, RoutedEventArgs e) => LoadNumber++;
+
         private void btnStartFrameBackFar_Click(object sender, RoutedEventArgs e) => StartFrame -= GetStepSizeFrames();
 
         private void btnStartFrameBack_Click(object sender, RoutedEventArgs e) => StartFrame--;
@@ -184,10 +169,6 @@ namespace unload
         private void btnEndFrameForward_Click(object sender, RoutedEventArgs e) => EndFrame++;
 
         private void btnEndFrameForwardFar_Click(object sender, RoutedEventArgs e) => EndFrame += GetStepSizeFrames();
-
-        private void btnBack_Click(object sender, RoutedEventArgs e) => LoadNumber--;
-
-        private void btnForward_Click(object sender, RoutedEventArgs e) => LoadNumber++;
 
         private void btnDLoadAdd_Click(object sender, RoutedEventArgs e)
         {
@@ -222,6 +203,13 @@ namespace unload
             LoadNumber--;
 
             UpdateDetectedLoads();
+        }
+
+        private void btnMainWindow_Click(object sender, RoutedEventArgs e)
+        {
+            mainWindow.UpdateDetectedLoads();
+            mainWindow.Show();
+            Close();
         }
 
         protected void OnPropertyChanged(string? name = null) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));

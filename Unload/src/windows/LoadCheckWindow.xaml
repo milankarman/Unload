@@ -158,7 +158,7 @@
                     </Grid.ColumnDefinitions>
                     <Label Grid.Row="0" Grid.Column="0" Margin="0,0,0,10" Content="Large adjustment step size (ms):"/>
                     <TextBox Grid.Row="0" Grid.Column="1" x:Name="txtStepSize" Margin="0,0,0,10" Text="100" HorizontalContentAlignment="Right"/>
-                    <Button Grid.Row="1" Grid.ColumnSpan="2" x:Name="btnMainWindow" Margin="0,0,0,0" Content="Return to Main Window"/>
+                    <Button Grid.Row="1" Grid.ColumnSpan="2" x:Name="btnMainWindow" Margin="0,0,0,0" Content="Return to Main Window" Click="btnMainWindow_Click"/>
                 </Grid>
             </GroupBox>
         </Grid>

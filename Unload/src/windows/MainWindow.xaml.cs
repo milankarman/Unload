@@ -63,6 +63,13 @@ namespace unload
             SetVideoFrame(1);
         }
 
+        // Sorts and gives proper indexes to the detected loads
+        public void UpdateDetectedLoads()
+        {
+            project.OrderLoads();
+            lbxLoads.ItemsSource = new ObservableCollection<DetectedLoad>(project.DetectedLoads);
+        }
+
         // Loads in a given frame in the video preview
         private void SetVideoFrame(int frameIndex)
         {
@@ -76,13 +83,6 @@ namespace unload
             imageVideo.Source = new BitmapImage(image);
 
             txtVideoFrame.Text = frameIndex.ToString();
-        }
-
-        // Sorts and gives proper indexes to the detected loads
-        private void UpdateDetectedLoads()
-        {
-            project.OrderLoads();
-            lbxLoads.ItemsSource = new ObservableCollection<DetectedLoad>(project.DetectedLoads);
         }
 
         // Applies cropping to the picked load screen and shows it on the interface
@@ -538,6 +538,12 @@ namespace unload
                 StartWindow startWindow = new();
                 startWindow.Show();
             }
+        }
+
+        private void btnLoadCheckWindow_Click(object sender, RoutedEventArgs e)
+        {
+            LoadCheckWindow loadCheckWindow = new(project, this);
+            loadCheckWindow.Show();
         }
     }
 }

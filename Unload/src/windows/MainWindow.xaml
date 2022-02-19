@@ -186,23 +186,29 @@
                 </Grid>
             </GroupBox>
             <GroupBox Grid.Row="1" x:Name="groupDetectedLoads" Header="Detected Loads" Margin="0,10,0,0">
-                <ScrollViewer VerticalScrollBarVisibility="Hidden">
-                    <StackPanel>
-                        <Grid HorizontalAlignment="Stretch" Margin="5,5,5,0">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="30"/>
-                                <ColumnDefinition Width="1*"/>
-                                <ColumnDefinition Width="1*"/>
-                                <ColumnDefinition Width="30"/>
-                            </Grid.ColumnDefinitions>
-                            <Label Grid.Column="0" Content="#"/>
-                            <Label Grid.Column="1" Content="Start"/>
-                            <Label Grid.Column="2" Content="End"/>
-                            <Button Grid.Column="3" Content="+" x:Name="btnAddLoad" Height="20" Click="btnDLoadAdd_Click"/>
-                        </Grid>
-                        <ItemsControl x:Name="lbxLoads" Margin="5,5,5,5"  HorizontalAlignment="Stretch" ItemsSource="{Binding}" ItemTemplate="{StaticResource DetectedLoadTemplate}"/>
-                    </StackPanel>
-                </ScrollViewer>
+                <Grid Margin="5,5,5,5">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="auto"/>
+                        <RowDefinition Height="1*"/>
+                        <RowDefinition Height="auto"/>
+                    </Grid.RowDefinitions>
+                    <Grid Grid.Row="0" HorizontalAlignment="Stretch" Margin="0,0,0,10">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="30"/>
+                            <ColumnDefinition Width="1*"/>
+                            <ColumnDefinition Width="1*"/>
+                            <ColumnDefinition Width="30"/>
+                        </Grid.ColumnDefinitions>
+                        <Label Grid.Column="0" Content="#"/>
+                        <Label Grid.Column="1" Content="Start"/>
+                        <Label Grid.Column="2" Content="End"/>
+                        <Button Grid.Column="3" Content="+" x:Name="btnAddLoad" Height="20" Click="btnDLoadAdd_Click"/>
+                    </Grid>
+                    <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Hidden" Margin="0,0,0,10">
+                        <ItemsControl x:Name="lbxLoads" Margin="0,5,0,0"  HorizontalAlignment="Stretch" ItemsSource="{Binding}" ItemTemplate="{StaticResource DetectedLoadTemplate}"/>
+                    </ScrollViewer>
+                    <Button Grid.Row="2" Content="Open Load Checking Window" x:Name="btnLoadCheckWindow" Click="btnLoadCheckWindow_Click"/>
+                </Grid>
             </GroupBox>
             <GroupBox Grid.Row="2" x:Name="groupSettings" Margin="0,10,0,0" Header="Settings">
                 <Grid Margin="5,5,5,5">
