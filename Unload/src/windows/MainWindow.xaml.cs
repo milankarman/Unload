@@ -161,9 +161,9 @@ namespace unload
         private Rectangle GetCropRect()
         {
             int top = (int)Math.Round(sliderCropTop.Value);
-            int bottom = (int)Math.Round(sliderCropBottom.Value);
+            int bottom = 100 - (int)Math.Round(sliderCropBottom.Value);
             int left = (int)Math.Round(sliderCropLeft.Value);
-            int right = (int)Math.Round(sliderCropRight.Value);
+            int right = 100 - (int)Math.Round(sliderCropRight.Value);
 
             int width = Math.Clamp(right - left, 1, 100);
             int height = Math.Clamp(bottom - top, 1, 100);
