@@ -22,6 +22,8 @@ namespace unload
         {
             // Remember file info
             Owner = _startWindow;
+            Owner.LocationChanged += new EventHandler(OnOwnerMoves);
+
             startWindow = _startWindow;
             filePath = _filePath;
             targetDirectory = _targetDirectory;
@@ -156,6 +158,12 @@ namespace unload
                 TextBoxValidator.ClampInteger(txtEndTimeS, startTime.Seconds, fileDuration.Seconds, "00");
                 TextBoxValidator.ClampInteger(txtEndTimeMS, startTime.Milliseconds, fileDuration.Milliseconds, "000");
             }
+        }
+
+        private void OnOwnerMoves(object? sender, EventArgs e)
+        {
+            Left = Owner.Left + (Owner.Width - ActualWidth) / 2;
+            Top = Owner.Top + (Owner.Height - ActualHeight) / 2;
         }
 
         private void btnConvert_Click(object sender, RoutedEventArgs e)

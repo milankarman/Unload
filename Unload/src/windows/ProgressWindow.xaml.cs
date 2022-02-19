@@ -21,6 +21,7 @@ namespace unload
             text = _text;
             Owner = owner;
             Owner.TaskbarItemInfo.ProgressState = TaskbarItemProgressState.Normal;
+            Owner.LocationChanged += new EventHandler(OnOwnerMoves);
 
             SetProgress();
 
@@ -36,6 +37,12 @@ namespace unload
             Owner.TaskbarItemInfo.ProgressValue = percentage / 100d;
             lblProgress.Content = $"{text}: {percentage:N2}%";
             progressBar.Value = percentage;
+        }
+
+        private void OnOwnerMoves(object? sender, EventArgs e)
+        {
+            Left = Owner.Left + (Owner.Width - ActualWidth) / 2;
+            Top = Owner.Top + (Owner.Height - ActualHeight) / 2;
         }
 
         public void timer_Tick(object? sender, EventArgs e)

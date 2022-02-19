@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using System;
+using System.Windows;
 using Microsoft.WindowsAPICodePack.Dialogs;
 using unload.Properties;
 
@@ -23,6 +24,14 @@ namespace unload
             txtWorkingDirectory.Text = workingDirectory ?? NO_WORKING_DIRECTORY;
 
             if (_workingDirectory != null) btnClear.IsEnabled = true;
+
+            Owner.LocationChanged += new EventHandler(OnOwnerMoves);
+        }
+
+        private void OnOwnerMoves(object? sender, EventArgs e)
+        {
+            Left = Owner.Left + (Owner.Width - ActualWidth) / 2;
+            Top = Owner.Top + (Owner.Height - ActualHeight) / 2;
         }
 
         private void btnBrowse_Click(object sender, RoutedEventArgs e)
