@@ -119,10 +119,12 @@
                         <ColumnDefinition/>
                         <ColumnDefinition/>
                     </Grid.ColumnDefinitions>
-                    <Image x:Name="imageLoadFrame" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="4"/>
-                    <Grid x:Name="gridLoadCrop" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="4" Background="Transparent" MouseDown="gridLoadCrop_MouseDown" MouseMove="gridLoadCrop_MouseMove" MouseUp="gridLoadCrop_MouseUp">
-                        <Rectangle x:Name="rctLoadCrop" StrokeThickness="1" Stroke="{StaticResource primaryLight}" HorizontalAlignment="Left" VerticalAlignment="Top" Visibility="Collapsed"/>
-                    </Grid>
+                    <Border BorderBrush="{StaticResource borderDarkSecondary}" BorderThickness="1" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="4">
+                        <Grid Background="Transparent">
+                            <Image x:Name="imageLoadFrame" MouseDown="imageLoadFrame_MouseDown" MouseMove="imageLoadFrame_MouseMove" MouseUp="imageLoadFrame_MouseUp" MouseEnter="imageLoadFrame_MouseEnter" MouseLeave="imageLoadFrame_MouseLeave"/>
+                            <Rectangle x:Name="rctLoadCrop" StrokeThickness="1" Stroke="{StaticResource primaryLight}" HorizontalAlignment="Left" VerticalAlignment="Top" IsHitTestVisible="False" Visibility="Collapsed"/>
+                        </Grid>
+                    </Border>
                     <Label Grid.Row="0" Grid.Column="3" x:Name="lblPickedLoadCount" Content="0 / 0" HorizontalAlignment="Right" Margin="0,1,1,0" VerticalAlignment="Top" Padding="10,2,10,2" Background="#FF5844FE" BorderBrush="{DynamicResource highlightDark}"/>
                     <Button Grid.Row="1" Grid.Column="0" x:Name="btnPreviousLoadFrame" Margin="0,10,10,0" Content="◄" FontFamily="Arial" Click="btnPreviousLoadFrame_Click"/>
                     <Button Grid.Row="1" Grid.Column="1" x:Name="btnNextLoadFrame" Margin="0,10,5,0" Content="►" FontFamily="Arial" Click="btnNextLoadFrame_Click"/>
@@ -130,13 +132,14 @@
                     <Button Grid.Row="1" Grid.Column="3" x:Name="btnRemoveLoadFrame" Margin="10,10,0,0" Content="-" FontFamily="Arial" FontSize="14" Click="btnRemoveLoadFrame_Click"/>
                     <Label Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" Content="Top" Margin="0,10,0,0" HorizontalContentAlignment="Center"/>
                     <Label Grid.Row="2" Grid.Column="2" Grid.ColumnSpan="2" Content="Bottom" Margin="0,10,0,0" HorizontalContentAlignment="Center"/>
-                    <Slider Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" x:Name="sliderCropTop" Margin="5,0,5,0" ValueChanged="slidersCropping_OnValueChanged" Maximum="100" Minimum="1" />
-                    <Slider Grid.Row="3" Grid.Column="2" Grid.ColumnSpan="2" x:Name="sliderCropBottom" Margin="5,0,5,0" ValueChanged="slidersCropping_OnValueChanged" Maximum="100" Minimum="1"/>
+                    <Slider Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" x:Name="sliderCropTop" Margin="5,0,5,0" ValueChanged="slidersCropping_OnValueChanged" Maximum="100" />
+                    <Slider Grid.Row="3" Grid.Column="2" Grid.ColumnSpan="2" x:Name="sliderCropBottom" Margin="5,0,5,0" ValueChanged="slidersCropping_OnValueChanged" Maximum="100"/>
                     <Label Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="2" Content="Left" Margin="0,0,0,0" HorizontalContentAlignment="Center"/>
                     <Label Grid.Row="4" Grid.Column="2" Grid.ColumnSpan="2" Content="Right" Margin="0,0,0,0" HorizontalContentAlignment="Center"/>
-                    <Slider Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="2" x:Name="sliderCropLeft" Margin="5,0,5,0" ValueChanged="slidersCropping_OnValueChanged" Maximum="100" Minimum="1"/>
-                    <Slider Grid.Row="5" Grid.Column="2" Grid.ColumnSpan="2" x:Name="sliderCropRight" Margin="5,0,5,0" ValueChanged="slidersCropping_OnValueChanged" Maximum="100" Minimum="1"/>
-                    <Button Grid.Row="6" Grid.Column="0" Grid.ColumnSpan="4" x:Name="btnCheckSimilarity" Margin="0,5,0,0" Content="Check Similarity to Video Frame" Click="btnCheckSimilarity_Click"/>
+                    <Slider Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="2" x:Name="sliderCropLeft" Margin="5,0,5,0" ValueChanged="slidersCropping_OnValueChanged" Maximum="100"/>
+                    <Slider Grid.Row="5" Grid.Column="2" Grid.ColumnSpan="2" x:Name="sliderCropRight" Margin="5,0,5,0" ValueChanged="slidersCropping_OnValueChanged" Maximum="100"/>
+                    <Button Grid.Row="6" Grid.Column="0" Grid.ColumnSpan="2" x:Name="btnResetCrop" Margin="0,5,5,0" Content="Reset Crop" Click="btnResetCrop_Click"/>
+                    <Button Grid.Row="6" Grid.Column="2" Grid.ColumnSpan="2" x:Name="btnCheckSimilarity" Margin="5,5,0,0" Content="Check Similarity" Click="btnCheckSimilarity_Click"/>
                 </Grid>
             </GroupBox>
             <GroupBox Grid.Row="2" x:Name="groupFrameCount" Header="Frame Count" Margin="0,10,0,0">

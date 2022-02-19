@@ -39,6 +39,10 @@ namespace unload
         private bool hasExported;
         private bool shouldOpenStart;
 
+        private bool drawingLoadCrop;
+        private Point loadCropStartPoint;
+        private Rect loadCropDrawing;
+
         public MainWindow(Project _project)
         {
             project = _project;
@@ -93,13 +97,33 @@ namespace unload
             if (pickedLoadingFrames.Count >= 1)
             {
                 Bitmap image = new(Path.Join(project.framesDirectory, $"{pickedLoadingFrames[selectedPickedLoad]}.jpg"));
-                Bitmap croppedImage = ImageProcessor.CropImage(image, GetSliderCropRect());
-                imageLoadFrame.Source = ImageProcessor.BitmapToBitmapImage(croppedImage);
+                image = ImageProcessor.CropImage(image, GetSliderCropRect());
+
+                imageLoadFrame.Source = ImageProcessor.BitmapToBitmapImage(image);
             }
             else
             {
                 imageLoadFrame.Source = null;
             }
+        }
+
+        private void ApplyDrawnCropping()
+        {
+            Mouse.OverrideCursor = null;
+            drawingLoadCrop = false;
+            rctLoadCrop.Visibility = Visibility.Collapsed;
+
+            double top = rctLoadCrop.Margin.Top;
+            double bottom = imageLoadFrame.ActualHeight - (top + rctLoadCrop.Height);
+            double left = rctLoadCrop.Margin.Left;
+            double right = imageLoadFrame.ActualWidth - (left + rctLoadCrop.Width);
+
+            sliderCropTop.Value = top / imageLoadFrame.ActualHeight * 100;
+            sliderCropBottom.Value = bottom / imageLoadFrame.ActualHeight * 100;
+            sliderCropLeft.Value = left / imageLoadFrame.ActualWidth * 100;
+            sliderCropRight.Value = right / imageLoadFrame.ActualWidth * 100;
+
+            UpdatePickedLoadPreview();
         }
 
         // Calculates the final times and adds them to the interface
@@ -188,6 +212,9 @@ namespace unload
 
         private int GetStepSizeFrames() => (int)(project.fps / (1000 / int.Parse(txtStepSize.Text)));
 
+        private bool HasCropping() => sliderCropTop.Value > 0 || sliderCropBottom.Value > 0 ||
+                sliderCropLeft.Value > 0 || sliderCropLeft.Value > 0;
+
         private void BindValidationMethods()
         {
             txtVideoFrame.PreviewTextInput += TextBoxValidator.ForceInteger;
@@ -218,6 +245,12 @@ namespace unload
                     btnResetFrames.IsEnabled = false;
                     btnCheckSimilarity.IsEnabled = false;
                     btnExportTimes.IsEnabled = false;
+
+                    sliderCropTop.IsEnabled = false;
+                    sliderCropBottom.IsEnabled = false;
+                    sliderCropLeft.IsEnabled = false;
+                    sliderCropRight.IsEnabled = false;
+                    btnResetCrop.IsEnabled = false;
                     break;
 
                 case ProjectState.PICKED_LOADS:
@@ -239,6 +272,7 @@ namespace unload
                     sliderCropBottom.IsEnabled = true;
                     sliderCropLeft.IsEnabled = true;
                     sliderCropRight.IsEnabled = true;
+                    btnResetCrop.IsEnabled = true;
                     break;
 
                 case ProjectState.PREPARED_FRAMES:
@@ -258,6 +292,7 @@ namespace unload
                     sliderCropBottom.IsEnabled = false;
                     sliderCropLeft.IsEnabled = false;
                     sliderCropRight.IsEnabled = false;
+                    btnResetCrop.IsEnabled = false;
                     break;
 
                 case ProjectState.DETECTED_LOADS:
@@ -274,6 +309,7 @@ namespace unload
                     sliderCropBottom.IsEnabled = false;
                     sliderCropLeft.IsEnabled = false;
                     sliderCropRight.IsEnabled = false;
+                    btnResetCrop.IsEnabled = false;
                     break;
             }
         }
@@ -341,6 +377,64 @@ namespace unload
 
         private void slidersCropping_OnValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e) => UpdatePickedLoadPreview();
 
+        private void imageLoadFrame_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            if (HasCropping()) return;
+            drawingLoadCrop = true;
+            loadCropStartPoint = e.GetPosition(imageLoadFrame);
+
+            loadCropDrawing = new Rect(loadCropStartPoint, loadCropStartPoint);
+            rctLoadCrop.Margin = new Thickness(loadCropDrawing.Left, loadCropDrawing.Top, 0, 0);
+            rctLoadCrop.Width = 10;
+            rctLoadCrop.Height = 10;
+        }
+
+        private void imageLoadFrame_MouseMove(object sender, MouseEventArgs e)
+        {
+            if (!drawingLoadCrop) return;
+
+            rctLoadCrop.Visibility = Visibility.Visible;
+            Point point = e.GetPosition(imageLoadFrame);
+
+            loadCropDrawing = new Rect(loadCropStartPoint, point);
+            rctLoadCrop.Margin = new Thickness(loadCropDrawing.Left, loadCropDrawing.Top, 0, 0);
+            rctLoadCrop.Width = loadCropDrawing.Width;
+            rctLoadCrop.Height = loadCropDrawing.Height;
+        }
+
+        private void imageLoadFrame_MouseUp(object sender, MouseButtonEventArgs e)
+        {
+            if (!drawingLoadCrop) return;
+
+            ApplyDrawnCropping();
+        }
+
+        private void imageLoadFrame_MouseEnter(object sender, MouseEventArgs e)
+        {
+            if (!HasCropping()) Mouse.OverrideCursor = Cursors.Cross;
+        }
+
+        private void imageLoadFrame_MouseLeave(object sender, MouseEventArgs e)
+        {
+            Mouse.OverrideCursor = null;
+
+            if (drawingLoadCrop)
+            {
+                drawingLoadCrop = false;
+                rctLoadCrop.Visibility = Visibility.Collapsed;
+            }
+        }
+
+        private void btnResetCrop_Click(object sender, RoutedEventArgs e)
+        {
+            sliderCropTop.Value = 0;
+            sliderCropBottom.Value = 0;
+            sliderCropRight.Value = 0;
+            sliderCropLeft.Value = 0;
+
+            UpdatePickedLoadPreview();
+        }
+
         private void btnCheckSimilarity_Click(object sender, RoutedEventArgs e)
         {
             int loadIndex = pickedLoadingFrames[selectedPickedLoad];
@@ -358,10 +452,7 @@ namespace unload
                 "Make sure your start frame and end frame are set properly, and that the load image cropping is correct. To change these after you will have to reset frames first.";
             MessageBoxResult result = MessageBox.Show(text, "Info", MessageBoxButton.YesNo, MessageBoxImage.Information);
 
-            if (result == MessageBoxResult.No)
-            {
-                return;
-            }
+            if (result == MessageBoxResult.No) return;
 
             Rectangle crop = GetSliderCropRect();
 
@@ -558,51 +649,6 @@ namespace unload
                 StartWindow startWindow = new();
                 startWindow.Show();
             }
-        }
-
-        bool drawingLoadCrop;
-        Point loadCropStartPoint;
-        Rect loadCropDrawing;
-
-        private void gridLoadCrop_MouseDown(object sender, MouseButtonEventArgs e)
-        {
-            drawingLoadCrop = true;
-            loadCropStartPoint = e.GetPosition(imageLoadFrame);
-        }
-
-        private void gridLoadCrop_MouseMove(object sender, MouseEventArgs e)
-        {
-            if (drawingLoadCrop)
-            {
-                rctLoadCrop.Visibility = Visibility.Visible;
-                Point point = e.GetPosition(imageLoadFrame);
-
-                loadCropDrawing = new Rect(loadCropStartPoint, point);
-                rctLoadCrop.Margin = new Thickness(loadCropDrawing.Left, loadCropDrawing.Top, 0, 0);
-                rctLoadCrop.Width = loadCropDrawing.Width;
-                rctLoadCrop.Height = loadCropDrawing.Height;
-            }
-            else
-            {
-                rctLoadCrop.Visibility = Visibility.Collapsed;
-            }
-        }
-
-        private void gridLoadCrop_MouseUp(object sender, MouseButtonEventArgs e)
-        {
-            drawingLoadCrop = false;
-
-            double top = rctLoadCrop.Margin.Top;
-            double bottom = imageLoadFrame.ActualHeight - (top + rctLoadCrop.Height);
-            double left = rctLoadCrop.Margin.Left;
-            double right = imageLoadFrame.ActualWidth - (left + rctLoadCrop.Width);
-
-            sliderCropTop.Value = top / imageLoadFrame.ActualHeight * 100;
-            sliderCropBottom.Value = bottom / imageLoadFrame.ActualHeight * 100;
-            sliderCropLeft.Value = left / imageLoadFrame.ActualWidth * 100;
-            sliderCropRight.Value = right / imageLoadFrame.ActualWidth * 100;
-
-            UpdatePickedLoadPreview();
         }
     }
 }
