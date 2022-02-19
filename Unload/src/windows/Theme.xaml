@@ -246,12 +246,13 @@
     <Style TargetType="Button">
         <Setter Property="Background" Value="{DynamicResource primaryDark}" />
         <Setter Property="Foreground" Value="{DynamicResource primaryLight}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource borderDarkPrimary}" />
 
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type Button}">
                     <Grid Background="{TemplateBinding Background}">
-                        <Border BorderBrush="{DynamicResource borderDarkPrimary}" BorderThickness="1"></Border>
+                        <Border BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="1"></Border>
                         <ContentPresenter x:Name="Content" 
                                           Content="{TemplateBinding Content}"
                                           Margin="3"
@@ -270,9 +271,11 @@
             </Trigger>
             <Trigger Property="IsMouseOver" Value="True">
                 <Setter Property="Background" Value="{DynamicResource highlight}"/>
+                <Setter Property="BorderBrush" Value="{DynamicResource highlightDark}"/>
             </Trigger>
             <Trigger Property="IsPressed" Value="True">
                 <Setter Property="Background" Value="{DynamicResource highlightDark}"/>
+                <Setter Property="BorderBrush" Value="{DynamicResource highlight}"/>
             </Trigger>
         </Style.Triggers>
     </Style>
