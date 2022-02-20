@@ -153,13 +153,13 @@ namespace unload
 
         public TimeSpan GetTotalTime()
         {
-            double totalSecondsDouble = totalFrames / fps;
+            double totalSecondsDouble = (usedEndFrame - usedStartFrame + 1) / fps;
             return TimeSpan.FromSeconds(Math.Round(totalSecondsDouble, 3));
         }
 
         public TimeSpan GetLoadlessTime()
         {
-            int loadlessFrames = totalFrames - GetDetectedLoadFrames();
+            int loadlessFrames = (usedEndFrame - usedStartFrame + 1) - GetDetectedLoadFrames();
             double loadlessSecondsDouble = loadlessFrames / fps;
             return TimeSpan.FromSeconds(Math.Round(loadlessSecondsDouble, 3));
         }
