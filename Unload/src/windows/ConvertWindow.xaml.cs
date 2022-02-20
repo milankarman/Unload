@@ -184,11 +184,7 @@ namespace unload
             double fps = double.Parse(txtFramesPerSecond.Text);
             int expectedFrames = (int)(fps * (endTime - startTime).TotalSeconds);
 
-            ConversionInfo info = new()
-            {
-                FPS = fps,
-                ExpectedFrames = expectedFrames
-            };
+            ConversionInfo info = new(Path.GetFileName(filePath), fps, expectedFrames);
 
             // Save user conversion string into a file in json format
             string jsonString = JsonSerializer.Serialize(info);

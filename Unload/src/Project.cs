@@ -10,8 +10,8 @@ namespace unload
 {
     public class Project
     {
-        public readonly string videoPath;
         public readonly string framesDirectory;
+        public readonly string videoName;
 
         public readonly int totalFrames;
         public readonly double fps;
@@ -24,10 +24,10 @@ namespace unload
         private double usedMinSimilarity;
         private int usedMinLoadFrames;
 
-        public Project(string _videoPath,string _framesDirectory, int _totalFrames, double _fps)
+        public Project(string _framesDirectory, string _videoName, int _totalFrames, double _fps)
         {
-            videoPath = _videoPath;
             framesDirectory = _framesDirectory;
+            videoName = _videoName; 
             totalFrames = _totalFrames;
             fps = _fps;
 

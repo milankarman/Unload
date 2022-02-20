@@ -628,8 +628,8 @@ namespace unload
             SaveFileDialog dialog = new()
             {
                 Filter = "Comma Seperated Values (*.csv)|*.csv",
-                InitialDirectory = project.videoPath,
-                FileName = Path.GetFileNameWithoutExtension(project.videoPath),
+                InitialDirectory = Directory.GetParent(project.framesDirectory)?.FullName ?? project.framesDirectory,
+                FileName = Path.GetFileNameWithoutExtension(project.videoName),
                 DefaultExt = "csv",
             };
 

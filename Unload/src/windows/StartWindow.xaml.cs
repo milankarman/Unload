@@ -17,12 +17,14 @@ namespace unload
     {
         private class PreviousVideo
         {
-            public string FilePath { get; set; }
+            public string FileName { get; set; }
+            public string FramesDirectory { get; set; }
             public DateTime LastOpened { get; set; }
 
-            public PreviousVideo(string filePath, DateTime lastOpened)
+            public PreviousVideo(string fileName, string framesDirectory, DateTime lastOpened)
             {
-                FilePath = filePath;
+                FileName = fileName;
+                FramesDirectory = framesDirectory;
                 LastOpened = lastOpened;
             }
         }
@@ -67,7 +69,7 @@ namespace unload
             if (workingDirectory.Length == 0) workingDirectory = null;
         }
 
-        public void LoadProject(string filePath, string framesDirectory)
+        public void LoadProject(string framesDirectory)
         {
             string infoPath = Path.Join(framesDirectory, "conversion-info.json");
 
@@ -92,6 +94,7 @@ namespace unload
                 return;
             }
 
+            string fileName = info.FileName;
             double fps = info.FPS;
             int totalFrames = info.ExpectedFrames;
 
@@ -104,26 +107,29 @@ namespace unload
                 totalFrames = Directory.GetFiles(framesDirectory, "*.jpg").Length;
             }
 
-            // Add to previously opened videos then sort and save them
-            PreviousVideo? existing = previousVideos.FirstOrDefault(i => i.FilePath == filePath);
-
-            if (existing != null)
+            if (fileName != null)
             {
-                existing.LastOpened = DateTime.Now;
-            }
-            else
-            {
-                PreviousVideo previousVideo = new(filePath, DateTime.Now);
-                previousVideos.Add(previousVideo);
-            }
+                // Add to previously opened videos then sort and save them
+                PreviousVideo? existing = previousVideos.FirstOrDefault(i => i.FileName == fileName);
 
-            previousVideos = new(previousVideos.OrderByDescending(i => i.LastOpened).Take(5).ToList());
+                if (existing != null)
+                {
+                    existing.LastOpened = DateTime.Now;
+                }
+                else
+                {
+                    PreviousVideo previousVideo = new(fileName, framesDirectory, DateTime.Now);
+                    previousVideos.Add(previousVideo);
+                }
 
-            Settings.Default.PreviousVideos = JsonConvert.SerializeObject(previousVideos);
-            Settings.Default.Save();
+                previousVideos = new(previousVideos.OrderByDescending(i => i.LastOpened).Take(5).ToList());
+
+                Settings.Default.PreviousVideos = JsonConvert.SerializeObject(previousVideos);
+                Settings.Default.Save();
+            }
 
             // Create the project and start the main window
-            Project project = new(filePath, framesDirectory, totalFrames, fps);
+            Project project = new(framesDirectory, fileName ?? "Unkown", totalFrames, fps);
 
             MainWindow mainWindow = new(project);
             mainWindow.Show();
@@ -133,15 +139,25 @@ namespace unload
         private void btnLoad_Click(object sender, RoutedEventArgs e)
         {
             OpenFileDialog dialog = new();
+            dialog.Filter = "Unload Supported Formats|*.3g2;*.3gp;*.3gp2;*.asf;*.avi;*.dvrms;*.flv;*.h261;*.h263;*.h264;*.m2t;" +
+                "*.m2ts;*.m4v;*.mkv;*.mod;*.mov;*.mp4;*.mpg;*.mxf;*.webm;*.wmv;*.xmv;conversion-info.json;";
 
             if (dialog.ShowDialog() == true)
             {
-                string? fileDirectory = Path.GetDirectoryName(dialog.FileName);
+                string? framesDirectory;
 
-                string framesDirectory = Path.Join(workingDirectory ?? fileDirectory,
-                    RemoveSymbols(dialog.SafeFileName) + FRAMES_SUFFIX);
+                if (dialog.SafeFileName == "conversion-info.json")
+                {
+                    framesDirectory = Path.GetDirectoryName(dialog.FileName);
+                }
+                else
+                {
+                    string? fileDirectory = Path.GetDirectoryName(dialog.FileName);
+                    framesDirectory = Path.Join(workingDirectory ?? fileDirectory,
+                        RemoveSymbols(dialog.SafeFileName) + FRAMES_SUFFIX);
+                }
 
-                if (!Directory.Exists(framesDirectory))
+                if (framesDirectory == null || !Directory.Exists(framesDirectory))
                 {
                     MessageBox.Show(
                         $"No {FRAMES_SUFFIX} folder accompanying this video found. Convert the video first.",
@@ -151,7 +167,7 @@ namespace unload
                     return;
                 }
 
-                LoadProject(dialog.FileName, framesDirectory);
+                LoadProject(framesDirectory);
             }
         }
 
@@ -175,7 +191,7 @@ namespace unload
                 void onFinished()
                 {
                     gridContainer.IsEnabled = true;
-                    LoadProject(dialog.FileName, framesDirectory);
+                    LoadProject(framesDirectory);
                 }
 
                 gridContainer.IsEnabled = false;
@@ -196,25 +212,10 @@ namespace unload
             Button cmd = (Button)sender;
             if (cmd.DataContext is PreviousVideo previousVideo)
             {
-                string? fileDirectory = Path.GetDirectoryName(previousVideo.FilePath);
-
-                string framesDirectory = Path.Join(workingDirectory ?? fileDirectory,
-                    RemoveSymbols(Path.GetFileName(previousVideo.FilePath)) + FRAMES_SUFFIX);
-
-                if (!File.Exists(previousVideo.FilePath))
+                if (!Directory.Exists(previousVideo.FramesDirectory))
                 {
                     MessageBox.Show(
-                        $"{fileDirectory} not found. It might have been moved or deleted.",
-                        "Error",
-                        MessageBoxButton.OK,
-                        MessageBoxImage.Error);
-                    return;
-                }
-
-                if (!Directory.Exists(framesDirectory))
-                {
-                    MessageBox.Show(
-                        $"No {FRAMES_SUFFIX} folder accompanying this video found. The working directory might have changed or the frames folder " +
+                        $"{previousVideo.FramesDirectory} not found. The working directory might have changed or the frames folder " +
                         $"could have been moved or deleted.",
                         "Error",
                         MessageBoxButton.OK,
@@ -222,7 +223,7 @@ namespace unload
                     return;
                 }
 
-                LoadProject(previousVideo.FilePath, framesDirectory);
+                LoadProject(previousVideo.FramesDirectory);
             }
         }
 
