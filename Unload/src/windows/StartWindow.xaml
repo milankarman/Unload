@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:unload"
         mc:Ignorable="d"
-        Title="Unload" MinHeight="300" MinWidth="600" Height="300" Width="600" WindowStartupLocation="CenterScreen" ResizeMode="NoResize" Style="{DynamicResource CustomWindowStyle}" Icon="../../icon/icon_32.png" Background="{DynamicResource bgDark}">
+        Title="Unload" MinHeight="300" MinWidth="600" Height="300" Width="600" WindowStartupLocation="CenterScreen" Style="{DynamicResource CustomWindowStyle}" Icon="../../icon/icon_32.png" Background="{DynamicResource bgDark}">
     <Window.TaskbarItemInfo>
         <TaskbarItemInfo/>
     </Window.TaskbarItemInfo>
