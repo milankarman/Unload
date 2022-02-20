@@ -22,6 +22,8 @@ namespace unload
         private int startFrame;
         private int endFrame;
 
+        private bool returningToMainWindow;
+
         private readonly int largeStepSize = 100;
 
         public int LoadNumber
@@ -231,6 +233,7 @@ namespace unload
 
         private void btnMainWindow_Click(object sender, RoutedEventArgs e)
         {
+            returningToMainWindow = true;
             SaveSettings();
             mainWindow.UpdateDetectedLoads();
             mainWindow.Left = Left;
@@ -246,6 +249,19 @@ namespace unload
         {
             Settings.Default.LargeAdjustmentStepSize = int.Parse(txtStepSize.Text);
             Settings.Default.Save();
+        }
+
+        private void Window_Closing(object sender, CancelEventArgs e)
+        {
+            if (!returningToMainWindow)
+            {
+                mainWindow.Close();
+
+                if (mainWindow != null)
+                {
+                    e.Cancel = true;
+                }
+            }
         }
 
         protected void OnPropertyChanged(string? name = null) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
