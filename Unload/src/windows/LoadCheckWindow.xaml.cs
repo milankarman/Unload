@@ -253,15 +253,12 @@ namespace unload
 
         private void Window_Closing(object sender, CancelEventArgs e)
         {
-            if (!returningToMainWindow)
-            {
-                mainWindow.Close();
+            if (returningToMainWindow) return;
 
-                if (mainWindow != null)
-                {
-                    e.Cancel = true;
-                }
-            }
+            mainWindow.Close();
+
+            if (mainWindow != null) e.Cancel = true;
+            SaveSettings();
         }
 
         protected void OnPropertyChanged(string? name = null) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
