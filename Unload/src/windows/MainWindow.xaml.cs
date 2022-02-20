@@ -43,11 +43,11 @@ namespace unload
         private Point loadCropStartPoint;
         private Rect loadCropDrawing;
 
-        private int stepSize = 250;
-        private bool snapToDetectedLoads = true;
+        private readonly int stepSize = 250;
+        private readonly bool snapToDetectedLoads = true;
+        private readonly double minSimilarity = 0.95;
+        private readonly int minFrames = 1;
         private bool saveLoadDetectionSettings = false;
-        private double minSimilarity = 0.95;
-        private int minFrames = 1;
 
         public MainWindow(Project _project)
         {
@@ -73,7 +73,7 @@ namespace unload
                 MessageBox.Show($"Failed to load in user settings. {Environment.NewLine}{ex.Message}",
                     "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
-            
+
             txtStepSize.Text = stepSize.ToString();
             cbxSnapLoads.IsChecked = snapToDetectedLoads;
             cbxSaveLoadDetectionSettings.IsChecked = saveLoadDetectionSettings;
@@ -667,7 +667,7 @@ namespace unload
 
             Settings.Default.SnapToDetectedLoads = cbxSnapLoads.IsChecked ?? true;
             Settings.Default.FastForwardStepSize = int.Parse(txtStepSize.Text);
-           
+
             saveLoadDetectionSettings = cbxSaveLoadDetectionSettings.IsChecked ?? false;
             Settings.Default.SaveLoadDetectionSettings = saveLoadDetectionSettings;
 
@@ -676,6 +676,8 @@ namespace unload
                 Settings.Default.MinimumFrames = int.Parse(txtMinFrames.Text);
                 Settings.Default.MinimumSimilarity = double.Parse(txtMinSimilarity.Text);
             }
+
+            Settings.Default.Save();
 
             if (shouldOpenStart)
             {

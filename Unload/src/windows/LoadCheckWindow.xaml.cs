@@ -7,6 +7,7 @@ using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media.Imaging;
+using unload.Properties;
 
 namespace unload
 {
@@ -20,6 +21,8 @@ namespace unload
         private int loadIndex;
         private int startFrame;
         private int endFrame;
+
+        private readonly int largeStepSize = 100;
 
         public int LoadNumber
         {
@@ -81,6 +84,18 @@ namespace unload
             InitializeComponent();
             DataContext = this;
             Title += $" {FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).ProductVersion} - Load Checking";
+
+            try
+            {
+                largeStepSize = Settings.Default.LargeAdjustmentStepSize;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Failed to load in user settings. {Environment.NewLine}{ex.Message}",
+                    "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+
+            txtStepSize.Text = largeStepSize.ToString();
 
             Left = mainWindow.Left;
             Top = mainWindow.Top;
@@ -216,6 +231,7 @@ namespace unload
 
         private void btnMainWindow_Click(object sender, RoutedEventArgs e)
         {
+            SaveSettings();
             mainWindow.UpdateDetectedLoads();
             mainWindow.Left = Left;
             mainWindow.Top = Top;
@@ -224,6 +240,12 @@ namespace unload
             mainWindow.WindowState = WindowState;
             mainWindow.Show();
             Close();
+        }
+
+        private void SaveSettings()
+        {
+            Settings.Default.LargeAdjustmentStepSize = int.Parse(txtStepSize.Text);
+            Settings.Default.Save();
         }
 
         protected void OnPropertyChanged(string? name = null) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
