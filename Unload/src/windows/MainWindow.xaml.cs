@@ -11,6 +11,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media.Imaging;
 using Microsoft.Win32;
+using unload.Properties;
 using Point = System.Windows.Point;
 
 namespace unload
@@ -34,7 +35,6 @@ namespace unload
         private readonly bool ready;
 
         private int selectedPickedLoad = -1;
-        private const double defaultSimilarity = 0.95;
 
         private bool hasExported;
         private bool shouldOpenStart;
@@ -43,6 +43,12 @@ namespace unload
         private Point loadCropStartPoint;
         private Rect loadCropDrawing;
 
+        private int stepSize = 250;
+        private bool snapToDetectedLoads = true;
+        private bool saveLoadDetectionSettings = false;
+        private double minSimilarity = 0.95;
+        private int minFrames = 1;
+
         public MainWindow(Project _project)
         {
             project = _project;
@@ -50,7 +56,29 @@ namespace unload
             InitializeComponent();
             Title += $" {FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).ProductVersion}";
 
-            txtMinSimilarity.Text = defaultSimilarity.ToString();
+            try
+            {
+                stepSize = Settings.Default.FastForwardStepSize;
+                snapToDetectedLoads = Settings.Default.SnapToDetectedLoads;
+                saveLoadDetectionSettings = Settings.Default.SaveLoadDetectionSettings;
+
+                if (saveLoadDetectionSettings)
+                {
+                    minSimilarity = Settings.Default.MinimumSimilarity;
+                    minFrames = Settings.Default.MinimumFrames;
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Failed to load in user settings. {Environment.NewLine}{ex.Message}",
+                    "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            
+            txtStepSize.Text = stepSize.ToString();
+            cbxSnapLoads.IsChecked = snapToDetectedLoads;
+            cbxSaveLoadDetectionSettings.IsChecked = saveLoadDetectionSettings;
+            txtMinSimilarity.Text = minSimilarity.ToString();
+            txtMinFrames.Text = minFrames.ToString();
 
             UpdateDetectedLoads();
 
@@ -635,6 +663,18 @@ namespace unload
             {
                 shouldOpenStart = false;
                 e.Cancel = true;
+            }
+
+            Settings.Default.SnapToDetectedLoads = cbxSnapLoads.IsChecked ?? true;
+            Settings.Default.FastForwardStepSize = int.Parse(txtStepSize.Text);
+           
+            saveLoadDetectionSettings = cbxSaveLoadDetectionSettings.IsChecked ?? false;
+            Settings.Default.SaveLoadDetectionSettings = saveLoadDetectionSettings;
+
+            if (saveLoadDetectionSettings)
+            {
+                Settings.Default.MinimumFrames = int.Parse(txtMinFrames.Text);
+                Settings.Default.MinimumSimilarity = double.Parse(txtMinSimilarity.Text);
             }
 
             if (shouldOpenStart)

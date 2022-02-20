@@ -12,7 +12,7 @@ namespace unload.Properties {
     
     
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "17.0.3.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "17.1.0.0")]
     internal sealed partial class Settings : global::System.Configuration.ApplicationSettingsBase {
         
         private static Settings defaultInstance = ((Settings)(global::System.Configuration.ApplicationSettingsBase.Synchronized(new Settings())));
@@ -44,6 +44,78 @@ namespace unload.Properties {
             }
             set {
                 this["PreviousVideos"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool SnapToDetectedLoads {
+            get {
+                return ((bool)(this["SnapToDetectedLoads"]));
+            }
+            set {
+                this["SnapToDetectedLoads"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("250")]
+        public int FastForwardStepSize {
+            get {
+                return ((int)(this["FastForwardStepSize"]));
+            }
+            set {
+                this["FastForwardStepSize"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        public int LargeAdjustmentStepSize {
+            get {
+                return ((int)(this["LargeAdjustmentStepSize"]));
+            }
+            set {
+                this["LargeAdjustmentStepSize"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool SaveLoadDetectionSettings {
+            get {
+                return ((bool)(this["SaveLoadDetectionSettings"]));
+            }
+            set {
+                this["SaveLoadDetectionSettings"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0.95")]
+        public double MinimumSimilarity {
+            get {
+                return ((double)(this["MinimumSimilarity"]));
+            }
+            set {
+                this["MinimumSimilarity"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("1")]
+        public int MinimumFrames {
+            get {
+                return ((int)(this["MinimumFrames"]));
+            }
+            set {
+                this["MinimumFrames"] = value;
             }
         }
     }
