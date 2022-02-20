@@ -527,6 +527,14 @@ namespace unload
                 if (project.DetectedLoads.Count > 0)
                 {
                     SetProjectState(ProjectState.DETECTED_LOADS);
+
+                    foreach (DetectedLoad load in project.DetectedLoads)
+                    {
+                        sliderTicks.Add(load.StartFrame);
+                        sliderTicks.Add(load.EndFrame);
+                    }
+                    SetTimelineTicks();
+
                     UpdateDetectedLoads();
                 }
                 else
