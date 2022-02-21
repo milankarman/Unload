@@ -99,14 +99,14 @@ namespace unload
             double fps = info.FPS;
             int totalFrames = info.ExpectedFrames;
 
-            // Check if the same amount of converted images are found as the video has frames
+            // Check if the same amount of converted images are found as the video has frames s(1 missing or 1 extra seems normal)
             if (!File.Exists(Path.Join(framesDirectory, (totalFrames - 1).ToString() + ".jpg")))
             {
                 string message = "Warning, fewer converted frames are found than expected. This could mean that the video has dropped frames.";
                 MessageBox.Show(message, "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
-
-                totalFrames = Directory.GetFiles(framesDirectory, "*.jpg").Length;
             }
+
+            totalFrames = Directory.GetFiles(framesDirectory, "*.jpg").Length;
 
             if (fileName != null)
             {
