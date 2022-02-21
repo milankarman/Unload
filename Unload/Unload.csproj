@@ -31,6 +31,7 @@
 		<None Include="..\LICENSE">
 			<Pack>True</Pack>
 			<PackagePath></PackagePath>
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 		</None>
 		<Resource Include="icon\icon.png">
 			<Pack>True</Pack>
