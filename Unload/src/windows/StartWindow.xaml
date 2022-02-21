@@ -42,8 +42,8 @@
             </TextBlock>
             <Image Grid.Column="1" Source="../../icon/icon.png" Height="64" Margin="10,10,10,10"/>
             <TextBlock Grid.Column="2" HorizontalAlignment="Left">           
-                <Hyperlink NavigateUri="https://github.com/milankarman/Unload" RequestNavigate="Hyperlink_RequestNavigate">
-                    Guide
+                <Hyperlink NavigateUri="https://github.com/milankarman/Unload#usage" RequestNavigate="Hyperlink_RequestNavigate">
+                    Usage
                 </Hyperlink>
             </TextBlock>
         </Grid>
