@@ -268,6 +268,7 @@ namespace unload
                     sliderCropLeft.IsEnabled = false;
                     sliderCropRight.IsEnabled = false;
                     btnResetCrop.IsEnabled = false;
+                    txtTimeOutput.Text = "";
                     break;
 
                 case ProjectState.PICKED_LOADS:
@@ -291,6 +292,7 @@ namespace unload
                     sliderCropLeft.IsEnabled = true;
                     sliderCropRight.IsEnabled = true;
                     btnResetCrop.IsEnabled = true;
+                    txtTimeOutput.Text = "";
                     break;
 
                 case ProjectState.PREPARED_FRAMES:
@@ -312,6 +314,7 @@ namespace unload
                     sliderCropLeft.IsEnabled = false;
                     sliderCropRight.IsEnabled = false;
                     btnResetCrop.IsEnabled = false;
+                    txtTimeOutput.Text = "";
                     break;
 
                 case ProjectState.DETECTED_LOADS:
