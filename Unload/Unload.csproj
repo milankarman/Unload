@@ -8,7 +8,7 @@
 		<ApplicationIcon>./icon/icon.ico</ApplicationIcon>
 		<EnableNETAnalyzers>true</EnableNETAnalyzers>
 		<EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
-		<Version>1.2.0</Version>
+		<Version>1.3.0</Version>
 		<Authors>milankarman</Authors>
 		<Description>An advanced automatic speedrun load time remover for community verifiers.</Description>
 		<PackageLicenseFile>LICENSE</PackageLicenseFile>
