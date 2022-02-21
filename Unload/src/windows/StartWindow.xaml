@@ -30,7 +30,22 @@
             <RowDefinition Height="1*"/>
         </Grid.RowDefinitions>
         <Grid Grid.Row="0" Background="{DynamicResource highlight}">
-            <Image Source="../../icon/icon.png" Height="64" Margin="10,10,10,10"/>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition Width="auto"/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+            <TextBlock Grid.Column="0" HorizontalAlignment="Right">           
+                <Hyperlink NavigateUri="https://github.com/milankarman/Unload" RequestNavigate="Hyperlink_RequestNavigate">
+                    GitHub
+                </Hyperlink>
+            </TextBlock>
+            <Image Grid.Column="1" Source="../../icon/icon.png" Height="64" Margin="10,10,10,10"/>
+            <TextBlock Grid.Column="2" HorizontalAlignment="Left">           
+                <Hyperlink NavigateUri="https://github.com/milankarman/Unload" RequestNavigate="Hyperlink_RequestNavigate">
+                    Guide
+                </Hyperlink>
+            </TextBlock>
         </Grid>
         <Grid Grid.Row="1" Margin="10,10,10,0">
             <Grid.ColumnDefinitions>

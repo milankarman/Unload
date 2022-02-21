@@ -200,6 +200,14 @@
             </Trigger>
         </Style.Triggers>
     </Style>
+    <Style TargetType="Hyperlink">
+        <Setter Property="Foreground" Value="{DynamicResource primaryLight}" />
+        <Style.Triggers>
+            <Trigger Property="IsEnabled" Value="False">
+                <Setter Property="Foreground" Value="{DynamicResource secondaryLight}"/>
+            </Trigger>
+        </Style.Triggers>
+    </Style>
     <Style TargetType="TextBlock">
         <Setter Property="Foreground" Value="{DynamicResource primaryLight}" />
         <Setter Property="VerticalAlignment" Value="Center"/>

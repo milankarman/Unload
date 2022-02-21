@@ -7,6 +7,7 @@ using System.Reflection;
 using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Navigation;
 using Microsoft.Win32;
 using Newtonsoft.Json;
 using unload.Properties;
@@ -225,6 +226,12 @@ namespace unload
 
                 LoadProject(previousVideo.FramesDirectory);
             }
+        }
+
+        private void Hyperlink_RequestNavigate(object sender, RequestNavigateEventArgs e)
+        {
+            Process.Start(new ProcessStartInfo("cmd", $"/c start {e.Uri.AbsoluteUri}") { CreateNoWindow = true });
+            e.Handled = true;
         }
 
         // Removes symbols that conflict with FFmpeg arguments
