@@ -175,6 +175,8 @@ namespace unload
         private void btnConvert_Click(object sender, RoutedEventArgs e)
         {
             OpenFileDialog dialog = new();
+            dialog.Filter = "Unload Supported Formats|*.3g2;*.3gp;*.3gp2;*.asf;*.avi;*.dvrms;*.flv;*.h261;*.h263;*.h264;*.m2t;" +
+                "*.m2ts;*.m4v;*.mkv;*.mod;*.mov;*.mp4;*.mpg;*.mxf;*.webm;*.wmv;*.xmv;";
 
             if (dialog.ShowDialog() == true)
             {
