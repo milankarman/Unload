@@ -70,7 +70,7 @@ And that's all you need to get started. There are more options for more specific
 
 # Download
 
-Download the most recent release [here](../../releases). Download the .zip file and extract the full "Unload" folder into the location where you want to keep it. Then you can run the Unload.exe file inside and you're up and running!
+You will need to have the [.NET 5.0 runtime](https://dotnet.microsoft.com/en-us/download/dotnet/thank-you/sdk-5.0.406-windows-x64-installer) installed. Download the most recent release [here](../../releases). Download the .zip file and extract the full "Unload" folder into the location where you want to keep it. Then you can run the Unload.exe file inside and you're up and running!
 
 Unload is only available for Windows, there hasn't been demand to port it and it will likely take a large amount of effort..
 
@@ -115,7 +115,7 @@ Last but not least you can lower the export width and height, but know that this
 
 **How can I speed up frame preperation?**  
 
-*Frame preparation is very dependent on the size of your loading screen cropping. If you hardly crop at all, then the process will likely take a long time. Thus try to find something smaller yet distinct on your loading screens to be recognized and crop to that when possible.
+*Frame preparation is very dependent on the size of your loading screen cropping. If you hardly crop at all, then the process will likely take a long time. Thus try to find something smaller yet distinct on your loading screens to be recognized and crop to that when possible.*
 
 **Does Unload support alpha masks for loading frames?**  
 
