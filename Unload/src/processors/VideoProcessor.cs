@@ -11,6 +11,7 @@ namespace unload
     public static class VideoProcessor
     {
         private const string FFMPEG_PATH = "./ffmpeg";
+        private static readonly string[] FFMPEG_EXECUTABLES = new[] { "ffmpeg.exe", "ffprobe.exe" };
 
         // Points the FFmpeg library to the right executables
         public static void SetFFMpegPath()
@@ -19,6 +20,16 @@ namespace unload
 #if DEBUG
             // Automatically downloads FFmpeg useful for development
             FFmpegDownloader.GetLatestVersion(FFmpegVersion.Official, FFmpeg.ExecutablesPath);
+#else
+            // SetExecutablesPath doesn't validate anything, Xabe only looks for the executables on first use
+            foreach (string executable in FFMPEG_EXECUTABLES)
+            {
+                string executablePath = Path.Join(FFMPEG_PATH, executable);
+                if (!File.Exists(executablePath))
+                {
+                    throw new FileNotFoundException($"Could not find {executable}", executablePath);
+                }
+            }
 #endif
         }
 
