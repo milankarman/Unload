@@ -30,21 +30,23 @@ namespace unload
             IMediaInfo info = await FFmpeg.GetMediaInfo(inputPath).ConfigureAwait(false);
             IVideoStream videoStream = info.VideoStreams.First();
 
-            // Prepares for converting every video frame to an image
+            // Input seeking resets timestamps to 0, so an output -to would act as a duration
+            TimeSpan duration = endTime - startTime;
+
+            // Prepares for converting every video frame to an image.
+            // fps runs before scale so frames that get dropped are never scaled.
             IConversion conversion = FFmpeg.Conversions.New()
                 .AddStream(videoStream)
                 .AddParameter($"-ss {startTime}", ParameterPosition.PreInput)
-                .AddParameter($"-to {endTime}")
-                .AddParameter($"-s {frameWidth}x{frameHeight}")
+                .AddParameter($"-t {duration}")
+                .AddParameter($"-vf fps={fps},scale={frameWidth}:{frameHeight}")
                 .AddParameter("-q:v 3")
-                .SetFrameRate(fps)
-                .SetVideoSyncMethod(VideoSyncMethod.cfr)
                 .SetOutput(Path.Join(outputPath, "%d.jpg"));
 
             // Notifies the calling location on the progress of converting
             conversion.OnProgress += (sender, args) =>
             {
-                double percent = Math.Round(args.Duration.TotalSeconds / endTime.TotalSeconds * 100, 2);
+                double percent = Math.Round(args.Duration.TotalSeconds / duration.TotalSeconds * 100, 2);
                 onProgress(percent);
             };
 
