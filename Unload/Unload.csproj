@@ -8,6 +8,8 @@
 		<UseWPF>true</UseWPF>
 		<ApplicationIcon>./icon/icon.ico</ApplicationIcon>
 		<EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
+		<!-- CA1304, CA1305 and CA1311 are disabled in .editorconfig, the culture is set globally in App.xaml.cs -->
+		<AnalysisModeGlobalization>All</AnalysisModeGlobalization>
 		<VersionPrefix>1.3.0</VersionPrefix>
 		<!-- Mark Debug builds as prereleases so they can't be mistaken for release builds. CI overrides it with `debug.<run number>`. -->
 		<VersionSuffix Condition="'$(Configuration)' == 'Debug' And '$(VersionSuffix)' == ''">debug</VersionSuffix>
