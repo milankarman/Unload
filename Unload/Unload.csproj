@@ -7,7 +7,6 @@
 		<RootNamespace>unload</RootNamespace>
 		<UseWPF>true</UseWPF>
 		<ApplicationIcon>./icon/icon.ico</ApplicationIcon>
-		<EnableNETAnalyzers>true</EnableNETAnalyzers>
 		<EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
 		<Version>1.3.0</Version>
 		<Authors>milankarman</Authors>
@@ -15,7 +14,6 @@
 		<PackageLicenseFile>LICENSE</PackageLicenseFile>
 		<PackageProjectUrl>https://github.com/milankarman/Unload</PackageProjectUrl>
 		<PackageIcon>icon.png</PackageIcon>
-		<PackageIconUrl />
 		<RepositoryUrl>https://github.com/milankarman/Unload</RepositoryUrl>
 		<RepositoryType>Git</RepositoryType>
 		<PackageTags>video, timing, moderation, verification, speedrun, speedrunning</PackageTags>
@@ -23,12 +21,6 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<Compile Remove="App.xaml.cs" />
-	</ItemGroup>
-
-	<ItemGroup>
-		<None Remove="icon\icon_32.png" />
-		<Page Remove=".xaml" />
 		<None Include="..\LICENSE">
 			<Pack>True</Pack>
 			<PackagePath></PackagePath>
@@ -64,18 +56,6 @@
 			<Generator>SettingsSingleFileGenerator</Generator>
 			<LastGenOutput>Settings.Designer.cs</LastGenOutput>
 		</None>
-	</ItemGroup>
-
-	<ItemGroup>
-		<Page Update="ConvertWindow.xaml">
-			<XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
-		</Page>
-		<Page Update="src\windows\StartWindow.xaml">
-			<XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
-		</Page>
-		<Page Update="src\windows\StartSettingsWindow.xaml">
-			<XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
-		</Page>
 	</ItemGroup>
 
 	<ItemGroup>
