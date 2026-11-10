@@ -4,12 +4,12 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Text.Json;
 using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Navigation;
 using Microsoft.Win32;
-using Newtonsoft.Json;
 using unload.Properties;
 
 namespace unload
@@ -53,7 +53,7 @@ namespace unload
                 Application.Current.Shutdown();
             }
 
-            PreviousVideo[] previousVideosArray = JsonConvert.DeserializeObject<PreviousVideo[]>(Settings.Default.PreviousVideos) ?? [];
+            PreviousVideo[] previousVideosArray = JsonSerializer.Deserialize<PreviousVideo[]>(Settings.Default.PreviousVideos) ?? [];
             previousVideos = new(previousVideosArray);
 
             if (previousVideos.Count > 0)
@@ -84,7 +84,15 @@ namespace unload
             }
 
             string jsonString = File.ReadAllText(infoPath);
-            ConversionInfo? info = JsonConvert.DeserializeObject<ConversionInfo>(jsonString);
+            ConversionInfo? info;
+            try
+            {
+                info = JsonSerializer.Deserialize<ConversionInfo>(jsonString);
+            }
+            catch (JsonException)
+            {
+                info = null;
+            }
 
             // Check if conversion info contains data
             if (info == null)
@@ -125,7 +133,7 @@ namespace unload
 
                 previousVideos = new(previousVideos.OrderByDescending(i => i.LastOpened).Take(5).ToList());
 
-                Settings.Default.PreviousVideos = JsonConvert.SerializeObject(previousVideos);
+                Settings.Default.PreviousVideos = JsonSerializer.Serialize(previousVideos);
                 Settings.Default.Save();
             }
 
