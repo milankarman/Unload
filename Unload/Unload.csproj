@@ -8,7 +8,9 @@
 		<UseWPF>true</UseWPF>
 		<ApplicationIcon>./icon/icon.ico</ApplicationIcon>
 		<EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
-		<Version>1.3.0</Version>
+		<VersionPrefix>1.3.0</VersionPrefix>
+		<!-- Mark Debug builds as prereleases so they can't be mistaken for release builds. CI overrides it with `debug.<run number>`. -->
+		<VersionSuffix Condition="'$(Configuration)' == 'Debug' And '$(VersionSuffix)' == ''">debug</VersionSuffix>
 		<Authors>milankarman</Authors>
 		<Description>An advanced automatic speedrun load time remover for community verifiers.</Description>
 		<PackageLicenseFile>LICENSE</PackageLicenseFile>
