@@ -1,15 +1,18 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.ExceptionServices;
+using System.Text.Json;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Navigation;
 using Microsoft.Win32;
-using Newtonsoft.Json;
 using unload.Properties;
 
 namespace unload
@@ -53,7 +56,7 @@ namespace unload
                 Application.Current.Shutdown();
             }
 
-            PreviousVideo[] previousVideosArray = JsonConvert.DeserializeObject<PreviousVideo[]>(Settings.Default.PreviousVideos);
+            PreviousVideo[] previousVideosArray = JsonSerializer.Deserialize<PreviousVideo[]>(Settings.Default.PreviousVideos) ?? [];
             previousVideos = new(previousVideosArray);
 
             if (previousVideos.Count > 0)
@@ -84,7 +87,15 @@ namespace unload
             }
 
             string jsonString = File.ReadAllText(infoPath);
-            ConversionInfo? info = JsonConvert.DeserializeObject<ConversionInfo>(jsonString);
+            ConversionInfo? info;
+            try
+            {
+                info = JsonSerializer.Deserialize<ConversionInfo>(jsonString);
+            }
+            catch (JsonException)
+            {
+                info = null;
+            }
 
             // Check if conversion info contains data
             if (info == null)
@@ -125,8 +136,7 @@ namespace unload
 
                 previousVideos = new(previousVideos.OrderByDescending(i => i.LastOpened).Take(5).ToList());
 
-                Settings.Default.PreviousVideos = JsonConvert.SerializeObject(previousVideos);
-                Settings.Default.Save();
+                SavePreviousVideos();
             }
 
             // Create the project and start the main window
@@ -230,6 +240,86 @@ namespace unload
             }
         }
 
+        private async void btnPreviousVideoDelete_Click(object sender, RoutedEventArgs e)
+        {
+            Button cmd = (Button)sender;
+            if (cmd.DataContext is PreviousVideo previousVideo)
+            {
+                string framesDirectory = previousVideo.FramesDirectory;
+
+                if (Directory.Exists(framesDirectory))
+                {
+                    MessageBoxResult result = MessageBox.Show(
+                        $"Delete the converted frames of \"{previousVideo.FileName}\" from disk?\n\n{framesDirectory}",
+                        "Delete frames",
+                        MessageBoxButton.YesNo,
+                        MessageBoxImage.Warning,
+                        MessageBoxResult.No);
+
+                    if (result != MessageBoxResult.Yes) return;
+
+                    // Disable the whole row so the entry can't be loaded while its frames are being deleted
+                    UIElement row = (UIElement)cmd.Parent;
+                    row.IsEnabled = false;
+
+                    try
+                    {
+                        await Task.Run(() => DeleteFramesDirectory(framesDirectory));
+                    }
+                    catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
+                    {
+                        row.IsEnabled = true;
+                        MessageBox.Show(
+                            $"Failed to delete {framesDirectory}: {ex.Message}",
+                            "Error",
+                            MessageBoxButton.OK,
+                            MessageBoxImage.Error);
+                        return;
+                    }
+                }
+
+                previousVideos.Remove(previousVideo);
+                SavePreviousVideos();
+
+                if (previousVideos.Count == 0)
+                {
+                    lbxPreviousVideos.Visibility = Visibility.Hidden;
+                    lblNoPreviousVideos.Visibility = Visibility.Visible;
+                }
+            }
+        }
+
+        // Only deletes what a conversion writes, so a folder the user picked by its conversion-info.json keeps their other files
+        private static void DeleteFramesDirectory(string framesDirectory)
+        {
+            IEnumerable<string> frames = Directory
+                .EnumerateFiles(framesDirectory, "*.jpg")
+                .Where(frame => FrameFileName().IsMatch(Path.GetFileNameWithoutExtension(frame)));
+
+            try
+            {
+                Parallel.ForEach(frames, File.Delete);
+            }
+            catch (AggregateException ex)
+            {
+                // Surface the first failure as-is so the caller's IOException / UnauthorizedAccessException filter still applies
+                ExceptionDispatchInfo.Capture(ex.InnerExceptions[0]).Throw();
+            }
+
+            File.Delete(Path.Join(framesDirectory, "conversion-info.json"));
+
+            if (!Directory.EnumerateFileSystemEntries(framesDirectory).Any())
+            {
+                Directory.Delete(framesDirectory);
+            }
+        }
+
+        private void SavePreviousVideos()
+        {
+            Settings.Default.PreviousVideos = JsonSerializer.Serialize(previousVideos);
+            Settings.Default.Save();
+        }
+
         private void Hyperlink_RequestNavigate(object sender, RequestNavigateEventArgs e)
         {
             Process.Start(new ProcessStartInfo("cmd", $"/c start {e.Uri.AbsoluteUri}") { CreateNoWindow = true });
@@ -239,7 +329,13 @@ namespace unload
         // Removes symbols that conflict with FFmpeg arguments
         private static string RemoveSymbols(string path)
         {
-            return Regex.Replace(path, @"[^0-9a-zA-Z\/\\:]+", "");
+            return FFmpegConflictingSymbols().Replace(path, "");
         }
+
+        [GeneratedRegex(@"[^0-9a-zA-Z\/\\:]+")]
+        private static partial Regex FFmpegConflictingSymbols();
+
+        [GeneratedRegex(@"^\d+$")]
+        private static partial Regex FrameFileName();
     }
 }
