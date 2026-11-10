@@ -168,14 +168,6 @@ namespace unload
 
         private void btnConvert_Click(object sender, RoutedEventArgs e)
         {
-            // Check if _frames directory exists, otherwise create it
-            if (Directory.Exists(targetDirectory))
-            {
-                Directory.Delete(targetDirectory, true);
-            }
-
-            Directory.CreateDirectory(targetDirectory);
-
             // Get user conversion settings
             TimeSpan startTime = GetStartTime();
             TimeSpan endTime = GetEndTime();
@@ -183,6 +175,26 @@ namespace unload
             int height = int.Parse(txtFrameHeight.Text);
             double fps = double.Parse(txtFramesPerSecond.Text);
             int expectedFrames = (int)(fps * (endTime - startTime).TotalSeconds);
+
+            // Covers an empty time range and a 0 framerate.
+            // Checked before deleting the _frames directory so existing frames are kept.
+            if (expectedFrames < 1)
+            {
+                MessageBox.Show(
+                    "The selected time range and framerate don't produce any frames.",
+                    "Nothing to convert",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Warning);
+                return;
+            }
+
+            // Check if _frames directory exists, otherwise create it
+            if (Directory.Exists(targetDirectory))
+            {
+                Directory.Delete(targetDirectory, true);
+            }
+
+            Directory.CreateDirectory(targetDirectory);
 
             ConversionInfo info = new(Path.GetFileName(filePath), fps, expectedFrames);
 
