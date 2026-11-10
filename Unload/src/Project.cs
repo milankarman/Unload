@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using Shipwreck.Phash;
+using Shipwreck.Phash.Bitmaps;
 
 namespace unload;
 
@@ -70,16 +71,16 @@ public class Project
     {
         DetectedLoads.Clear();
 
-        Bitmap[] loadFrames = new Bitmap[pickedLoadsIndeces.Count];
-
+        Digest[] loadHashes = new Digest[pickedLoadsIndeces.Count];
         for (int i = 0; i < pickedLoadsIndeces.Count; i++)
         {
             using Bitmap loadFrame = new(Path.Join(framesDirectory, $"{pickedLoadsIndeces[i]}.jpg"));
-            loadFrames[i] = ImageProcessor.CropImage(loadFrame, crop);
+            using Bitmap croppedLoadFrame = ImageProcessor.CropImage(loadFrame, crop);
+            loadHashes[i] = ImagePhash.ComputeDigest(croppedLoadFrame.ToLuminanceImage());
         }
 
         // Store the similarity of all frames and store this in another dictionary
-        Dictionary<int, float[]> frameSimilarities = ImageProcessor.GetHashDictSimilarity(HashedFrames, loadFrames);
+        Dictionary<int, float[]> frameSimilarities = ImageProcessor.GetHashDictSimilarity(HashedFrames, loadHashes);
 
         int loadScreenCounter = 0;
         int loadFrameCounter = 0;
