@@ -32,9 +32,11 @@ public static class ImageProcessor
         ConcurrentDictionary<int, Digest> frameHashes = new();
 
         int doneFrames = 0;
+        int totalFrames = endFrame - startFrame + 1;
 
         // Hashes frames in parallel to the max amount of concurrent tasks the user defined. Holds a cancellation token so it can be stopped
-        Parallel.For(startFrame, endFrame, new ParallelOptions { CancellationToken = cts.Token }, i =>
+        // endFrame is inclusive, but Parallel.For's upper bound is exclusive
+        Parallel.For(startFrame, endFrame + 1, new ParallelOptions { CancellationToken = cts.Token }, i =>
         {
             // Crops and hashes the current frame
             Bitmap currentFrame = new(Path.Join(path, $"{i}.jpg"));
@@ -46,18 +48,18 @@ public static class ImageProcessor
 
             // Clears the current frame from memory and notifies the caller of its progress
             currentFrame.Dispose();
-            doneFrames += 1;
-            double percentage = doneFrames / (double)endFrame * 100d;
-
-            onProgress(percentage);
+            int done = Interlocked.Increment(ref doneFrames);
+            onProgress(done / (double)totalFrames * 100d);
         });
 
+        // Workers' onProgress calls can land out of order, ensure the last one reports 100%
+        onProgress(100d);
         onFinished();
 
         return new Dictionary<int, Digest>(frameHashes);
     }
 
-    // Compares an entire dictiory against a single image and returns a dictionary of similarity
+    // Compares an entire dictionary against a single image and returns a dictionary of similarity
     public static Dictionary<int, float[]> GetHashDictSimilarity(Dictionary<int, Digest> hashDict, Bitmap[] references)
     {
         Digest[] referenceHashes = new Digest[references.Length];
