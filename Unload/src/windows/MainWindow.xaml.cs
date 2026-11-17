@@ -428,6 +428,10 @@ public partial class MainWindow : Window
 
     private void btnSetEnd_Click(object sender, RoutedEventArgs e) => txtEndFrame.Text = ((int)sliderTimeline.Value).ToString();
 
+    private void btnGotoStartFrame_Click(object sender, RoutedEventArgs e) => sliderTimeline.Value = int.Parse(txtStartFrame.Text);
+
+    private void btnGotoEndFrame_Click(object sender, RoutedEventArgs e) => sliderTimeline.Value = int.Parse(txtEndFrame.Text);
+
     // Load picking
     private void btnPreviousLoadFrame_Click(object sender, RoutedEventArgs e)
     {

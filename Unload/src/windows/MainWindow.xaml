@@ -192,13 +192,27 @@
                         <RowDefinition Height="auto"/>
                     </Grid.RowDefinitions>
                     <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="3*"/>
                         <ColumnDefinition Width="2*"/>
-                        <ColumnDefinition Width="1*"/>
                     </Grid.ColumnDefinitions>
                     <Label Grid.Row="0" Grid.Column="0" Margin="0,0,0,5" Content="Start Frame:"/>
-                    <TextBox Grid.Row="0" Grid.Column="1" x:Name="txtStartFrame" Margin="0,0,0,5" Text="1" HorizontalContentAlignment="Right"/>
+                    <Grid Grid.Row="0" Grid.Column="1" Margin="0,0,0,5">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="auto"/>
+                            <ColumnDefinition Width="1*"/>
+                        </Grid.ColumnDefinitions>
+                        <Button Grid.Column="0" Content="►" Width="22" Margin="0,0,5,0" FontFamily="Arial" Click="btnGotoStartFrame_Click"/>
+                        <TextBox Grid.Column="1" x:Name="txtStartFrame"  Text="1" HorizontalContentAlignment="Right"/>
+                    </Grid>
                     <Label Grid.Row="1" Grid.Column="0" Margin="0,0,0,5" Content="End Frame:"/>
-                    <TextBox Grid.Row="1" Grid.Column="1" x:Name="txtEndFrame" Margin="0,0,0,5" Text="1" HorizontalContentAlignment="Right"/>
+                    <Grid Grid.Row="1" Grid.Column="1" Margin="0,0,0,5">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="auto"/>
+                            <ColumnDefinition Width="1*"/>
+                        </Grid.ColumnDefinitions>
+                        <Button Grid.Column="0" Content="►" Width="22" Margin="0,0,5,0" FontFamily="Arial" Click="btnGotoEndFrame_Click"/>
+                        <TextBox Grid.Column="1" x:Name="txtEndFrame"  Text="1" HorizontalContentAlignment="Right"/>
+                    </Grid>
                     <Label Grid.Row="2" Grid.Column="0" Margin="0,0,0,5" Content="FPS:"/>
                     <TextBox Grid.Row="2" Grid.Column="1" x:Name="txtFPS" Margin="0,0,0,5" Text="30" HorizontalContentAlignment="Right" IsReadOnly="True"/>
                     <Label Grid.Row="3" Grid.Column="0" Margin="0,0,0,10" Content="Load Frames:"/>
