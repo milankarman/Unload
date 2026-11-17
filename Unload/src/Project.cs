@@ -191,6 +191,7 @@ public class Project
 
         lines.Add("");
         lines.Add("Unload Settings");
+        lines.Add($"FPS,\"{fps}\"");
         lines.Add($"Minimum similarity,\"{usedMinSimilarity}\"");
         lines.Add($"Minimum frames,{usedMinLoadFrames}");
         lines.Add($"Start frame,{usedStartFrame}");
