@@ -16,10 +16,12 @@
                     <ColumnDefinition Width="2*"/>
                     <ColumnDefinition Width="auto"/>
                     <ColumnDefinition Width="auto"/>
+                    <ColumnDefinition Width="auto"/>
                 </Grid.ColumnDefinitions>
                 <TextBlock Grid.Column="0" Text="{Binding Path=FileName}" TextTrimming="CharacterEllipsis" Margin="0,0,5,0"/>
                 <TextBlock Grid.Column="1" Text="{Binding Path=LastOpened}" Margin="5,0,0,0" HorizontalAlignment="Right"/>
                 <Button Grid.Column="2" x:Name="btnConvert" Margin="10,0,0,0" Width="40" Content="Load" Click="btnPreviousVideoLoad_Click"/>
+                <Button Grid.Column="3" Margin="5,0,0,0" Width="22" Content="🗑" ToolTip="Remove from list" Click="btnPreviousVideoDelete_Click"/>
             </Grid>
         </DataTemplate>
     </Window.Resources>
@@ -55,7 +57,7 @@
             </Grid.ColumnDefinitions>
             <Button Grid.Column="0" x:Name="btnConvert" Margin="0,0,5,0" Content="Convert &amp; Load" Click="btnConvert_Click"/>
             <Button Grid.Column="1" x:Name="btnLoad" Margin="5,0,5,0" Content="Load" Click="btnLoad_Click"/>
-            <Button Grid.Column="2" x:Name="btnStartSettings" Margin="5,0,0,0" Content="⚙" Click="btnStartSettings_Click"/>
+            <Button Grid.Column="2" x:Name="btnStartSettings" Margin="5,0,0,0" Content="⚙" ToolTip="Settings" Click="btnStartSettings_Click"/>
         </Grid>
         <Grid Grid.Row="2" Margin="10,10,10,10">
             <GroupBox x:Name="groupPreviousVideos" Header="Previously Loaded Videos">
