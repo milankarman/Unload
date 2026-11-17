@@ -49,6 +49,7 @@ public partial class MainWindow : Window
     private readonly int minFrames = 1;
     private bool saveLoadDetectionSettings = false;
 
+    // Binds keyboard shortcuts through commands (see MainWindow.xaml)
     public static readonly RoutedUICommand ForwardCommand = new("Forward", "Forward", typeof(MainWindow));
     private void Forward_Executed(object sender, ExecutedRoutedEventArgs e) { if (btnForward.IsEnabled) btnForward_Click(sender, e); }
 
@@ -73,12 +74,30 @@ public partial class MainWindow : Window
     public static readonly RoutedUICommand RemoveLoadFrameCommand = new("Remove Load Frame", "RemoveLoadFrame", typeof(MainWindow));
     private void RemoveLoadFrame_Executed(object sender, ExecutedRoutedEventArgs e) { if (btnRemoveLoadFrame.IsEnabled) btnRemoveLoadFrame_Click(sender, e); }
 
+    public static readonly RoutedUICommand BackFarMultCommand = new("Back Far Multiple", "BackFarMult", typeof(MainWindow));
+    private void BackFarMult_Executed(object sender, ExecutedRoutedEventArgs e)
+    {
+        if (btnBackFar.IsEnabled)
+        {
+            txtVideoFrame.Text = (int.Parse(txtVideoFrame.Text) - GetStepSizeFrames() * 4).ToString();
+        }
+    }
+
     public static readonly RoutedUICommand BackVeryFarCommand = new("Back Very Far", "BackFar", typeof(MainWindow));
     private void BackVeryFar_Executed(object sender, ExecutedRoutedEventArgs e)
     {
         if (btnBackFar.IsEnabled)
         {
             txtVideoFrame.Text = (int.Parse(txtVideoFrame.Text) - (project.totalFrames * 0.05)).ToString();
+        }
+    }
+
+    public static readonly RoutedUICommand ForwardFarMultCommand = new("Forward Far Multiple", "ForwardFarMult", typeof(MainWindow));
+    private void ForwardFarMult_Executed(object sender, ExecutedRoutedEventArgs e)
+    {
+        if (btnBackFar.IsEnabled)
+        {
+            txtVideoFrame.Text = (int.Parse(txtVideoFrame.Text) + GetStepSizeFrames() * 4).ToString();
         }
     }
 
