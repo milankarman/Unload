@@ -27,7 +27,7 @@ namespace unload
         public Project(string _framesDirectory, string _videoName, int _totalFrames, double _fps)
         {
             framesDirectory = _framesDirectory;
-            videoName = _videoName; 
+            videoName = _videoName;
             totalFrames = _totalFrames;
             fps = _fps;
 
