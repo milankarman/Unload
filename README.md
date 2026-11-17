@@ -70,7 +70,9 @@ And that's all you need to get started. There are more options for more specific
 
 # Download
 
-You will need to have the [.NET 5.0 runtime](https://dotnet.microsoft.com/en-us/download/dotnet/thank-you/sdk-5.0.406-windows-x64-installer) installed. Download the most recent release [here](../../releases). Download the .zip file and extract the full "Unload" folder into the location where you want to keep it. Then you can run the Unload.exe file inside and you're up and running!
+You will need to have the [.NET 10.0 Desktop Runtime](https://dotnet.microsoft.com/en-us/download/dotnet/10.0) installed.
+
+Download the most recent release [here](../../releases). Download the .zip file and extract the full "Unload" folder into the location where you want to keep it. Then you can run the Unload.exe file inside and you're up and running!
 
 Unload is only available for Windows, there hasn't been demand to port it and it will likely take a large amount of effort..
 
