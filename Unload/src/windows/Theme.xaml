@@ -341,7 +341,7 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="RepeatButton">
-                    <Border Background="{DynamicResource primaryDark}" Height="3"/>
+                    <Border Background="{DynamicResource primaryDark}" Height="12" CornerRadius="5"/>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
@@ -349,11 +349,11 @@
     <Style x:Key="SliderRepeatButton1" TargetType="RepeatButton">
         <Setter Property="SnapsToDevicePixels" Value="true" />
         <Setter Property="OverridesDefaultStyle" Value="true" />
-        <Setter Property="Background" Value="{DynamicResource highlight}" />
+        <Setter Property="Background" Value="{DynamicResource highlightDark}" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="RepeatButton">
-                    <Border Background="{TemplateBinding Background}" Height="3"/>
+                    <Border Background="{TemplateBinding Background}" Height="12" CornerRadius="5"/>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
@@ -370,7 +370,7 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="Thumb">
-                    <Ellipse Height="10" Width="10" Fill="{TemplateBinding Background}"></Ellipse>
+                    <Ellipse Height="12" Width="12" Fill="{TemplateBinding Background}"></Ellipse>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
