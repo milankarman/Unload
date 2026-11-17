@@ -53,7 +53,7 @@ namespace unload
                 Application.Current.Shutdown();
             }
 
-            PreviousVideo[] previousVideosArray = JsonConvert.DeserializeObject<PreviousVideo[]>(Settings.Default.PreviousVideos);
+            PreviousVideo[] previousVideosArray = JsonConvert.DeserializeObject<PreviousVideo[]>(Settings.Default.PreviousVideos) ?? [];
             previousVideos = new(previousVideosArray);
 
             if (previousVideos.Count > 0)
