@@ -49,6 +49,48 @@ public partial class MainWindow : Window
     private readonly int minFrames = 1;
     private bool saveLoadDetectionSettings = false;
 
+    public static readonly RoutedUICommand ForwardCommand = new("Forward", "Forward", typeof(MainWindow));
+    private void Forward_Executed(object sender, ExecutedRoutedEventArgs e) { if (btnForward.IsEnabled) btnForward_Click(sender, e); }
+
+    public static readonly RoutedUICommand ForwardFarCommand = new("Forward Far", "ForwardFar", typeof(MainWindow));
+    private void ForwardFar_Executed(object sender, ExecutedRoutedEventArgs e) { if (btnForwardFar.IsEnabled) btnForwardFar_Click(sender, e); }
+
+    public static readonly RoutedUICommand BackCommand = new("Back", "Back", typeof(MainWindow));
+    private void Back_Executed(object sender, ExecutedRoutedEventArgs e) { if (btnBack.IsEnabled) btnBack_Click(sender, e); }
+
+    public static readonly RoutedUICommand BackFarCommand = new("Back Far", "BackFar", typeof(MainWindow));
+    private void BackFar_Executed(object sender, ExecutedRoutedEventArgs e) { if (btnBackFar.IsEnabled) btnBackFar_Click(sender, e); }
+
+    public static readonly RoutedUICommand SetStartCommand = new("Set Start", "SetStart", typeof(MainWindow));
+    private void SetStart_Executed(object sender, ExecutedRoutedEventArgs e) { if (btnSetStart.IsEnabled) btnSetStart_Click(sender, e); }
+
+    public static readonly RoutedUICommand SetEndCommand = new("Set End", "SetEnd", typeof(MainWindow));
+    private void SetEnd_Executed(object sender, ExecutedRoutedEventArgs e) { if (btnSetEnd.IsEnabled) btnSetEnd_Click(sender, e); }
+
+    public static readonly RoutedUICommand AddLoadFrameCommand = new("Add Load Frame", "AddLoadFrame", typeof(MainWindow));
+    private void AddLoadFrame_Executed(object sender, ExecutedRoutedEventArgs e) { if (btnAddLoadFrame.IsEnabled) btnAddLoadFrame_Click(sender, e); }
+
+    public static readonly RoutedUICommand RemoveLoadFrameCommand = new("Remove Load Frame", "RemoveLoadFrame", typeof(MainWindow));
+    private void RemoveLoadFrame_Executed(object sender, ExecutedRoutedEventArgs e) { if (btnRemoveLoadFrame.IsEnabled) btnRemoveLoadFrame_Click(sender, e); }
+
+    public static readonly RoutedUICommand BackVeryFarCommand = new("Back Very Far", "BackFar", typeof(MainWindow));
+    private void BackVeryFar_Executed(object sender, ExecutedRoutedEventArgs e)
+    {
+        if (btnBackFar.IsEnabled)
+        {
+            txtVideoFrame.Text = (int.Parse(txtVideoFrame.Text) - (project.totalFrames * 0.05)).ToString();
+        }
+    }
+
+    public static readonly RoutedUICommand ForwardVeryFarCommand = new("Forward Very Far", "ForwardVeryFar", typeof(MainWindow));
+    private void ForwardVeryFar_Executed(object sender, ExecutedRoutedEventArgs e)
+    {
+        if (btnForwardFar.IsEnabled)
+        {
+            txtVideoFrame.Text = (int.Parse(txtVideoFrame.Text) + (project.totalFrames * 0.05)).ToString();
+        }
+    }
+
     public MainWindow(Project _project)
     {
         project = _project;
@@ -345,7 +387,7 @@ public partial class MainWindow : Window
 
     private void txtVideoFrame_TextChanged(object sender, EventArgs e)
     {
-        int frameIndex = int.Parse(txtVideoFrame.Text);
+        int frameIndex = (int)float.Parse(txtVideoFrame.Text);
         sliderTimeline.Value = frameIndex;
         SetVideoFrame(frameIndex);
     }
@@ -356,10 +398,10 @@ public partial class MainWindow : Window
     private void btnBackFar_Click(object sender, RoutedEventArgs e) =>
         txtVideoFrame.Text = (int.Parse(txtVideoFrame.Text) - GetStepSizeFrames()).ToString();
 
-    private void btnForwardFar_Click(object sender, RoutedEventArgs e) =>
+    private void btnForward_Click(object sender, RoutedEventArgs e) =>
         txtVideoFrame.Text = (int.Parse(txtVideoFrame.Text) + 1).ToString();
 
-    private void btnForward_Click(object sender, RoutedEventArgs e) =>
+    private void btnForwardFar_Click(object sender, RoutedEventArgs e) =>
         txtVideoFrame.Text = (int.Parse(txtVideoFrame.Text) + GetStepSizeFrames()).ToString();
 
     // Range selection
@@ -497,6 +539,7 @@ public partial class MainWindow : Window
                 progress.Close();
                 gridContainer.IsEnabled = true;
                 SetProjectState(ProjectState.PREPARED_FRAMES);
+                Focus();
             });
         }
 

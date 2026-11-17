@@ -9,6 +9,38 @@
     <Window.TaskbarItemInfo>
         <TaskbarItemInfo/>
     </Window.TaskbarItemInfo>
+    <Window.CommandBindings>
+        <CommandBinding Command="{x:Static local:MainWindow.ForwardCommand}" Executed="Forward_Executed"/>
+        <CommandBinding Command="{x:Static local:MainWindow.ForwardFarCommand}" Executed="ForwardFar_Executed"/>
+        <CommandBinding Command="{x:Static local:MainWindow.ForwardVeryFarCommand}" Executed="ForwardVeryFar_Executed"/>
+        
+        <CommandBinding Command="{x:Static local:MainWindow.BackCommand}" Executed="Back_Executed"/>
+        <CommandBinding Command="{x:Static local:MainWindow.BackFarCommand}" Executed="BackFar_Executed"/>
+        <CommandBinding Command="{x:Static local:MainWindow.BackVeryFarCommand}" Executed="BackVeryFar_Executed"/>
+
+        <CommandBinding Command="{x:Static local:MainWindow.SetStartCommand}" Executed="SetStart_Executed"/>
+        <CommandBinding Command="{x:Static local:MainWindow.SetEndCommand}" Executed="SetEnd_Executed"/>
+
+        <CommandBinding Command="{x:Static local:MainWindow.AddLoadFrameCommand}" Executed="AddLoadFrame_Executed"/>
+        <CommandBinding Command="{x:Static local:MainWindow.RemoveLoadFrameCommand}" Executed="RemoveLoadFrame_Executed"/>
+    </Window.CommandBindings>
+
+    <Window.InputBindings>
+        <KeyBinding Key="Right" Command="{x:Static local:MainWindow.ForwardCommand}"/>
+        <KeyBinding Key="Right" Modifiers="Control" Command="{x:Static local:MainWindow.ForwardFarCommand}"/>
+        <KeyBinding Key="Right" Modifiers="Shift" Command="{x:Static local:MainWindow.ForwardVeryFarCommand}"/>
+        
+        <KeyBinding Key="Left" Command="{x:Static local:MainWindow.BackCommand}"/>
+        <KeyBinding Key="Left" Modifiers="Control" Command="{x:Static local:MainWindow.BackFarCommand}"/>
+        <KeyBinding Key="Left" Modifiers="Shift" Command="{x:Static local:MainWindow.BackVeryFarCommand}"/>
+
+        <KeyBinding Key="Home" Command="{x:Static local:MainWindow.SetStartCommand}"/>
+        <KeyBinding Key="End" Command="{x:Static local:MainWindow.SetEndCommand}"/>
+
+        <KeyBinding Key="Insert" Command="{x:Static local:MainWindow.AddLoadFrameCommand}"/>
+        <KeyBinding Key="Delete" Command="{x:Static local:MainWindow.RemoveLoadFrameCommand}"/>
+    </Window.InputBindings>
+    
     <Window.Resources>
         <DataTemplate x:Key="DetectedLoadTemplate">
             <Grid Width="auto" Margin="0,0,0,5">
@@ -82,12 +114,14 @@
                         <ColumnDefinition Width="auto"/>
                     </Grid.ColumnDefinitions>
                     <Slider Grid.Row="0" Grid.ColumnSpan="9" x:Name="sliderTimeline" Margin="0,0,0,10" VerticalAlignment="Top" Height="18" ValueChanged="sliderTimeline_ValueChanged" TickPlacement="None" SmallChange="1" Minimum="1" IsSnapToTickEnabled="True"/>
+                    
                     <Button Grid.Row="1" Grid.Column="0" x:Name="btnBackFar" Margin="0,0,5,0" Width="40" Content="◄◄" Click="btnBackFar_Click" FontFamily="Arial"/>
-                    <Button Grid.Row="1" Grid.Column="1" x:Name="btnBack" Margin="0,0,5,0" Width="40" Content="◄" Click="btnBack_Click" FontFamily="Arial"/>
-                    <Button Grid.Row="1" Grid.Column="2" x:Name="btnForward" Margin="0,0,5,0" Width="40" Content="►" Click="btnForwardFar_Click" FontFamily="Arial"/>
-                    <Button Grid.Row="1" Grid.Column="3" x:Name="btnForwardFar" Margin="0,0,5,0" Width="40" Content="►►" Click="btnForward_Click" FontFamily="Arial"/>
+                    <Button Grid.Row="1" Grid.Column="0" x:Name="btnBack" Margin="0,0,5,0" Width="40" Content="◄◄" Click="btnBack_Click" FontFamily="Arial"/>
+                    <Button Grid.Row="1" Grid.Column="2" x:Name="btnForward" Margin="0,0,5,0" Width="40" Content="►" Click="btnForward_Click" FontFamily="Arial"/>
+                    <Button Grid.Row="1" Grid.Column="3" x:Name="btnForwardFar" Margin="0,0,5,0" Width="40" Content="►►" Click="btnForwardFar_Click" FontFamily="Arial"/>
                     <Button Grid.Row="1" Grid.Column="5" x:Name="btnSetStart" Margin="0,0,5,0" Width="60" Content="Set Start" Click="btnSetStart_Click"/>
                     <Button Grid.Row="1" Grid.Column="6" x:Name="btnSetEnd" Margin="0,0,10,0" Width="60"  Content="Set End" Click="btnSetEnd_Click"/>
+                    
                     <Label Grid.Row="1" Grid.Column="7" Margin="0,0,5,0" Width="40" Content="Frame:"/>
                     <TextBox Grid.Row="1" Grid.Column="8" x:Name="txtVideoFrame" Width="70" Text="1" TextAlignment="Right" TextChanged="txtVideoFrame_TextChanged"/>
                 </Grid>
