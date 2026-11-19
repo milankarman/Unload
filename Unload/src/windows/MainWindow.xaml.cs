@@ -627,16 +627,16 @@ public partial class MainWindow : Window
                     MessageBoxImage.Warning
                 );
             }
-                SetProjectState(ProjectState.DETECTED_LOADS);
+            SetProjectState(ProjectState.DETECTED_LOADS);
 
-                foreach (DetectedLoad load in project.DetectedLoads)
-                {
-                    sliderTicks.Add(load.StartFrame);
-                    sliderTicks.Add(load.EndFrame);
-                }
-                SetTimelineTicks();
+            foreach (DetectedLoad load in project.DetectedLoads)
+            {
+                sliderTicks.Add(load.StartFrame);
+                sliderTicks.Add(load.EndFrame);
+            }
+            SetTimelineTicks();
 
-                UpdateDetectedLoads();
+            UpdateDetectedLoads();
         }
         catch (Exception ex)
         {
