@@ -200,6 +200,11 @@
             </Trigger>
         </Style.Triggers>
     </Style>
+    <Style TargetType="ToolTip">
+        <Setter Property="Background" Value="{DynamicResource primaryDark}" />
+        <Setter Property="Foreground" Value="{DynamicResource primaryLight}" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
+    </Style>
     <Style TargetType="Hyperlink">
         <Setter Property="Foreground" Value="{DynamicResource primaryLight}" />
         <Style.Triggers>
