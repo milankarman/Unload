@@ -88,11 +88,11 @@ public class Project
         bool subsequentLoadFrame = false;
 
         // Check every frame similarities to the load images against the minimum similarity and list them as loads
-        for (int i = usedStartFrame; i < usedEndFrame; i++)
+        for (int i = usedStartFrame; i <= usedEndFrame; i++)
         {
             for (int j = 0; j < frameSimilarities[i].Length; j++)
             {
-                if (frameSimilarities[i][j] > minSimilarity && i < usedEndFrame)
+                if (frameSimilarities[i][j] > minSimilarity)
                 {
                     loadFrameCounter += 1;
 
@@ -108,19 +108,29 @@ public class Project
                 }
                 else if (j >= frameSimilarities[i].Length - 1 && subsequentLoadFrame)
                 {
-                    int currentLoadEndFrame = i - 1;
-                    int currentLoadTotalFrames = currentLoadEndFrame - currentLoadStartFrame + 1;
-
-                    // Check if the detected loading screen matches the minimum number of frames set by user
-                    if (currentLoadTotalFrames >= minLoadFrames)
-                    {
-                        DetectedLoads.Add(new DetectedLoad(loadScreenCounter, currentLoadStartFrame, currentLoadEndFrame));
-                    }
-
-                    subsequentLoadFrame = false;
-                    currentLoadStartFrame = 0;
+                    EndCurrentLoad(i - 1);
                 }
             }
+        }
+
+        // A load still running on the end frame has no following frame to close it
+        if (subsequentLoadFrame)
+        {
+            EndCurrentLoad(usedEndFrame);
+        }
+
+        void EndCurrentLoad(int currentLoadEndFrame)
+        {
+            int currentLoadTotalFrames = currentLoadEndFrame - currentLoadStartFrame + 1;
+
+            // Check if the detected loading screen matches the minimum number of frames set by user
+            if (currentLoadTotalFrames >= minLoadFrames)
+            {
+                DetectedLoads.Add(new DetectedLoad(loadScreenCounter, currentLoadStartFrame, currentLoadEndFrame));
+            }
+
+            subsequentLoadFrame = false;
+            currentLoadStartFrame = 0;
         }
 
         usedMinSimilarity = minSimilarity;
@@ -191,6 +201,7 @@ public class Project
 
         lines.Add("");
         lines.Add("Unload Settings");
+        lines.Add($"FPS,\"{fps}\"");
         lines.Add($"Minimum similarity,\"{usedMinSimilarity}\"");
         lines.Add($"Minimum frames,{usedMinLoadFrames}");
         lines.Add($"Start frame,{usedStartFrame}");
