@@ -618,8 +618,15 @@ public partial class MainWindow : Window
 
             project.DetectLoadFrames(minSimilarity, minFrames, pickedLoadingFrames, GetSliderCropRect());
 
-            if (project.DetectedLoads.Count > 0)
+            if (project.DetectedLoads.Count == 0)
             {
+                MessageBox.Show("Failed to detect any load frames." +
+                    "Double check your load detection settings",
+                    "Warning",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Warning
+                );
+            }
                 SetProjectState(ProjectState.DETECTED_LOADS);
 
                 foreach (DetectedLoad load in project.DetectedLoads)
@@ -630,16 +637,6 @@ public partial class MainWindow : Window
                 SetTimelineTicks();
 
                 UpdateDetectedLoads();
-            }
-            else
-            {
-                MessageBox.Show("Failed to detect any load frames." +
-                    "Double check your load detection settings",
-                    "Warning",
-                    MessageBoxButton.OK,
-                    MessageBoxImage.Warning
-                );
-            }
         }
         catch (Exception ex)
         {
