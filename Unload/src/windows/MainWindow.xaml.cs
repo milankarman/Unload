@@ -324,6 +324,7 @@ public partial class MainWindow : Window
 
                 txtTimeOutput.IsEnabled = false;
 
+                gridCropSliders.IsEnabled = false;
                 sliderCropTop.IsEnabled = false;
                 sliderCropBottom.IsEnabled = false;
                 sliderCropLeft.IsEnabled = false;
@@ -348,6 +349,7 @@ public partial class MainWindow : Window
                 txtEndFrame.IsEnabled = true;
                 txtTimeOutput.IsEnabled = false;
 
+                gridCropSliders.IsEnabled = true;
                 sliderCropTop.IsEnabled = true;
                 sliderCropBottom.IsEnabled = true;
                 sliderCropLeft.IsEnabled = true;
@@ -370,6 +372,7 @@ public partial class MainWindow : Window
                 txtEndFrame.IsEnabled = false;
                 txtTimeOutput.IsEnabled = false;
 
+                gridCropSliders.IsEnabled = false;
                 sliderCropTop.IsEnabled = false;
                 sliderCropBottom.IsEnabled = false;
                 sliderCropLeft.IsEnabled = false;
@@ -390,6 +393,7 @@ public partial class MainWindow : Window
 
                 txtTimeOutput.IsEnabled = true;
 
+                gridCropSliders.IsEnabled = false;
                 sliderCropTop.IsEnabled = false;
                 sliderCropBottom.IsEnabled = false;
                 sliderCropLeft.IsEnabled = false;
@@ -465,6 +469,22 @@ public partial class MainWindow : Window
     }
 
     private void slidersCropping_OnValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e) => UpdatePickedLoadPreview();
+
+    private void btnCropTopIncrease_Click(object sender, RoutedEventArgs e) => sliderCropTop.Value += 1;
+
+    private void btnCropTopDecrease_Click(object sender, RoutedEventArgs e) => sliderCropTop.Value -= 1;
+
+    private void btnCropBottomIncrease_Click(object sender, RoutedEventArgs e) => sliderCropBottom.Value += 1;
+
+    private void btnCropBottomDecrease_Click(object sender, RoutedEventArgs e) => sliderCropBottom.Value -= 1;
+
+    private void btnCropRightIncrease_Click(object sender, RoutedEventArgs e) => sliderCropRight.Value += 1;
+
+    private void btnCropRightDecrease_Click(object sender, RoutedEventArgs e) => sliderCropRight.Value -= 1;
+
+    private void btnCropLeftIncrease_Click(object sender, RoutedEventArgs e) => sliderCropLeft.Value += 1;
+
+    private void btnCropLeftDecrease_Click(object sender, RoutedEventArgs e) => sliderCropLeft.Value -= 1;
 
     private void imageLoadFrame_MouseDown(object sender, MouseButtonEventArgs e)
     {

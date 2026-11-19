@@ -14,7 +14,7 @@
         <CommandBinding Command="{x:Static local:MainWindow.ForwardFarCommand}" Executed="ForwardFar_Executed"/>
         <CommandBinding Command="{x:Static local:MainWindow.ForwardFarMultCommand}" Executed="ForwardFarMult_Executed"/>
         <CommandBinding Command="{x:Static local:MainWindow.ForwardVeryFarCommand}" Executed="ForwardVeryFar_Executed"/>
-        
+
         <CommandBinding Command="{x:Static local:MainWindow.BackCommand}" Executed="Back_Executed"/>
         <CommandBinding Command="{x:Static local:MainWindow.BackFarCommand}" Executed="BackFar_Executed"/>
         <CommandBinding Command="{x:Static local:MainWindow.BackFarMultCommand}" Executed="BackFarMult_Executed"/>
@@ -32,7 +32,7 @@
         <KeyBinding Key="Right" Modifiers="Control" Command="{x:Static local:MainWindow.ForwardFarCommand}"/>
         <KeyBinding Key="Right" Modifiers="Control+Shift" Command="{x:Static local:MainWindow.ForwardFarMultCommand}"/>
         <KeyBinding Key="Right" Modifiers="Shift" Command="{x:Static local:MainWindow.ForwardVeryFarCommand}"/>
-        
+
         <KeyBinding Key="Left" Command="{x:Static local:MainWindow.BackCommand}"/>
         <KeyBinding Key="Left" Modifiers="Control" Command="{x:Static local:MainWindow.BackFarCommand}"/>
         <KeyBinding Key="Left" Modifiers="Control+Shift" Command="{x:Static local:MainWindow.BackFarMultCommand}"/>
@@ -44,7 +44,7 @@
         <KeyBinding Key="Insert" Command="{x:Static local:MainWindow.AddLoadFrameCommand}"/>
         <KeyBinding Key="Delete" Command="{x:Static local:MainWindow.RemoveLoadFrameCommand}"/>
     </Window.InputBindings>
-    
+
     <Window.Resources>
         <DataTemplate x:Key="DetectedLoadTemplate">
             <Grid Width="auto" Margin="0,0,0,5">
@@ -117,16 +117,16 @@
                         <ColumnDefinition Width="auto"/>
                         <ColumnDefinition Width="auto"/>
                     </Grid.ColumnDefinitions>
-                    
+
                     <Slider Grid.Row="0" Grid.ColumnSpan="9" x:Name="sliderTimeline" Margin="0,0,0,10" VerticalAlignment="Top" Height="18" ValueChanged="sliderTimeline_ValueChanged" TickPlacement="None" SmallChange="1" Minimum="1" IsSnapToTickEnabled="True" IsMoveToPointEnabled="True"/>
-                    
+
                     <RepeatButton Grid.Row="1" Grid.Column="0" x:Name="btnBackFar" Margin="0,0,5,0" Width="40" Content="◄◄" Click="btnBackFar_Click" FontFamily="Arial"/>
                     <RepeatButton Grid.Row="1" Grid.Column="1" x:Name="btnBack" Margin="0,0,5,0" Width="40" Content="◄" Click="btnBack_Click" FontFamily="Arial"/>
                     <RepeatButton Grid.Row="1" Grid.Column="2" x:Name="btnForward" Margin="0,0,5,0" Width="40" Content="►" Click="btnForward_Click" FontFamily="Arial"/>
                     <RepeatButton Grid.Row="1" Grid.Column="3" x:Name="btnForwardFar" Margin="0,0,5,0" Width="40" Content="►►" Click="btnForwardFar_Click" FontFamily="Arial"/>
                     <Button Grid.Row="1" Grid.Column="5" x:Name="btnSetStart" Margin="0,0,5,0" Width="60" Content="Set Start" Click="btnSetStart_Click"/>
                     <Button Grid.Row="1" Grid.Column="6" x:Name="btnSetEnd" Margin="0,0,10,0" Width="60"  Content="Set End" Click="btnSetEnd_Click"/>
-                    
+
                     <Label Grid.Row="1" Grid.Column="7" Margin="0,0,5,0" Width="40" Content="Frame:"/>
                     <TextBox Grid.Row="1" Grid.Column="8" x:Name="txtVideoFrame" Width="70" Text="1" TextAlignment="Right" TextChanged="txtVideoFrame_TextChanged"/>
                 </Grid>
@@ -148,9 +148,6 @@
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
                     </Grid.RowDefinitions>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition/>
@@ -169,16 +166,78 @@
                     <Button Grid.Row="1" Grid.Column="1" x:Name="btnNextLoadFrame" Margin="0,10,5,0" Content="►" FontFamily="Arial" Click="btnNextLoadFrame_Click"/>
                     <Button Grid.Row="1" Grid.Column="2" x:Name="btnAddLoadFrame" Margin="5,10,0,0" Content="+" FontFamily="Arial" FontSize="14" Click="btnAddLoadFrame_Click"/>
                     <Button Grid.Row="1" Grid.Column="3" x:Name="btnRemoveLoadFrame" Margin="10,10,0,0" Content="-" FontFamily="Arial" FontSize="14" Click="btnRemoveLoadFrame_Click"/>
-                    <Label Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" Content="Top" Margin="0,10,0,0" HorizontalContentAlignment="Center" IsEnabled="{Binding ElementName=sliderCropTop, Path=IsEnabled}"/>
-                    <Label Grid.Row="2" Grid.Column="2" Grid.ColumnSpan="2" Content="Bottom" Margin="0,10,0,0" HorizontalContentAlignment="Center" IsEnabled="{Binding ElementName=sliderCropBottom, Path=IsEnabled}"/>
-                    <Slider Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" x:Name="sliderCropTop" Margin="5,0,5,0" ValueChanged="slidersCropping_OnValueChanged" Maximum="100" />
-                    <Slider Grid.Row="3" Grid.Column="2" Grid.ColumnSpan="2" x:Name="sliderCropBottom" Margin="5,0,5,0" ValueChanged="slidersCropping_OnValueChanged" Maximum="100"/>
-                    <Label Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="2" Content="Left" Margin="0,0,0,0" HorizontalContentAlignment="Center" IsEnabled="{Binding ElementName=sliderCropLeft, Path=IsEnabled}"/>
-                    <Label Grid.Row="4" Grid.Column="2" Grid.ColumnSpan="2" Content="Right" Margin="0,0,0,0" HorizontalContentAlignment="Center" IsEnabled="{Binding ElementName=sliderCropRight, Path=IsEnabled}"/>
-                    <Slider Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="2" x:Name="sliderCropLeft" Margin="5,0,5,0" ValueChanged="slidersCropping_OnValueChanged" Maximum="100"/>
-                    <Slider Grid.Row="5" Grid.Column="2" Grid.ColumnSpan="2" x:Name="sliderCropRight" Margin="5,0,5,0" ValueChanged="slidersCropping_OnValueChanged" Maximum="100"/>
-                    <Button Grid.Row="6" Grid.Column="0" Grid.ColumnSpan="2" x:Name="btnResetCrop" Margin="0,15,5,0" Content="Reset Crop" Click="btnResetCrop_Click"/>
-                    <Button Grid.Row="6" Grid.Column="2" Grid.ColumnSpan="2" x:Name="btnCheckSimilarity" Margin="5,15,0,0" Content="Check Similarity" Click="btnCheckSimilarity_Click"/>
+                    <Grid x:Name="gridCropSliders" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="4" Margin="0,20,0,0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="1*"/>
+                            <ColumnDefinition Width="1*"/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                        </Grid.RowDefinitions>
+                        <Grid Grid.Row="0" Grid.Column="0" Margin="5,0,5,0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="auto"/>
+                                <ColumnDefinition Width="1*"/>
+                                <ColumnDefinition Width="auto"/>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="auto"/>
+                                <RowDefinition Height="auto"/>
+                            </Grid.RowDefinitions>
+                            <RepeatButton Grid.Column="0" Margin="0" Width="17" Height="17" FontSize="10" Content="◄" Click="btnCropTopDecrease_Click" FontFamily="Arial"/>
+                            <Label Grid.Column="1" Content="Top"  HorizontalContentAlignment="Center"/>
+                            <RepeatButton Grid.Column="2" Margin="0" Width="17" Height="17" FontSize="10" Content="►" Click="btnCropTopIncrease_Click" FontFamily="Arial"/>
+                            <Slider Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3" Margin="0,3,0,0" x:Name="sliderCropTop" ValueChanged="slidersCropping_OnValueChanged" Maximum="100" IsMoveToPointEnabled="True"/>
+                        </Grid>
+                        <Grid Grid.Row="0" Grid.Column="1" Margin="5,0,5,0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="auto"/>
+                                <ColumnDefinition Width="1*"/>
+                                <ColumnDefinition Width="auto"/>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="auto"/>
+                                <RowDefinition Height="auto"/>
+                            </Grid.RowDefinitions>
+                            <RepeatButton Grid.Column="0" Margin="0" Width="17" Height="17" FontSize="10" Content="◄" Click="btnCropBottomDecrease_Click" FontFamily="Arial"/>
+                            <Label Grid.Column="1" Content="Bottom"  HorizontalContentAlignment="Center"/>
+                            <RepeatButton Grid.Column="2" Margin="0" Width="17" Height="17" FontSize="10" Content="►" Click="btnCropBottomIncrease_Click" FontFamily="Arial"/>
+                            <Slider Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3" Margin="0,3,0,0" x:Name="sliderCropBottom" ValueChanged="slidersCropping_OnValueChanged" Maximum="100" IsMoveToPointEnabled="True"/>
+                        </Grid>
+                        <Grid Grid.Row="1" Grid.Column="0" Margin="5,15,5,0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="auto"/>
+                                <ColumnDefinition Width="1*"/>
+                                <ColumnDefinition Width="auto"/>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="auto"/>
+                                <RowDefinition Height="auto"/>
+                            </Grid.RowDefinitions>
+                            <RepeatButton Grid.Column="0" Margin="0" Width="17" Height="17" FontSize="10" Content="◄" Click="btnCropLeftDecrease_Click" FontFamily="Arial"/>
+                            <Label Grid.Column="1" Content="Left"  HorizontalContentAlignment="Center"/>
+                            <RepeatButton Grid.Column="2" Margin="0" Width="17" Height="17" FontSize="10" Content="►" Click="btnCropLeftIncrease_Click" FontFamily="Arial"/>
+                            <Slider Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3" Margin="0,3,0,0" x:Name="sliderCropLeft" ValueChanged="slidersCropping_OnValueChanged" Maximum="100" IsMoveToPointEnabled="True"/>
+                        </Grid>
+                        <Grid Grid.Row="1" Grid.Column="1" Margin="5,15,5,0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="auto"/>
+                                <ColumnDefinition Width="1*"/>
+                                <ColumnDefinition Width="auto"/>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="auto"/>
+                                <RowDefinition Height="auto"/>
+                            </Grid.RowDefinitions>
+                            <RepeatButton Grid.Column="0" Margin="0" Width="17" Height="17" FontSize="10" Content="◄" Click="btnCropRightDecrease_Click" FontFamily="Arial"/>
+                            <Label Grid.Column="1" Content="Right"  HorizontalContentAlignment="Center"/>
+                            <RepeatButton Grid.Column="2" Margin="0" Width="17" Height="17" FontSize="10" Content="►" Click="btnCropRightIncrease_Click" FontFamily="Arial"/>
+                            <Slider Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3" Margin="0,3,0,0" x:Name="sliderCropRight" ValueChanged="slidersCropping_OnValueChanged" Maximum="100" IsMoveToPointEnabled="True"/>
+                        </Grid>
+                    </Grid>
+                    <Button Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" x:Name="btnResetCrop" Margin="0,15,5,0" Content="Reset Crop" Click="btnResetCrop_Click"/>
+                    <Button Grid.Row="3" Grid.Column="2" Grid.ColumnSpan="2" x:Name="btnCheckSimilarity" Margin="5,15,0,0" Content="Check Similarity" Click="btnCheckSimilarity_Click"/>
                 </Grid>
             </GroupBox>
             <GroupBox Grid.Row="2" x:Name="groupFrameCount" Header="Frame Count" Margin="0,10,0,0">
