@@ -88,7 +88,7 @@ public partial class MainWindow : Window
     {
         if (btnBackFar.IsEnabled)
         {
-            txtVideoFrame.Text = (int.Parse(txtVideoFrame.Text) - (project.totalFrames * 0.05)).ToString();
+            txtVideoFrame.Text = Math.Round(float.Parse(txtVideoFrame.Text) - (project.totalFrames * 0.05)).ToString();
         }
     }
 
@@ -106,7 +106,7 @@ public partial class MainWindow : Window
     {
         if (btnForwardFar.IsEnabled)
         {
-            txtVideoFrame.Text = (int.Parse(txtVideoFrame.Text) + (project.totalFrames * 0.05)).ToString();
+            txtVideoFrame.Text = Math.Round(float.Parse(txtVideoFrame.Text) + (project.totalFrames * 0.05)).ToString();
         }
     }
 
@@ -286,20 +286,23 @@ public partial class MainWindow : Window
         }
     }
 
-    private int GetStepSizeFrames() => (int)(project.fps / (1000 / int.Parse(txtStepSize.Text)));
+    // Step size is in milliseconds
+    private int GetStepSizeFrames() => (int)(project.fps * TextBoxValidator.GetInteger(txtStepSize, stepSize) / 1000);
+
+    private int GetVideoFrame() => TextBoxValidator.GetInteger(txtVideoFrame, (int)sliderTimeline.Value);
 
     private bool HasCropping() => sliderCropTop.Value > 0 || sliderCropBottom.Value > 0 ||
             sliderCropLeft.Value > 0 || sliderCropLeft.Value > 0;
 
     private void BindValidationMethods()
     {
-        txtVideoFrame.PreviewTextInput += TextBoxValidator.ForceInteger;
-        txtStartFrame.PreviewTextInput += TextBoxValidator.ForceInteger;
-        txtEndFrame.PreviewTextInput += TextBoxValidator.ForceInteger;
-        txtStepSize.PreviewTextInput += TextBoxValidator.ForceInteger;
+        TextBoxValidator.ForceInteger(txtVideoFrame);
+        TextBoxValidator.ForceInteger(txtStartFrame);
+        TextBoxValidator.ForceInteger(txtEndFrame);
+        TextBoxValidator.ForceInteger(txtStepSize);
+        TextBoxValidator.ForceInteger(txtMinFrames);
 
-        txtFPS.PreviewTextInput += TextBoxValidator.ForceDouble;
-        txtMinSimilarity.PreviewTextInput += TextBoxValidator.ForceDouble;
+        TextBoxValidator.ForceDouble(txtMinSimilarity);
     }
 
     private void SetProjectState(ProjectState _projectState)
@@ -410,16 +413,18 @@ public partial class MainWindow : Window
 
     private void txtVideoFrame_TextChanged(object sender, EventArgs e)
     {
-        int frameIndex = (int)float.Parse(txtVideoFrame.Text);
+        // Wait for a valid frame number while the user is still typing
+        if (!int.TryParse(txtVideoFrame.Text, out int frameIndex)) return;
+        // int frameIndex = (int)float.Parse(txtVideoFrame.Text);
         sliderTimeline.Value = frameIndex;
         SetVideoFrame(frameIndex);
     }
 
     private void btnBack_Click(object sender, RoutedEventArgs e) =>
-        txtVideoFrame.Text = (int.Parse(txtVideoFrame.Text) - 1).ToString();
+        txtVideoFrame.Text = (GetVideoFrame() - 1).ToString();
 
     private void btnBackFar_Click(object sender, RoutedEventArgs e) =>
-        txtVideoFrame.Text = (int.Parse(txtVideoFrame.Text) - GetStepSizeFrames()).ToString();
+        txtVideoFrame.Text = (GetVideoFrame() - GetStepSizeFrames()).ToString();
 
     private void btnForward_Click(object sender, RoutedEventArgs e) =>
         txtVideoFrame.Text = (int.Parse(txtVideoFrame.Text) + 1).ToString();
@@ -453,7 +458,7 @@ public partial class MainWindow : Window
 
     private void btnAddLoadFrame_Click(object sender, RoutedEventArgs e)
     {
-        pickedLoadingFrames.Add(int.Parse(txtVideoFrame.Text));
+        pickedLoadingFrames.Add(GetVideoFrame());
         selectedPickedLoad++;
 
         UpdatePickedLoadPreview();
@@ -547,7 +552,7 @@ public partial class MainWindow : Window
     private void btnCheckSimilarity_Click(object sender, RoutedEventArgs e)
     {
         int loadIndex = pickedLoadingFrames[selectedPickedLoad];
-        int videoFrame = int.Parse(txtVideoFrame.Text);
+        int videoFrame = GetVideoFrame();
         float similarity = project.GetSimilarity(loadIndex, videoFrame, GetSliderCropRect());
 
         MessageBox.Show(similarity.ToString());
@@ -565,8 +570,8 @@ public partial class MainWindow : Window
 
         Rectangle crop = GetSliderCropRect();
 
-        int startFrame = int.Parse(txtStartFrame.Text);
-        int endFrame = int.Parse(txtEndFrame.Text);
+        int startFrame = TextBoxValidator.GetInteger(txtStartFrame, 1);
+        int endFrame = TextBoxValidator.GetInteger(txtEndFrame, project.totalFrames);
 
         ProgressWindow progress = new("Preparing frames", this);
         progress.Show();
@@ -763,15 +768,15 @@ public partial class MainWindow : Window
         }
 
         Settings.Default.SnapToDetectedLoads = cbxSnapLoads.IsChecked ?? true;
-        Settings.Default.FastForwardStepSize = int.Parse(txtStepSize.Text);
+        Settings.Default.FastForwardStepSize = TextBoxValidator.GetInteger(txtStepSize, stepSize);
 
         saveLoadDetectionSettings = cbxSaveLoadDetectionSettings.IsChecked ?? false;
         Settings.Default.SaveLoadDetectionSettings = saveLoadDetectionSettings;
 
         if (saveLoadDetectionSettings)
         {
-            Settings.Default.MinimumFrames = int.Parse(txtMinFrames.Text);
-            Settings.Default.MinimumSimilarity = double.Parse(txtMinSimilarity.Text);
+            Settings.Default.MinimumFrames = TextBoxValidator.GetInteger(txtMinFrames, minFrames);
+            Settings.Default.MinimumSimilarity = TextBoxValidator.GetDouble(txtMinSimilarity, minSimilarity);
         }
 
         Settings.Default.Save();

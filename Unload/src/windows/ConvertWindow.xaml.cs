@@ -32,19 +32,19 @@ public partial class ConvertWindow : Window
         InitializeComponent();
 
         // Bind text validation methods to text boxes
-        txtEndTimeH.PreviewTextInput += TextBoxValidator.ForceInteger;
-        txtEndTimeM.PreviewTextInput += TextBoxValidator.ForceInteger;
-        txtEndTimeS.PreviewTextInput += TextBoxValidator.ForceInteger;
-        txtEndTimeMS.PreviewTextInput += TextBoxValidator.ForceInteger;
+        TextBoxValidator.ForceInteger(txtEndTimeH);
+        TextBoxValidator.ForceInteger(txtEndTimeM);
+        TextBoxValidator.ForceInteger(txtEndTimeS);
+        TextBoxValidator.ForceInteger(txtEndTimeMS);
 
-        txtStartTimeH.PreviewTextInput += TextBoxValidator.ForceInteger;
-        txtStartTimeM.PreviewTextInput += TextBoxValidator.ForceInteger;
-        txtStartTimeS.PreviewTextInput += TextBoxValidator.ForceInteger;
-        txtStartTimeMS.PreviewTextInput += TextBoxValidator.ForceInteger;
+        TextBoxValidator.ForceInteger(txtStartTimeH);
+        TextBoxValidator.ForceInteger(txtStartTimeM);
+        TextBoxValidator.ForceInteger(txtStartTimeS);
+        TextBoxValidator.ForceInteger(txtStartTimeMS);
 
-        txtFrameWidth.PreviewTextInput += TextBoxValidator.ForceInteger;
-        txtFrameHeight.PreviewTextInput += TextBoxValidator.ForceInteger;
-        txtFramesPerSecond.PreviewTextInput += TextBoxValidator.ForceDouble;
+        TextBoxValidator.ForceInteger(txtFrameWidth);
+        TextBoxValidator.ForceInteger(txtFrameHeight);
+        TextBoxValidator.ForceDouble(txtFramesPerSecond);
     }
 
     // Sets default values from video and shows the window
@@ -73,10 +73,10 @@ public partial class ConvertWindow : Window
     // Reads user start time values and returns it as a timespan
     private TimeSpan GetStartTime()
     {
-        int hours = int.Parse(txtStartTimeH.Text);
-        int minutes = int.Parse(txtStartTimeM.Text);
-        int seconds = int.Parse(txtStartTimeS.Text);
-        int milliseconds = int.Parse(txtStartTimeMS.Text);
+        int hours = TextBoxValidator.GetInteger(txtStartTimeH, 0);
+        int minutes = TextBoxValidator.GetInteger(txtStartTimeM, 0);
+        int seconds = TextBoxValidator.GetInteger(txtStartTimeS, 0);
+        int milliseconds = TextBoxValidator.GetInteger(txtStartTimeMS, 0);
 
         return new TimeSpan(0, hours, minutes, seconds, milliseconds);
     }
@@ -84,10 +84,10 @@ public partial class ConvertWindow : Window
     // Reads user end time values and returns it as a timespan
     private TimeSpan GetEndTime()
     {
-        int hours = int.Parse(txtEndTimeH.Text);
-        int minutes = int.Parse(txtEndTimeM.Text);
-        int seconds = int.Parse(txtEndTimeS.Text);
-        int milliseconds = int.Parse(txtEndTimeMS.Text);
+        int hours = TextBoxValidator.GetInteger(txtEndTimeH, 0);
+        int minutes = TextBoxValidator.GetInteger(txtEndTimeM, 0);
+        int seconds = TextBoxValidator.GetInteger(txtEndTimeS, 0);
+        int milliseconds = TextBoxValidator.GetInteger(txtEndTimeMS, 0);
 
         return new TimeSpan(0, hours, minutes, seconds, milliseconds);
     }
@@ -171,9 +171,9 @@ public partial class ConvertWindow : Window
         // Get user conversion settings
         TimeSpan startTime = GetStartTime();
         TimeSpan endTime = GetEndTime();
-        int width = int.Parse(txtFrameWidth.Text);
-        int height = int.Parse(txtFrameHeight.Text);
-        double fps = double.Parse(txtFramesPerSecond.Text);
+        int width = TextBoxValidator.GetInteger(txtFrameWidth, 640);
+        int height = TextBoxValidator.GetInteger(txtFrameHeight, 360);
+        double fps = TextBoxValidator.GetDouble(txtFramesPerSecond, fileFramerate);
         int expectedFrames = (int)(fps * (endTime - startTime).TotalSeconds);
 
         // Covers an empty time range and a 0 framerate.
@@ -328,10 +328,10 @@ public partial class ConvertWindow : Window
         ClampStartTimeValues();
     }
 
-    // Ensure picked framerate isn't higher than the video framerate
+    // Ensure picked framerate is a number no higher than the video framerate
     private void txtFramesPerSecond_LostFocus(object sender, RoutedEventArgs e)
     {
-        if (double.Parse(txtFramesPerSecond.Text) > fileFramerate)
+        if (!double.TryParse(txtFramesPerSecond.Text, out double fps) || fps > fileFramerate)
         {
             txtFramesPerSecond.Text = fileFramerate.ToString();
         }

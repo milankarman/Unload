@@ -105,10 +105,10 @@ public partial class LoadCheckWindow : Window, INotifyPropertyChanged
         Width = mainWindow.Width;
         WindowState = mainWindow.WindowState;
 
-        txtLoadNumber.PreviewTextInput += TextBoxValidator.ForceInteger;
-        txtStartFrame.PreviewTextInput += TextBoxValidator.ForceInteger;
-        txtEndFrame.PreviewTextInput += TextBoxValidator.ForceInteger;
-        txtStepSize.PreviewTextInput += TextBoxValidator.ForceInteger;
+        TextBoxValidator.ForceInteger(txtLoadNumber);
+        TextBoxValidator.ForceInteger(txtStartFrame);
+        TextBoxValidator.ForceInteger(txtEndFrame);
+        TextBoxValidator.ForceInteger(txtStepSize);
 
         UpdateDetectedLoads();
 
@@ -174,7 +174,8 @@ public partial class LoadCheckWindow : Window, INotifyPropertyChanged
         sliderTimeline.Maximum = project.DetectedLoads.Count;
     }
 
-    private int GetStepSizeFrames() => (int)(project.fps / (1000 / int.Parse(txtStepSize.Text)));
+    // Step size is in milliseconds
+    private int GetStepSizeFrames() => (int)(project.fps * TextBoxValidator.GetInteger(txtStepSize, largeStepSize) / 1000);
 
     private void btnBack_Click(object sender, RoutedEventArgs e) => LoadNumber--;
 
@@ -247,7 +248,7 @@ public partial class LoadCheckWindow : Window, INotifyPropertyChanged
 
     private void SaveSettings()
     {
-        Settings.Default.LargeAdjustmentStepSize = int.Parse(txtStepSize.Text);
+        Settings.Default.LargeAdjustmentStepSize = TextBoxValidator.GetInteger(txtStepSize, largeStepSize);
         Settings.Default.Save();
     }
 

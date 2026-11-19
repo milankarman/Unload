@@ -15,6 +15,14 @@ insert_final_newline=true
 dotnet_diagnostic.IDE0090.severity=suggestion
 dotnet_diagnostic.IDE0008.severity=suggestion
 
+# The culture is set globally to InvariantCulture in App.xaml.cs, so call sites don't need to pass one
+# CA1304: Specify CultureInfo
+dotnet_diagnostic.CA1304.severity=none
+# CA1305: Specify IFormatProvider
+dotnet_diagnostic.CA1305.severity=none
+# CA1311: Specify a culture or use an invariant version
+dotnet_diagnostic.CA1311.severity=none
+
 # IDE0161: Use file-scoped namespace
 csharp_style_namespace_declarations=file_scoped:warning
 dotnet_diagnostic.IDE0161.severity=warning
