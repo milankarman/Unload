@@ -38,16 +38,13 @@ public static class ImageProcessor
         // endFrame is inclusive, but Parallel.For's upper bound is exclusive
         Parallel.For(startFrame, endFrame + 1, new ParallelOptions { CancellationToken = cts.Token }, i =>
         {
-            // Crops and hashes the current frame
-            Bitmap currentFrame = new(Path.Join(path, $"{i}.jpg"));
-            currentFrame = CropImage(currentFrame, cropPercentage);
-            Digest currentFrameHash = ImagePhash.ComputeDigest(currentFrame.ToLuminanceImage());
+            // Crops and hashes the current frame, then stores the hash at the frame number.
+            // CA2000 doesn't analyze lambdas, so it won't flag a missing `using` here.
+            using Bitmap currentFrame = new(Path.Join(path, $"{i}.jpg"));
+            using Bitmap croppedFrame = CropImage(currentFrame, cropPercentage);
+            frameHashes[i] = ImagePhash.ComputeDigest(croppedFrame.ToLuminanceImage());
 
-            // Stores the hash at the frame number
-            frameHashes[i] = currentFrameHash;
-
-            // Clears the current frame from memory and notifies the caller of its progress
-            currentFrame.Dispose();
+            // Notifies the caller of its progress
             int done = Interlocked.Increment(ref doneFrames);
             onProgress(done / (double)totalFrames * 100d);
         });
@@ -59,17 +56,9 @@ public static class ImageProcessor
         return new Dictionary<int, Digest>(frameHashes);
     }
 
-    // Compares an entire dictionary against a single image and returns a dictionary of similarity
-    public static Dictionary<int, float[]> GetHashDictSimilarity(Dictionary<int, Digest> hashDict, Bitmap[] references)
+    // Compares an entire dictionary against reference hashes and returns a dictionary of similarity
+    public static Dictionary<int, float[]> GetHashDictSimilarity(Dictionary<int, Digest> hashDict, Digest[] referenceHashes)
     {
-        Digest[] referenceHashes = new Digest[references.Length];
-
-        // Calculated hashes of reference images
-        for (int i = 0; i < references.Length; i++)
-        {
-            referenceHashes[i] = ImagePhash.ComputeDigest(references[i].ToLuminanceImage());
-        }
-
         ConcurrentDictionary<int, float[]> frameSimilarities = new();
 
         // Gets similarity of all frames in parallel

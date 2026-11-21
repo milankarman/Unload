@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using Shipwreck.Phash;
+using Shipwreck.Phash.Bitmaps;
 
 namespace unload;
 
@@ -38,13 +39,13 @@ public class Project
     // Returns the similarity of 2 frames ranging from 0 to 1
     public float GetSimilarity(int frame1Index, int frame2Index, Rectangle crop)
     {
-        Bitmap frame1 = new(Path.Join(framesDirectory, $"{frame1Index}.jpg"));
-        Bitmap frame2 = new(Path.Join(framesDirectory, $"{frame2Index}.jpg"));
+        using Bitmap frame1 = new(Path.Join(framesDirectory, $"{frame1Index}.jpg"));
+        using Bitmap frame2 = new(Path.Join(framesDirectory, $"{frame2Index}.jpg"));
 
-        frame1 = ImageProcessor.CropImage(frame1, crop);
-        frame2 = ImageProcessor.CropImage(frame2, crop);
+        using Bitmap croppedFrame1 = ImageProcessor.CropImage(frame1, crop);
+        using Bitmap croppedFrame2 = ImageProcessor.CropImage(frame2, crop);
 
-        return ImageProcessor.CompareBitmapPhash(frame1, frame2);
+        return ImageProcessor.CompareBitmapPhash(croppedFrame1, croppedFrame2);
     }
 
     // Crops and hashes every video frame in the selected range and stores it for later comparisons
@@ -70,16 +71,16 @@ public class Project
     {
         DetectedLoads.Clear();
 
-        Bitmap[] loadFrames = new Bitmap[pickedLoadsIndeces.Count];
-
+        Digest[] loadHashes = new Digest[pickedLoadsIndeces.Count];
         for (int i = 0; i < pickedLoadsIndeces.Count; i++)
         {
-            Bitmap loadFrame = new(Path.Join(framesDirectory, $"{pickedLoadsIndeces[i]}.jpg"));
-            loadFrames[i] = ImageProcessor.CropImage(loadFrame, crop);
+            using Bitmap loadFrame = new(Path.Join(framesDirectory, $"{pickedLoadsIndeces[i]}.jpg"));
+            using Bitmap croppedLoadFrame = ImageProcessor.CropImage(loadFrame, crop);
+            loadHashes[i] = ImagePhash.ComputeDigest(croppedLoadFrame.ToLuminanceImage());
         }
 
         // Store the similarity of all frames and store this in another dictionary
-        Dictionary<int, float[]> frameSimilarities = ImageProcessor.GetHashDictSimilarity(HashedFrames, loadFrames);
+        Dictionary<int, float[]> frameSimilarities = ImageProcessor.GetHashDictSimilarity(HashedFrames, loadHashes);
 
         int loadScreenCounter = 0;
         int loadFrameCounter = 0;
