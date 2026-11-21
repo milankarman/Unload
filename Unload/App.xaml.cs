@@ -1,7 +1,7 @@
 ﻿using System.Globalization;
 using System.Windows;
 
-namespace unload;
+namespace Unload;
 
 public partial class App : Application
 {

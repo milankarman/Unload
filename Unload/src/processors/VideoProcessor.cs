@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using Xabe.FFmpeg;
 using Xabe.FFmpeg.Downloader;
 
-namespace unload;
+namespace Unload;
 
 public static class VideoProcessor
 {

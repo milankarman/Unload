@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Windows;
 using Microsoft.WindowsAPICodePack.Dialogs;
-using unload.Properties;
+using Unload.Properties;
 
-namespace unload;
+namespace Unload;
 
 public partial class StartSettingsWindow : Window
 {
