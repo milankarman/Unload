@@ -25,7 +25,6 @@
 * [Extra Info](#extra-info)
 * [Credits](#credits)
 
-
 # About
 
 Speedrun timing is a tricky subject. A community doesn't want to give anyone an unfair advantage but you also don't want the timing and verification process of new runs to take too long. Unload is made to help with those speedruns that choose loadless timing yet require a lot of verification work. I ran into this problem with speedruns of the game "The Hobbit" which I verify - and thus Unload was born.
@@ -40,6 +39,7 @@ If the game you verify has consistent recognizable loading screens then Unload s
 <br />
 
 # Features
+
 * Pick one or more loading screens and detect them everywhere.
 * Loads are picked from the video you're verifying, so even bad video quality load screens can be recognized.
 * Quickly check and adjust load frames with the dedicated load checking window.
@@ -90,7 +90,6 @@ Note that loading screens that fade in or out would require some extra adjustmen
 
 And if you're still not sure there's never harm in trying.
 
-
 <p align="center">
   <img src="img/load_example.png" alt="Loading screen example" width="100%" height="auto">
       <i>An easy to detect load screen in the game "The Hobbit."</i>
@@ -103,7 +102,7 @@ Here I'll answer some things you might be wondering in a questions-and-answers f
 
 **How does Unload work behind the scenes?**  
 
-*Unload calculates something callled a Perceptual Hash (PHash) for every video frame as well as the picked loading frames. Using this PHash it can compare how similar the video frames are to the picked loading frames and if they are similar enough they can be confidently counted as load frames. From there it's simple math to subtract the load frames from real time.*
+*Unload calculates something called a Perceptual Hash (PHash) for every video frame as well as the picked loading frames. Using this PHash it can compare how similar the video frames are to the picked loading frames and if they are similar enough they can be confidently counted as load frames. From there it's simple math to subtract the load frames from real time.*
 
 **How can I speed up conversion?**  
 
@@ -123,14 +122,13 @@ Last but not least you can lower the export width and height, but know that this
 
 *No, this is not supported yet. But it's something I would like to add eventually.*
 
-**Can unload work on live runs together with my timer?**  
+**Can Unload work on live runs together with my timer?**  
 
 *No, Unload is purely designed for verification purposes.*
 
-
 **What does it mean when Unload tells me "Fewer converted frames are found than expected"?**  
 
-*When Unload loads in your video file it checks how many frames it expects there to be in the video. It then checks how many frames it finds in your converted "_frames" folder. If this is less than it expects then there's a chance some frames might be missing, possibly due to a conversion error. The warning is just to make you aware of this, as there's a chance that might lead to innacurate load time calculation.*
+*When Unload loads in your video file it checks how many frames it expects there to be in the video. It then checks how many frames it finds in your converted "_frames" folder. If this is less than it expects then there's a chance some frames might be missing, possibly due to a conversion error. The warning is just to make you aware of this, as there's a chance that might lead to inaccurate load time calculation.*
 
 # Credits
 

@@ -6,7 +6,7 @@ using System.Linq;
 using System.Threading;
 using Shipwreck.Phash;
 
-namespace unload;
+namespace Unload;
 
 public class Project
 {
@@ -66,15 +66,15 @@ public class Project
 
     // Compares every frame hash against the picked loads hashes and stores them
     public void DetectLoadFrames(double minSimilarity, int minLoadFrames,
-        List<int> pickedLoadsIndeces, Rectangle crop)
+        List<int> pickedLoadsIndices, Rectangle crop)
     {
         DetectedLoads.Clear();
 
-        Bitmap[] loadFrames = new Bitmap[pickedLoadsIndeces.Count];
+        Bitmap[] loadFrames = new Bitmap[pickedLoadsIndices.Count];
 
-        for (int i = 0; i < pickedLoadsIndeces.Count; i++)
+        for (int i = 0; i < pickedLoadsIndices.Count; i++)
         {
-            Bitmap loadFrame = new(Path.Join(framesDirectory, $"{pickedLoadsIndeces[i]}.jpg"));
+            Bitmap loadFrame = new(Path.Join(framesDirectory, $"{pickedLoadsIndices[i]}.jpg"));
             loadFrames[i] = ImageProcessor.CropImage(loadFrame, crop);
         }
 

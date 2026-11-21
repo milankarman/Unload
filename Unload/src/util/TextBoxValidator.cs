@@ -3,7 +3,7 @@ using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
 
-namespace unload;
+namespace Unload;
 
 public static partial class TextBoxValidator
 {

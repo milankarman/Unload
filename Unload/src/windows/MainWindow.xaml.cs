@@ -11,10 +11,10 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media.Imaging;
 using Microsoft.Win32;
-using unload.Properties;
+using Unload.Properties;
 using Point = System.Windows.Point;
 
-namespace unload;
+namespace Unload;
 
 public partial class MainWindow : Window
 {
@@ -726,7 +726,7 @@ public partial class MainWindow : Window
     {
         SaveFileDialog dialog = new()
         {
-            Filter = "Comma Seperated Values (*.csv)|*.csv",
+            Filter = "Comma Separated Values (*.csv)|*.csv",
             InitialDirectory = Directory.GetParent(project.framesDirectory)?.FullName ?? project.framesDirectory,
             FileName = Path.GetFileNameWithoutExtension(project.videoName),
             DefaultExt = "csv",

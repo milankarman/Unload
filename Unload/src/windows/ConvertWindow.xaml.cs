@@ -6,7 +6,7 @@ using System.Threading;
 using System.Windows;
 using Xabe.FFmpeg;
 
-namespace unload;
+namespace Unload;
 
 public partial class ConvertWindow : Window
 {

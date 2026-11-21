@@ -4,7 +4,7 @@ using System.Windows;
 using System.Windows.Shell;
 using System.Windows.Threading;
 
-namespace unload;
+namespace Unload;
 
 public partial class ProgressWindow : Window
 {
@@ -14,7 +14,7 @@ public partial class ProgressWindow : Window
 
     readonly private string text;
 
-    // Initalizes progress window and starts the timer to check for progress
+    // Initializes progress window and starts the timer to check for progress
     public ProgressWindow(string _text, Window owner)
     {
         InitializeComponent();
