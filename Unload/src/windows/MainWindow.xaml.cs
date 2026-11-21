@@ -183,10 +183,10 @@ public partial class MainWindow : Window
     {
         if (pickedLoadingFrames.Count >= 1)
         {
-            Bitmap image = new(Path.Join(project.framesDirectory, $"{pickedLoadingFrames[selectedPickedLoad]}.jpg"));
-            image = ImageProcessor.CropImage(image, GetSliderCropRect());
+            using Bitmap image = new(Path.Join(project.framesDirectory, $"{pickedLoadingFrames[selectedPickedLoad]}.jpg"));
+            using Bitmap croppedImage = ImageProcessor.CropImage(image, GetSliderCropRect());
 
-            imageLoadFrame.Source = ImageProcessor.BitmapToBitmapImage(image);
+            imageLoadFrame.Source = ImageProcessor.BitmapToBitmapImage(croppedImage);
         }
         else
         {

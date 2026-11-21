@@ -38,13 +38,13 @@ public class Project
     // Returns the similarity of 2 frames ranging from 0 to 1
     public float GetSimilarity(int frame1Index, int frame2Index, Rectangle crop)
     {
-        Bitmap frame1 = new(Path.Join(framesDirectory, $"{frame1Index}.jpg"));
-        Bitmap frame2 = new(Path.Join(framesDirectory, $"{frame2Index}.jpg"));
+        using Bitmap frame1 = new(Path.Join(framesDirectory, $"{frame1Index}.jpg"));
+        using Bitmap frame2 = new(Path.Join(framesDirectory, $"{frame2Index}.jpg"));
 
-        frame1 = ImageProcessor.CropImage(frame1, crop);
-        frame2 = ImageProcessor.CropImage(frame2, crop);
+        using Bitmap croppedFrame1 = ImageProcessor.CropImage(frame1, crop);
+        using Bitmap croppedFrame2 = ImageProcessor.CropImage(frame2, crop);
 
-        return ImageProcessor.CompareBitmapPhash(frame1, frame2);
+        return ImageProcessor.CompareBitmapPhash(croppedFrame1, croppedFrame2);
     }
 
     // Crops and hashes every video frame in the selected range and stores it for later comparisons
@@ -74,7 +74,7 @@ public class Project
 
         for (int i = 0; i < pickedLoadsIndeces.Count; i++)
         {
-            Bitmap loadFrame = new(Path.Join(framesDirectory, $"{pickedLoadsIndeces[i]}.jpg"));
+            using Bitmap loadFrame = new(Path.Join(framesDirectory, $"{pickedLoadsIndeces[i]}.jpg"));
             loadFrames[i] = ImageProcessor.CropImage(loadFrame, crop);
         }
 
