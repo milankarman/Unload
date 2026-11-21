@@ -36,7 +36,7 @@ public partial class StartSettingsWindow : Window
 
     private void btnBrowse_Click(object sender, RoutedEventArgs e)
     {
-        CommonOpenFileDialog dialog = new()
+        using CommonOpenFileDialog dialog = new()
         {
             Title = "Select working directory for creating frames",
             IsFolderPicker = true,
