@@ -7,9 +7,9 @@ using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media.Imaging;
-using unload.Properties;
+using Unload.Properties;
 
-namespace unload;
+namespace Unload;
 
 public partial class LoadCheckWindow : Window, INotifyPropertyChanged
 {

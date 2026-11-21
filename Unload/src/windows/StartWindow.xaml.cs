@@ -13,9 +13,9 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Navigation;
 using Microsoft.Win32;
-using unload.Properties;
+using Unload.Properties;
 
-namespace unload;
+namespace Unload;
 
 public partial class StartWindow : Window
 {
@@ -190,7 +190,7 @@ public partial class StartWindow : Window
 
         if (dialog.ShowDialog() == true)
         {
-            // Create _frames folder to store the image sequence, ommiting illegal symbols
+            // Create _frames folder to store the image sequence, omitting illegal symbols
             string? fileDirectory = Path.GetDirectoryName(dialog.FileName);
 
             string framesDirectory = Path.Join(workingDirectory ?? fileDirectory,

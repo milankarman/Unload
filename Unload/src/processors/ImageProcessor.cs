@@ -10,7 +10,7 @@ using System.Windows.Media.Imaging;
 using Shipwreck.Phash;
 using Shipwreck.Phash.Bitmaps;
 
-namespace unload;
+namespace Unload;
 
 public static class ImageProcessor
 {

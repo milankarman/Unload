@@ -1,4 +1,4 @@
-﻿namespace unload;
+﻿namespace Unload;
 
 // Class holding data of a single detected loading screen
 public class DetectedLoad
