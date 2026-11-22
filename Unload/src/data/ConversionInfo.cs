@@ -1,4 +1,4 @@
-﻿namespace unload;
+﻿namespace Unload;
 
 // Class holding info about a converted image sequence
 public class ConversionInfo
