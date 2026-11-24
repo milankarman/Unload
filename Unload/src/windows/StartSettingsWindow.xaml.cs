@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Windows;
-using Microsoft.WindowsAPICodePack.Dialogs;
+using Microsoft.Win32;
 using unload.Properties;
 
 namespace unload;
@@ -36,18 +36,14 @@ public partial class StartSettingsWindow : Window
 
     private void btnBrowse_Click(object sender, RoutedEventArgs e)
     {
-        CommonOpenFileDialog dialog = new()
+        OpenFolderDialog dialog = new()
         {
             Title = "Select working directory for creating frames",
-            IsFolderPicker = true,
-            EnsureFileExists = true,
-            EnsurePathExists = true,
-            EnsureValidNames = true,
             Multiselect = false,
         };
-        if (dialog.ShowDialog() == CommonFileDialogResult.Ok)
+        if (dialog.ShowDialog(this) ?? false)
         {
-            workingDirectory = dialog.FileName;
+            workingDirectory = dialog.FolderName;
             txtWorkingDirectory.Text = workingDirectory;
             btnClear.IsEnabled = true;
         }
