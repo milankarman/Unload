@@ -445,6 +445,7 @@
         <Setter Property="Focusable" Value="False"/>
         <Setter Property="SnapsToDevicePixels" Value="true" />
         <Setter Property="OverridesDefaultStyle" Value="true" />
+        <EventSetter Event="Loaded" Handler="Slider_Loaded"/>
         <Style.Triggers>
             <Trigger Property="Orientation" Value="Horizontal">
                 <Setter Property="MinHeight" Value="21" />
